@@ -120,34 +120,7 @@
             })
           };
         },
-        cache: true,
-        query: function query(q) {
-          var pageSize = 20;
-          var data = servicioDropdown.select2('data');
-
-          // Filter data based on search term
-          var filtered = data.filter(function (s) {
-            if (q.term == '') {
-              return true;
-            }
-            return s.text.toLowerCase().includes(q.term.toLowerCase());
-          });
-
-          // Paginate
-          var pageResults = filtered.slice((q.page - 1) * pageSize, q.page * pageSize);
-
-          // Check for more pages
-          var morePages = false;
-          if (pageResults.length < filtered.length) {
-            morePages = true;
-          }
-
-          // Invoke callback
-          q.callback({
-            results: pageResults,
-            more: morePages
-          });
-        }
+        cache: true
       }
     });
 
