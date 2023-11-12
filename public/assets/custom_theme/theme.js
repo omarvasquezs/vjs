@@ -91,18 +91,64 @@
       });
     });
 
-    // Fetch and populate servicios in the dropdown
+    // Fetch and populate servicios using Select2
     var servicioDropdown = $('#servicioDropdown');
-    var serviciosData = []; // To store all servicio data
+    servicioDropdown.select2({
+      placeholder: "-- SELECCIONAR SERVICIO --",
+      allowClear: true,
+      theme: "bootstrap",
+      minimumInputLength: 1,
+      // Minimum characters to start searching
+      ajax: {
+        url: 'fetchServicios',
+        // Update with your actual URL for fetching servicio data
+        dataType: 'json',
+        delay: 250,
+        data: function data(params) {
+          return {
+            q: params.term // Search term
+          };
+        },
 
-    $.get('fetchServicios', function (data) {
-      serviciosData = data;
-      $.each(data, function (key, value) {
-        servicioDropdown.append($('<option>', {
-          value: value.id,
-          text: value.nom_servicio
-        }));
-      });
+        processResults: function processResults(data) {
+          return {
+            results: $.map(data, function (item) {
+              return {
+                id: item.id,
+                text: item.nom_servicio
+              };
+            })
+          };
+        },
+        cache: true,
+        query: function query(q) {
+          var pageSize = 20;
+          var data = servicioDropdown.select2('data');
+
+          // Filter data based on search term
+          var filtered = data.filter(function (s) {
+            if (q.term == '') {
+              return true;
+            }
+            return s.text.toLowerCase().includes(q.term.toLowerCase());
+          });
+
+          // Paginate
+          var pageResults = filtered.slice((q.page - 1) * pageSize, q.page * pageSize);
+
+          // Check for more pages
+          var morePages = false;
+          if (pageResults.length < filtered.length) {
+            morePages = true;
+          }
+
+          // Invoke callback
+          q.callback({
+            results: pageResults,
+            more: morePages
+          });
+        }
+      }
     });
 
     // Add a row when the "Add Row" button is clicked
@@ -134,10 +180,11 @@
               updateTotalRegister();
             });
 
-            // Disable the option in the dropdown to prevent it from being added again
-            servicioDropdown.find('option[value="' + servicio.id + '"]').prop('disabled', true);
+            // Disable selected option                        
+            $('#servicioDropdown option:selected').select2().prop("disabled", true);
+
             // Clear the selected value in the dropdown
-            servicioDropdown.val('');
+            servicioDropdown.val(null).trigger('change'); // Clear the selected value in the Select2 dropdown
           }
         });
       }

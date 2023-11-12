@@ -227,16 +227,26 @@ class Home extends BaseController
 
         return $this->response->setJSON($metodopago);
     }
-    public function fetchServicios()
-    {
+    public function fetchServicios() {
         $servicioModel = new \App\Models\Servicios();
-        $servicios = $servicioModel->where('habilitado', 1)->findAll();
-
+    
+        // Get the search term from the request
+        $searchTerm = $this->request->getVar('q');
+    
+        // If a search term is provided, filter results
+        if ($searchTerm !== null) {
+            $servicios = $servicioModel
+                ->like('nom_servicio', $searchTerm) // Adjust 'nom_servicio' based on your database column
+                ->where('habilitado', 1)
+                ->findAll();
+        } else {
+            // If no search term, retrieve all enabled servicios
+            $servicios = $servicioModel->where('habilitado', 1)->findAll();
+        }
+    
         return $this->response->setJSON($servicios);
     }
-
-    public function fetchServicioDetails()
-    {
+    public function fetchServicioDetails() {
         $servicioModel = new \App\Models\Servicios();
         $servicioId = $this->request->getPost('servicio_id');
         $servicio = $servicioModel->getServicioDetails($servicioId);
