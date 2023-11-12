@@ -3,16 +3,11 @@
         <h1 class="mb-5">REGISTRO DE COMPROBANTE</h1>
         <form>
             <div class="row mb-4">
-                <div class="col-md-8 input-group-lg">
+                <div class="col-md-12 input-group-lg">
                     <input type="text" style="background: #e9ecef;" class="form-control" id="id_user_register"
                         placeholder="Cod. Cliente" required>
                 </div>
-                <div class="d-grid gap-2 col-4 mx-auto">
-                    <button class="btn btn-secondary btn-lg" data-bs-toggle="modal"
-                        data-bs-target="#consultaUsuarios">SELECCIONAR</button>
-                </div>
             </div>
-
             <div class="row mb-4">
                 <div class="col-md-6 input-group-lg">
                     <select class="form-select is-required" id="metodopagoDropdown" required>
@@ -35,11 +30,9 @@
                     </div>
                 </div>
             </div>
-
             <div class="row mb-4">
                 <div class="col-md-8 input-group-lg">
-                    <select class="form-select is-required" id="servicioDropdown" required>
-                        <option value="" selected>-- SELECCIONAR SERVICIO --</option>
+                    <select class="form-select is-required" id="servicioDropdown">
                         <!-- Servicios will be populated here through JavaScript -->
                     </select>
                 </div>
@@ -47,7 +40,6 @@
                     <button class="btn btn-primary" id="addRowButton">AÑADIR</button>
                 </div>
             </div>
-
             <div class="row mb-5 pb-5">
                 <table class="table" id="productTableBody">
                     <thead>
@@ -64,32 +56,15 @@
                     </tbody>
                 </table>
             </div>
-
             <div class="row mt-5">                
                 <h4>OP. GRAVADAS: S/. <span id="igv_register"></span></h4>
                 <h4>IGV 18%: S/. <span id="igv_register"></span></h4>                
                 <h4>TOTAL A PAGAR: S/. <span id="total_register"></span></h4>
             </div>
-
             <div class="row mt-5">
                 <div class="d-grid gap-2 col-6 mx-auto"><button class="btn btn-success btn-lg">Registrar</button></div>
                 <div class="d-grid gap-2 col-6 mx-auto"><a href="/" class="btn btn-danger btn-lg">Cancelar</a></div>
             </div>
-
         </form>
-    </div>
-</div>
-<!-- Modal -->
-<div class="modal fade" id="consultaUsuarios" tabindex="-1" aria-labelledby="consultaUsuariosLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Seleccionar Cliente</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-        </div>
     </div>
 </div>
