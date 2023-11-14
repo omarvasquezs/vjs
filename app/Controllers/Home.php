@@ -223,7 +223,20 @@ class Home extends BaseController
     }
     public function fetchMetodoPago() {
         $metodoPagoModel = new \App\Models\MetodoPago();
-        $metodopago = $metodoPagoModel->where('habilitado', 1)->findAll();
+        
+        // Get the search term from the request
+        $searchTerm = $this->request->getVar('q');
+
+        // If a search term is provided, filter results
+        if ($searchTerm !== null) {
+            $metodopago = $metodoPagoModel
+                ->like('nom_metodo_pago', $searchTerm) // Adjust 'nom_servicio' based on your database column
+                ->where('habilitado', 1)
+                ->findAll();
+        } else {
+            // If no search term, retrieve all enabled servicios
+            $metodopago = $metodoPagoModel->where('habilitado', 1)->findAll();
+        }
 
         return $this->response->setJSON($metodopago);
     }

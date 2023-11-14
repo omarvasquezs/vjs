@@ -1,5 +1,15 @@
 // Content
 
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
 // Flexigrid styling to match bootstrap
 .flexigrid div.form-div input[type=text] {
     height: 2.5rem;
@@ -40,24 +50,13 @@
     }
 }
 
+// STYLES OF TOTAL SECTION IN REGISTRAR COMPROBANTE PAGE
+h5 span {
+    font-weight: 400;
+}
 
-body {
+.row.total-block h5 {
+    font-weight: bold;
     display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-main {
-    flex: 1 0 auto;
-}
-
-#id_user_register {
-    pointer-events: none;
-}
-
-
-h5 {
-    span {
-        font-weight: 400;
-    }
+    justify-content: space-between;
 }

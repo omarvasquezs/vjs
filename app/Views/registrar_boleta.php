@@ -3,7 +3,7 @@
         <h1 class="mb-5">REGISTRO DE COMPROBANTE</h1>
         <form>
             <div class="row g-5">
-                <div class="col-md-8">
+                <div class="col-lg-8 col-md-12">
                     <div class="row mb-4">
                         <div class="col-md-12 input-group-lg">
                             <select class="form-select is-required" id="clienteDropdown" required>
@@ -31,6 +31,14 @@
                                 <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
                                 <label class="btn btn-outline-primary" for="btnradio3">FACTURA</label>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <input type="number" name="num_ruc" id="num_ruc" class="form-control" placeholder="N° DE RUC" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" name="razon_social" id="razon_social" class="form-control" placeholder="RAZON SOCIAL" disabled>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -64,16 +72,16 @@
                     </div>
                     <!-- END TABLE -->
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-12">
                     <!-- START TOTAL + SUBMIT BUTTON -->
-                    <div class="row">
+                    <div class="row total-block">
                         <h5>OP. GRAVADAS: <span id="sub_total_register"></span></h5>
-                        <h5>IGV 18%: <span id="igv_register"></span></h5>
+                        <h5 class="mb-4">IGV 18%: <span id="igv_register"></span></h5>
                         <h5>TOTAL A PAGAR: <span id="total_register"></span></h5>
                     </div>
                     <div class="row mt-3">
-                        <div class="d-grid gap-2">
-                            <button id="btn_registrar_comprobante" class="btn btn-success">Registrar</button>
+                        <div class="d-grid gap-2 py-4">
+                            <button id="btn_registrar_comprobante" class="btn btn-success btn-lg">REGISTRAR</button>
                         </div>
                     </div>
                     <!-- END TOTAL + SUBMIT BUTTON -->

@@ -6,6 +6,16 @@
     display: block;
   }
 }
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
 .flexigrid div.form-div input[type=text] {
   height: 2.5rem;
 }
@@ -43,22 +53,14 @@
   display: none;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-main {
-  flex: 1 0 auto;
-}
-
-#id_user_register {
-  pointer-events: none;
-}
-
 h5 span {
   font-weight: 400;
+}
+
+.row.total-block h5 {
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
 }
 
 .footer {

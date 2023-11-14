@@ -100,18 +100,49 @@
         // Call the updateTotalRegister() function on page load
         updateTotalRegister();
 
-        // Fetch and populate metodo de pago in the dropdown
+        // Fetch and populate metodo de pago using Select2
         var metodopagoDropdown = $('#metodopagoDropdown');
-        var metodopagoData = []; // To store all metodo de pago data
 
-        $.get('fetchMetodoPago', function (data) {
-            metodopagoData = data;
-            $.each(data, function (key, value) {
-                metodopagoDropdown.append($('<option>', {
-                    value: value.id,
-                    text: value.nom_metodo_pago
-                }));
-            });
+        metodopagoDropdown.select2({
+            placeholder: "-- CONDICIÓN DE PAGO --",
+            allowClear: true,
+            theme: "bootstrap-5",
+            minimumInputLength: 0, // Minimum characters to start searching
+            language: {
+                inputTooShort: function (args) {
+                    return "Coloque 2 o más letras.";
+                },
+                noResults: function () {
+                    return "No hay resultados.";
+                },
+                searching: function () {
+                    return "Buscando...";
+                }
+            },
+            ajax: {
+                url: 'fetchMetodoPago', // Update with your actual URL for fetching servicio data
+                dataType: 'json',
+                type: "GET",
+                quietMillis: 20,
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term || '',
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.nom_metodo_pago,
+                            };
+                        }),
+                    };
+                },
+                cache: true,
+            }
         });
 
         // Fetch and populate clientes using Select2
@@ -244,10 +275,35 @@
             }
         });
     });
-    // Comprobante buttons
-    $(document).ready(function () {
-        $('#btn_registrar_comprobante').click(function () {
-            return confirm('Esta accion es irreversible, confirma que esta 100% seguro');
+    // Comprobante registrar button
+    $(document).ready(function() {
+        $('#btn_registrar_comprobante').click(function() {
+            var tableContent = $('table tbody').html().trim();
+            if (tableContent === '') {
+                alert('Favor ingrese servicios en el comprobante!');
+                event.preventDefault();
+            } else {
+                var emptyRequiredInputs = $('input:enabled[required]').filter(function() {
+                    return this.value === '';
+                });
+                if (emptyRequiredInputs.length > 0) {
+                    alert('Favor de completar todos los campos.');
+                    event.preventDefault();
+                } else {
+                    return confirm('Esta accion es irreversible, confirma que esta 100% seguro?');
+                }
+            }
+        });
+    });    
+    // radio options for RUC fields behavior
+    $(document).ready(function() {
+        $('#btnradio3').change(function() {
+            $('#num_ruc, #razon_social').prop('disabled', !this.checked);
+            $('#num_ruc, #razon_social').prop('required', this.checked);
+        });
+        $('#btnradio1, #btnradio2').change(function() {
+            $('#num_ruc, #razon_social').prop('disabled', true);
+            $('#num_ruc, #razon_social').prop('required', false);
         });
     });
 })(jQuery);
