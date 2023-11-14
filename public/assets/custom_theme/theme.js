@@ -40,13 +40,6 @@
     }
   });
 
-  // Prevent users from modifying the input when registering a comprobante
-  $(document).ready(function () {
-    $('#id_user_register').keydown(function (e) {
-      e.preventDefault();
-    });
-  });
-
   // Dynamic content on registering a comprobante
   $(document).ready(function () {
     // Calculate the total of the fifth column values
