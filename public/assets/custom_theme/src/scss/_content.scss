@@ -60,3 +60,34 @@ h5 span {
     display: flex;
     justify-content: space-between;
 }
+
+// LOGIN STYLES
+
+body.login-page {
+    background-color: #f0f0f0;
+}
+
+.login-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 40px 40px 55px 40px; /* Increased padding at top and bottom */
+    margin: 0 auto;
+    width: 100%;
+    max-width: 30rem;
+    margin-top: 100px;
+}
+
+.login-form {
+    margin-top: 20px;
+}
+
+.login-button {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+}
