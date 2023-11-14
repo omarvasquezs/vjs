@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      *    http://example.com/
      */
-    public string $baseURL = 'https://ci4test.ddev.site/';
+    public string $baseURL = 'https://staging.vjslaundry.com//';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
