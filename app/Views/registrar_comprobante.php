@@ -13,8 +13,7 @@
                     </div>
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <select class="form-select is-required" id="metodopagoDropdown" required>
-                                <option value="" selected>-- CONDICIÓN DE PAGO --</option>
+                            <select class="form-select is-required" id="metodopagoDropdown" required>                                
                                 <!-- Metodo de Pago will be populated here through JavaScript -->
                             </select>
                         </div>
@@ -85,6 +84,7 @@
                     <div class="row">
                         <div class="d-grid gap-2 py-2">
                             <select class="form-select is-required" id="estadoComprobante" required></select>
+                            <!-- Estado Comprobante will be populated here through JavaScript -->
                         </div>
                     </div>
                     <div class="row total-block">
