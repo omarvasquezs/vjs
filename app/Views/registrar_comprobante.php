@@ -20,25 +20,28 @@
                         </div>
                         <div class="col-md-6 d-grid gap-2">
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off"
-                                    checked>
-                                <label class="btn btn-outline-primary" for="btnradio1">NOTA DE
-                                    VENTA</label>
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" value="N"
+                                    autocomplete="off" checked>
+                                <label class="btn btn-outline-primary" for="btnradio1">NOTA DE VENTA</label>
 
-                                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" value="B"
+                                    autocomplete="off">
                                 <label class="btn btn-outline-primary" for="btnradio2">BOLETA</label>
 
-                                <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio3" value="F"
+                                    autocomplete="off">
                                 <label class="btn btn-outline-primary" for="btnradio3">FACTURA</label>
                             </div>
                         </div>
                     </div>
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <input type="number" name="num_ruc" id="num_ruc" class="form-control" placeholder="N° DE RUC" disabled>
+                            <input type="number" name="num_ruc" id="num_ruc" class="form-control"
+                                placeholder="N° DE RUC" disabled>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="razon_social" id="razon_social" class="form-control" placeholder="RAZON SOCIAL" disabled>
+                            <input type="text" name="razon_social" id="razon_social" class="form-control"
+                                placeholder="RAZON SOCIAL" disabled>
                         </div>
                     </div>
                     <div class="row mb-4">
