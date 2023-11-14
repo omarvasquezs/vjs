@@ -38,14 +38,14 @@
 </head>
 <body>
     <div class="container">
-        <div class="login-container">
-            <h2 class="text-center mb-4">Sistema de Lavanderia 1.0</h2>
+        <div class="login-container">            
+            <img class="img-fluid" src="<?=base_url()?>assets/img/main_logo.jpeg">
             <form class="login-form" action="/authenticate" method="post">
                 <div class="mb-3">                    
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Usuario" required>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="USUARIO" required>
                 </div>
                 <div class="mb-4">                    
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="CONTRASEÑA" required>
                 </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary login-button">Login</button>
