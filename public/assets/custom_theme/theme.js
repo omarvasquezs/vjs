@@ -260,7 +260,7 @@
   });
   // Comprobante registrar button
   $(document).ready(function () {
-    $('#btn_registrar_comprobante').click(function () {
+    $('#btn_registrar_comprobante').click(function (event) {
       var tableContent = $('table tbody').html().trim();
       if (tableContent === '') {
         alert('Favor ingrese servicios en el comprobante!');
@@ -269,8 +269,12 @@
         var emptyRequiredInputs = $('input:enabled[required], select:enabled[required]').filter(function () {
           return this.value === '';
         });
+        var kgRopaRegister = $('#kg_ropa_register').val();
         if (emptyRequiredInputs.length > 0) {
           alert('Favor de completar todos los campos.');
+          event.preventDefault();
+        } else if (kgRopaRegister <= 0) {
+          alert('Uno de los campos PESO EN KG tine valor igual o menor que 0.');
           event.preventDefault();
         } else {
           return confirm('Esta accion es irreversible, confirma que esta 100% seguro?');
