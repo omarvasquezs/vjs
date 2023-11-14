@@ -304,5 +304,45 @@ class Home extends BaseController
         }
     
         return $this->response->setJSON($ec);
-    }    
+    }
+    public function submit_comprobantes_form() {
+        helper(['form', 'url']);
+        
+        $model_comprobantes = new \App\Models\Comprobantes();
+        $model_comprobantes_detalles = new \App\Models\ComprobantesDetalles();
+    
+        $data_comprobantes = [
+            'cliente_id' => $this->request->getPost('clienteDropdown'),
+            'metodo_pago_id' => $this->request->getPost('metodopagoDropdown'),
+            'tipo_comprobante' => $this->request->getPost('btnradio'),
+            'num_ruc' => $this->request->getPost('num_ruc'),
+            'razon_social' => $this->request->getPost('razon_social'),
+            'observaciones' => $this->request->getPost('comprobante_observaciones'),
+            'user_id' => session()->get('user_id'),
+            'local_id' => 5,
+            'fecha' => date('Y-m-d H:i:s'),
+            'estado_comprobante_id' => $this->request->getPost('estadoComprobante')
+        ];
+    
+        $inserted_id = $model_comprobantes->insert($data_comprobantes);
+    
+        $val_id_servicio = $this->request->getPost('val_id_servicio');
+        $val_kg_ropa_register = $this->request->getPost('val_kg_ropa_register');
+        $val_precio_kilo = $this->request->getPost('val_precio_kilo');
+    
+        $data_comprobantes_detalles = [];
+    
+        foreach($val_id_servicio as $key => $value) {
+            $data_comprobantes_detalles[] = [
+                'servicio_id' => $val_id_servicio[$key],
+                'peso_kg' => $val_kg_ropa_register[$key],
+                'costo_kilo' => $val_precio_kilo[$key],
+                'comprobante_id' => $inserted_id
+            ];
+        }
+    
+        $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
+    
+        return redirect()->to('/comprobantes');
+    }
 }

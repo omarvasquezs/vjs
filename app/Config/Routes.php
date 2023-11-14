@@ -48,6 +48,7 @@ $routes->post('fetchServicioDetails/(:any)','Home::fetchServicioDetails');
 $routes->get('fetchMetodoPago','Home::fetchMetodoPago');
 $routes->get('fetchClientes','Home::fetchClientes');
 $routes->get('fetchEstadocomprobantes','Home::fetchEstadocomprobantes');
+$routes->post('submit_comprobante','Home::submit_comprobantes_form');
 
 $routes->get('logout','Auth::logout');
 $routes->get('login', 'Auth::login');
