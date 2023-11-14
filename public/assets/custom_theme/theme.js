@@ -62,7 +62,11 @@
     // Update the total register span element with the calculated total
     function updateTotalRegister() {
       var total = calculateTotal();
+      var igv = total * 0.18;
+      var subtotal = total - igv;
       $("#total_register").text(total);
+      $("#igv_register").text(igv.toFixed(2));
+      $("#sub_total_register").text(subtotal);
     }
     // Bind the calculateTotal() function to the keyup and blur events of all number input elements
     $(".table tbody").on('keyup blur', 'tr input[type="number"]', function () {

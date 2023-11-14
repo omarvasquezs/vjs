@@ -58,7 +58,7 @@
                 </table>
             </div>
             <div class="row mt-5">                
-                <h4>OP. GRAVADAS: S/. <span id="igv_register"></span></h4>
+                <h4>OP. GRAVADAS: S/. <span id="sub_total_register"></span></h4>
                 <h4>IGV 18%: S/. <span id="igv_register"></span></h4>                
                 <h4>TOTAL A PAGAR: S/. <span id="total_register"></span></h4>
             </div>
