@@ -6,14 +6,14 @@
                 <div class="col-lg-8 col-md-12">
                     <div class="row mb-4">
                         <div class="col-md-12 input-group-lg">
-                            <select class="form-select is-required" id="clienteDropdown" required>
+                            <select class="form-select is-required" name="clienteDropdown" id="clienteDropdown" required>
                                 <!-- Clientes will be populated here through js -->
                             </select>
                         </div>
                     </div>
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <select class="form-select is-required" id="metodopagoDropdown" required>                                
+                            <select class="form-select is-required" name="metodopagoDropdown" id="metodopagoDropdown" required>                                
                                 <!-- Metodo de Pago will be populated here through JavaScript -->
                             </select>
                         </div>
@@ -45,7 +45,7 @@
                     </div>
                     <div class="row mb-4">
                         <div class="col-md-8 input-group-lg">
-                            <select class="form-select is-required" id="servicioDropdown">
+                            <select class="form-select is-required" name="servicioDropdown" id="servicioDropdown">
                                 <!-- Servicios will be populated here through JavaScript -->
                             </select>
                         </div>
@@ -83,7 +83,7 @@
                     </div>
                     <div class="row">
                         <div class="d-grid gap-2 py-2">
-                            <select class="form-select is-required" id="estadoComprobante" required></select>
+                            <select class="form-select is-required" name="estadoComprobante" id="estadoComprobante" required></select>
                             <!-- Estado Comprobante will be populated here through JavaScript -->
                         </div>
                     </div>
