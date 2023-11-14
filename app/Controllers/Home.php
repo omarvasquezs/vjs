@@ -253,4 +253,22 @@ class Home extends BaseController
 
         return $this->response->setJSON($servicio);
     }
+    public function fetchClientes() {
+        $clientesModel = new \App\Models\Clientes();
+    
+        // Get the search term from the request
+        $searchTerm = $this->request->getVar('q');
+    
+        // If a search term is provided, filter results
+        if ($searchTerm !== null) {
+            $clientes = $clientesModel
+                ->like('nombres', $searchTerm) // Adjust 'nom_servicio' based on your database column
+                ->findAll();
+        } else {
+            // If no search term, retrieve all enabled servicios
+            $clientes = $clientesModel->findAll();
+        }
+    
+        return $this->response->setJSON($clientes);
+    }
 }

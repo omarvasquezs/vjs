@@ -110,6 +110,51 @@
             });
         });
 
+        // Fetch and populate clientes using Select2
+        var servicioDropdown = $('#clienteDropdown');
+
+        servicioDropdown.select2({
+            placeholder: "-- SELECCIONAR CLIENTE --",
+            allowClear: true,
+            theme: "bootstrap",
+            minimumInputLength: 2, // Minimum characters to start searching
+            language: {
+                inputTooShort: function (args) {
+                    return "Coloque 2 o más letras.";
+                },
+                noResults: function () {
+                    return "No hay resultados.";
+                },
+                searching: function () {
+                    return "Buscando...";
+                }
+            },
+            ajax: {
+                url: 'fetchClientes', // Update with your actual URL for fetching servicio data
+                dataType: 'json',
+                type: "GET",
+                quietMillis: 20,
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term || '',
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.nombres,
+                            };
+                        }),
+                    };
+                },
+                cache: true,
+            }
+        });        
+
         // Fetch and populate servicios using Select2
         var servicioDropdown = $('#servicioDropdown');
 
@@ -117,14 +162,28 @@
             placeholder: "-- SELECCIONAR SERVICIO --",
             allowClear: true,
             theme: "bootstrap",
-            minimumInputLength: 1, // Minimum characters to start searching
+            minimumInputLength: 2, // Minimum characters to start searching
+            language: {
+                inputTooShort: function (args) {
+                    return "Coloque 2 o más letras.";
+                },
+                noResults: function () {
+                    return "No hay resultados.";
+                },
+                searching: function () {
+                    return "Buscando...";
+                }
+            },
             ajax: {
                 url: 'fetchServicios', // Update with your actual URL for fetching servicio data
                 dataType: 'json',
+                type: "GET",
+                quietMillis: 20,
                 delay: 250,
                 data: function (params) {
                     return {
-                        q: params.term, // Search term
+                        q: params.term || '',
+                        page: params.page || 1
                     };
                 },
                 processResults: function (data) {

@@ -52,6 +52,10 @@ $routes->get('fetchMetodoPago','Home::fetchMetodoPago');
 $routes->get('fetchMetodoPago/(:any)','Home::fetchMetodoPago/$1');
 $routes->post('fetchMetodoPago','Home::fetchMetodoPago');
 $routes->post('fetchMetodoPago/(:any)','Home::fetchMetodoPago');
+$routes->get('fetchClientes','Home::fetchClientes');
+$routes->get('fetchClientes/(:any)','Home::fetchClientes/$1');
+$routes->post('fetchClientes','Home::fetchClientes');
+$routes->post('fetchClientes/(:any)','Home::fetchClientes');
 
 $routes->get('logout','Auth::logout');
 $routes->get('login', 'Auth::login');

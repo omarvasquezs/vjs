@@ -4,8 +4,9 @@
         <form>
             <div class="row mb-4">
                 <div class="col-md-12 input-group-lg">
-                    <input type="text" style="background: #e9ecef;" class="form-control" id="id_user_register"
-                        placeholder="Cod. Cliente" required>
+                    <select class="form-select is-required" id="clienteDropdown" required>
+                        <!-- Clientes will be populated here through js -->
+                    </select>
                 </div>
             </div>
             <div class="row mb-4">
