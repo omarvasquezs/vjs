@@ -15,7 +15,7 @@ main {
     height: 2.5rem;
 }
 
-.flexigrid {    
+.flexigrid {
     padding: 10px;
 }
 
@@ -44,7 +44,8 @@ main {
     display: none;
 }
 
-.clientes, .comprobantes {
+.clientes,
+.comprobantes {
     .flexigrid div.tDiv {
         display: none;
     }
@@ -61,6 +62,10 @@ h5 span {
     justify-content: space-between;
 }
 
+#comprobante_observaciones {
+    border: 1px solid #000000;
+}
+
 // LOGIN STYLES
 
 body.login-page {
@@ -72,7 +77,8 @@ body.login-page {
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 40px 40px 55px 40px; /* Increased padding at top and bottom */
+    padding: 40px 40px 55px 40px;
+    /* Increased padding at top and bottom */
     margin: 0 auto;
     width: 100%;
     max-width: 30rem;
@@ -90,4 +96,17 @@ body.login-page {
 
 .login-button:hover {
     background-color: #0056b3;
+}
+
+.login-form #username {
+    text-transform: uppercase;
+}
+
+/* Custom CSS to remove highlighting of selected option */
+.select2-results__option[aria-selected=true] {
+    background-color: transparent !important;
+    color: #000000!important;
+    &:hover {
+        background-color: #e9ecef!important;
+    }
 }

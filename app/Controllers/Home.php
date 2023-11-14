@@ -230,11 +230,11 @@ class Home extends BaseController
         // If a search term is provided, filter results
         if ($searchTerm !== null) {
             $metodopago = $metodoPagoModel
-                ->like('nom_metodo_pago', $searchTerm) // Adjust 'nom_servicio' based on your database column
+                ->like('nom_metodo_pago', $searchTerm) // Adjust 'nom_metodo_pago' based on your database column
                 ->where('habilitado', 1)
                 ->findAll();
         } else {
-            // If no search term, retrieve all enabled servicios
+            // If no search term, retrieve all enabled metodo de pago
             $metodopago = $metodoPagoModel->where('habilitado', 1)->findAll();
         }
 
@@ -275,13 +275,34 @@ class Home extends BaseController
         // If a search term is provided, filter results
         if ($searchTerm !== null) {
             $clientes = $clientesModel
-                ->like('nombres', $searchTerm) // Adjust 'nom_servicio' based on your database column
+                ->like('nombres', $searchTerm) // Adjust 'nombres' based on your database column
                 ->findAll();
         } else {
-            // If no search term, retrieve all enabled servicios
+            // If no search term, retrieve all enabled clientes
             $clientes = $clientesModel->findAll();
         }
     
         return $this->response->setJSON($clientes);
     }
+    public function fetchEstadocomprobantes() {
+        $ecModel = new \App\Models\Estadocomprobantes();
+    
+        // Get the search term from the request
+        $searchTerm = $this->request->getVar('q');
+    
+        // If a search term is provided, filter results
+        if ($searchTerm !== null) {
+            $ec = $ecModel
+                ->where('id !=', 3) // Should not be equal to ANULADO
+                ->like('nom_estado', $searchTerm) // Adjust 'nom_estado' based on your database column
+                ->findAll();
+        } else {
+            // If no search term, retrieve all enabled estado comprobantes
+            $ec = $ecModel
+                ->where('id !=', 3) // Should not be equal to ANULADO
+                ->findAll();
+        }
+    
+        return $this->response->setJSON($ec);
+    }    
 }

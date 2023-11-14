@@ -82,7 +82,18 @@
                         <h5 class="mb-4">IGV 18%: <span id="igv_register"></span></h5>
                         <h5>TOTAL A PAGAR: <span id="total_register"></span></h5>
                     </div>
-                    <div class="row mt-3">
+                    <div class="row">
+                        <div class="d-grid gap-2 py-2">
+                            <select class="form-select is-required" id="estadoComprobante" required></select>
+                        </div>
+                    </div>
+                    <div class="row total-block">
+                        <div class="d-grid gap-2 pt-4 pb-2">
+                            <h5>OBSERVACIONES:</h5>                            
+                            <textarea name="comprobante_observaciones" id="comprobante_observaciones" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>                    
+                    <div class="row">
                         <div class="d-grid gap-2 py-4">
                             <button id="btn_registrar_comprobante" class="btn btn-success btn-lg">REGISTRAR</button>
                         </div>

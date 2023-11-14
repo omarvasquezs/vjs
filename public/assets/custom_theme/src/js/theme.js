@@ -235,6 +235,51 @@
             }
         });
 
+        // Fetch and populate estado comprobantes using select2
+        var ecDropdown = $('#estadoComprobante');
+        ecDropdown.select2({
+            placeholder: "-- ESTADO --",
+            allowClear: true,
+            theme: "bootstrap-5",
+            minimumInputLength: 0, // Minimum characters to start searching
+            minimumResultsForSearch: Infinity,
+            language: {
+                inputTooShort: function (args) {
+                    return "Coloque 2 o más letras.";
+                },
+                noResults: function () {
+                    return "No hay resultados.";
+                },
+                searching: function () {
+                    return "Buscando...";
+                }
+            },
+            ajax: {
+                url: 'fetchEstadocomprobantes', // Update with your actual URL for fetching estado comprobante data
+                dataType: 'json',
+                type: "GET",
+                quietMillis: 20,
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term || '',
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.nom_estado,
+                            };
+                        }),
+                    };
+                },
+                cache: true,
+            }            
+        });
+
         // Add a row when the "Add Row" button is clicked
         $('#addRowButton').click(function (e) {
             e.preventDefault();
