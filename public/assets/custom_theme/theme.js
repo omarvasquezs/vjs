@@ -214,19 +214,6 @@
         });
       }
     });
-
-    // Handle change in the "servicios" dropdown
-    servicioDropdown.change(function () {
-      var selectedServicioId = $(this).val();
-      if (selectedServicioId) {
-        // Check if the selected servicio is disabled
-        if (servicioDropdown.find('option[value="' + selectedServicioId + '"]').is(':disabled')) {
-          // Enable the option and clear the selection
-          servicioDropdown.find('option[value="' + selectedServicioId + '"]').prop('disabled', false);
-          $(this).val('');
-        }
-      }
-    });
   });
 })(jQuery);
 
