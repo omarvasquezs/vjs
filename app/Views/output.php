@@ -31,7 +31,7 @@
                             REGISTRAR
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="registrarDropdown">
-                            <li><a class="dropdown-item" href="<?=base_url()?>registrar_boleta">COMPROBANTE</a></li>
+                            <li><a class="dropdown-item" href="<?=base_url()?>registrar_comprobante">COMPROBANTE</a></li>
                             <li><a class="dropdown-item" href="<?=base_url()?>clientes/add">CLIENTE</a></li>
                         </ul>
                     </li>
@@ -40,7 +40,7 @@
                             CONSULTAR
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="consultarDropdown">
-                            <li><a class="dropdown-item" href="<?=base_url()?>boletas">BOLETAS</a></li>
+                            <li><a class="dropdown-item" href="<?=base_url()?>comprobantes">COMPROBANTES</a></li>
                             <li><a class="dropdown-item" href="<?=base_url()?>clientes">CLIENTES</a></li>
                         </ul>
                     </li>
@@ -50,7 +50,7 @@
                             OPCIONES AVANZADAS
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="consultarDropdown">
-                            <li><a class="dropdown-item" href="<?=base_url()?>estado_boletas">ESTADO BOLETAS</a></li>
+                            <li><a class="dropdown-item" href="<?=base_url()?>estado_comprobantes">ESTADO COMPROBANTES</a></li>
                             <li><a class="dropdown-item" href="<?=base_url()?>locales">LOCALES</a></li>
                             <li><a class="dropdown-item" href="<?=base_url()?>metodo_pago">MÉTODOS DE PAGO</a></li>
                             <li><a class="dropdown-item" href="<?=base_url()?>roles">ROLES</a></li>

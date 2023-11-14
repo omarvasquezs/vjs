@@ -49,7 +49,7 @@ main {
   display: none;
 }
 
-.clientes .flexigrid div.tDiv, .boletas .flexigrid div.tDiv {
+.clientes .flexigrid div.tDiv, .comprobantes .flexigrid div.tDiv {
   display: none;
 }
 

@@ -50,14 +50,14 @@ class Home extends BaseController
 
 		return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files,'js_files' => $js_files]);
 	}
-    public function estado_boletas() {
+    public function estado_comprobantes() {
         $crud = new GroceryCrud();
 
-	    $crud->setTable('estado_boletas');
-        $crud->setSubject('ESTADO DE BOLETA');
+	    $crud->setTable('estado_comprobantes');
+        $crud->setSubject('ESTADO DE COMPROBANTE');
         $crud->fieldType('habilitado','true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
         $crud->displayAs([
-            'nom_estado' => 'NOMBRE ESTADO DE BOLETA',
+            'nom_estado' => 'NOMBRE ESTADO DE COMPROBANTE',
             'habilitado' => 'ESTADO'
         ]);
         $crud->unsetExport();
@@ -184,14 +184,14 @@ class Home extends BaseController
 
 		return $this->_mainOutput($output);
     }
-    public function boletas() {
+    public function comprobantes() {
         $crud = new GroceryCrud();
 
-        $crud->setTable('boletas');
-        $crud->setSubject('Boleta');
+        $crud->setTable('comprobantes');
+        $crud->setSubject('Comprobante');
         $crud->setRelation('cliente_id','clientes','nombres');        
         $crud->setRelation('metodo_pago_id','metodo_pago','nom_metodo_pago');
-        $crud->setRelation('estado_boleta_id','estado_boletas','nom_estado');
+        $crud->setRelation('estado_comprobante_id','estado_comprobantes','nom_estado');
         $crud->setRelation('local_id','locales','nombre');
         $crud->fieldType('user_id', 'hidden', session()->get('role_id'));
         $crud->unsetEdit();
@@ -201,23 +201,23 @@ class Home extends BaseController
         $crud->displayAs([
             'cliente_id' => 'CLIENTE',
             'metodo_pago_id' => 'METODO DE PAGO',
-            'estado_boleta_id' => 'ESTADO',
+            'estado_comprobante_id' => 'ESTADO',
             'local_id' => 'LOCAL',
             'observaciones' => 'OBSERVACIONES'
         ]);
         $output = $crud->render();
         $css_files = $output->css_files;
         $js_files = $output->js_files;
-        $css_class = 'boletas';
+        $css_class = 'comprobantes';
         $output = $output->output;
 
 		return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files,'js_files' => $js_files]);
     }
-    public function registrar_boleta() {
+    public function registrar_comprobante() {
         $output = (object)[
             'css_files' => [],
             'js_files' => [],           
-            'output' => view('registrar_boleta')
+            'output' => view('registrar_comprobante')
         ];        
         return $this->_mainOutput($output);        
     }
