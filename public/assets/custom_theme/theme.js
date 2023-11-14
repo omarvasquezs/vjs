@@ -89,6 +89,7 @@
       theme: "bootstrap-5",
       minimumInputLength: 0,
       // Minimum characters to start searching
+      minimumResultsForSearch: Infinity,
       language: {
         inputTooShort: function inputTooShort(args) {
           return "Coloque 2 o más letras.";
