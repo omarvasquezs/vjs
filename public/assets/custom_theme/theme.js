@@ -266,7 +266,7 @@
         alert('Favor ingrese servicios en el comprobante!');
         event.preventDefault();
       } else {
-        var emptyRequiredInputs = $('input:enabled[required]').filter(function () {
+        var emptyRequiredInputs = $('input:enabled[required], select:enabled[required]').filter(function () {
           return this.value === '';
         });
         if (emptyRequiredInputs.length > 0) {
