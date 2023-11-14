@@ -59,40 +59,47 @@
 
     // Dynamic content on registering a comprobante
     $(document).ready(function () {
-        // Calculate the total of the fifth column values
+        // Calculate the total of the fourth column values
         function calculateTotal() {
             var total = 0;
             $(".table tbody").find('tr input[type="number"]').each(function () {
                 var row = $(this).closest('tr');
                 var input = $(this).val();
-                var thirdColumn = row.find('td:eq(2)').text();
+                var thirdColumn = parseFloat(row.find('td:eq(2)').text());
+
+                // Check if input is empty or not
+                var inputValue = input.trim() === '' ? 0 : parseFloat(input);
 
                 // Calculate the sum
-                var sum = parseFloat(input) * parseFloat(thirdColumn);
+                var sum = inputValue * thirdColumn || 0; // If either input or thirdColumn is NaN, set sum as 0
 
                 // Display the sum in the fourth column
-                row.find('td:eq(3)').text(sum);
+                row.find('td:eq(3)').text(sum.toFixed(2));
 
                 total += sum;
             });
 
             return total;
         }
+
         // Update the total register span element with the calculated total
         function updateTotalRegister() {
             var total = calculateTotal();
             var igv = total * 0.18;
             var subtotal = total - igv;
-            $("#total_register").text(total);
-            $("#igv_register").text(igv.toFixed(2));
-            $("#sub_total_register").text(subtotal);
+            $("#total_register").text('S/. ' + total.toFixed(2));
+            $("#igv_register").text('S/. ' + igv.toFixed(2));
+            $("#sub_total_register").text('S/. ' + subtotal.toFixed(2));
         }
+
         // Bind the calculateTotal() function to the keyup and blur events of all number input elements
         $(".table tbody").on('keyup blur', 'tr input[type="number"]', function () {
             updateTotalRegister();
         });
+
         // Call the updateTotalRegister() function on page load
         updateTotalRegister();
+
         // Fetch and populate metodo de pago in the dropdown
         var metodopagoDropdown = $('#metodopagoDropdown');
         var metodopagoData = []; // To store all metodo de pago data
@@ -113,7 +120,7 @@
         servicioDropdown.select2({
             placeholder: "-- SELECCIONAR CLIENTE --",
             allowClear: true,
-            theme: "bootstrap",
+            theme: "bootstrap-5",
             minimumInputLength: 2, // Minimum characters to start searching
             language: {
                 inputTooShort: function (args) {
@@ -158,7 +165,7 @@
         servicioDropdown.select2({
             placeholder: "-- SELECCIONAR SERVICIO --",
             allowClear: true,
-            theme: "bootstrap",
+            theme: "bootstrap-5",
             minimumInputLength: 2, // Minimum characters to start searching
             language: {
                 inputTooShort: function (args) {
@@ -209,10 +216,10 @@
                     var servicio = data;
 
                     if (servicio) {
-                        var newRow = $('<tr>');
-                        newRow.append('<td>' + servicio.nom_servicio + '</td>');
-                        newRow.append('<td><input type="number" step="0.01" class="form-control" id="kg_ropa_register" style="width: 5rem;" required></td>'); // Empty cell, no quantity needed
-                        newRow.append('<td class="text-center">' + servicio.precio_kilo + '</td>');
+                        var newRow = $('<tr style="vertical-align: middle;">');
+                        newRow.append('<td>' + servicio.nom_servicio + '<input name="val_id_servicio" type="hidden" value="' + servicio.id + '"></td>');
+                        newRow.append('<td><input type="number" step="0.01" class="form-control" name="val_kg_ropa_register" id="kg_ropa_register" style="width: 5rem;" required></td>'); // Empty cell, no quantity needed
+                        newRow.append('<td class="text-center">' + servicio.precio_kilo + '<input name="val_precio_kilo" type="hidden" value="' + servicio.precio_kilo + '"></td>');
                         newRow.append('<td class="text-center"></td>'); // Empty cell, no total cost needed
                         newRow.append('<td><button class="btn btn-danger btn-sm delete-row"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/></svg></button></td>');
                         newRow.append('</tr>');
@@ -241,10 +248,6 @@
     $(document).ready(function () {
         $('#btn_registrar_comprobante').click(function () {
             return confirm('Esta accion es irreversible, confirma que esta 100% seguro');
-        });
-
-        $('#btn_cancelar_comprobante').click(function () {
-            return confirm('Estas seguro que quieres cancelar?');
         });
     });
 })(jQuery);

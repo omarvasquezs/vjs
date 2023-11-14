@@ -57,6 +57,10 @@ main {
   pointer-events: none;
 }
 
+h5 span {
+  font-weight: 400;
+}
+
 .footer {
   margin-top: auto;
 }
