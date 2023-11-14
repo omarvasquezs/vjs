@@ -63,8 +63,8 @@
                 <h4>TOTAL A PAGAR: S/. <span id="total_register"></span></h4>
             </div>
             <div class="row mt-5">
-                <div class="d-grid gap-2 col-6 mx-auto"><button class="btn btn-success btn-lg">Registrar</button></div>
-                <div class="d-grid gap-2 col-6 mx-auto"><a href="/" class="btn btn-danger btn-lg">Cancelar</a></div>
+                <div class="d-grid gap-2 col-6 mx-auto"><button id="btn_registrar_comprobante" class="btn btn-success btn-lg">Registrar</button></div>
+                <div class="d-grid gap-2 col-6 mx-auto"><a id="btn_cancelar_comprobante" href="/" class="btn btn-danger btn-lg">Cancelar</a></div>
             </div>
         </form>
     </div>

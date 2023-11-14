@@ -150,7 +150,7 @@
                 },
                 cache: true,
             }
-        });        
+        });
 
         // Fetch and populate servicios using Select2
         var servicioDropdown = $('#servicioDropdown');
@@ -237,5 +237,14 @@
             }
         });
     });
+    // Comprobante buttons
+    $(document).ready(function () {
+        $('#btn_registrar_comprobante').click(function () {
+            return confirm('Esta accion es irreversible, confirma que esta 100% seguro');
+        });
 
+        $('#btn_cancelar_comprobante').click(function () {
+            return confirm('Estas seguro que quieres cancelar?');
+        });
+    });
 })(jQuery);
