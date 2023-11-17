@@ -6,21 +6,24 @@ use App\Libraries\GroceryCrud;
 
 class Home extends BaseController
 {
-    private function _mainOutput($output = null) {
-        return view('output', (array)$output);
+    private function _mainOutput($output = null)
+    {
+        return view('output', (array) $output);
     }
-    public function index() {        
-        $output = (object)[
+    public function index()
+    {
+        $output = (object) [
             'css_files' => [],
-            'js_files' => [],           
+            'js_files' => [],
             'output' => view('main')
-        ];        
+        ];
         return $this->_mainOutput($output);
     }
-	public function clientes() {
-	    $crud = new GroceryCrud();
+    public function clientes()
+    {
+        $crud = new GroceryCrud();
 
-	    $crud->setTable('clientes');
+        $crud->setTable('clientes');
 
         $crud->setTheme('flexigrid');
         $crud->setRead();
@@ -42,20 +45,21 @@ class Home extends BaseController
             'direccion' => 'DIRECCION'
         ]);
 
-	    $output = $crud->render();
+        $output = $crud->render();
         $css_files = $output->css_files;
         $js_files = $output->js_files;
         $css_class = 'clientes';
         $output = $output->output;
 
-		return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files,'js_files' => $js_files]);
-	}
-    public function estado_comprobantes() {
+        return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
+    }
+    public function estado_comprobantes()
+    {
         $crud = new GroceryCrud();
 
-	    $crud->setTable('estado_comprobantes');
+        $crud->setTable('estado_comprobantes');
         $crud->setSubject('ESTADO DE COMPROBANTE');
-        $crud->fieldType('habilitado','true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
+        $crud->fieldType('habilitado', 'true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
         $crud->displayAs([
             'nom_estado' => 'NOMBRE ESTADO DE COMPROBANTE',
             'habilitado' => 'ESTADO'
@@ -64,14 +68,15 @@ class Home extends BaseController
         $crud->unsetPrint();
         $output = $crud->render();
 
-		return $this->_mainOutput($output);
+        return $this->_mainOutput($output);
     }
-    public function metodo_pago() {
+    public function metodo_pago()
+    {
         $crud = new GroceryCrud();
 
-	    $crud->setTable('metodo_pago');
+        $crud->setTable('metodo_pago');
         $crud->setSubject('METODO DE PAGO');
-        $crud->fieldType('habilitado','true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
+        $crud->fieldType('habilitado', 'true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
         $crud->displayAs([
             'nom_metodo_pago' => 'METODO DE PAGO',
             'habilitado' => 'ESTADO'
@@ -80,13 +85,14 @@ class Home extends BaseController
         $crud->unsetPrint();
         $output = $crud->render();
 
-		return $this->_mainOutput($output);
+        return $this->_mainOutput($output);
     }
-    public function roles () {
+    public function roles()
+    {
         $crud = new GroceryCrud();
 
-	    $crud->setTable('roles');
-        $crud->fieldType('habilitado','true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
+        $crud->setTable('roles');
+        $crud->fieldType('habilitado', 'true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
         $crud->setSubject('ROL');
         $crud->displayAs([
             'role_name' => 'ROL',
@@ -96,15 +102,16 @@ class Home extends BaseController
         $crud->unsetPrint();
         $output = $crud->render();
 
-		return $this->_mainOutput($output);
+        return $this->_mainOutput($output);
     }
-    public function servicios () {
+    public function servicios()
+    {
         $crud = new GroceryCrud();
 
-	    $crud->setTable('servicios');
+        $crud->setTable('servicios');
         $crud->setSubject('SERVICIO');
-        $crud->fieldType('habilitado','true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
-        $crud->columns(['nom_servicio','precio_kilo','habilitado']);
+        $crud->fieldType('habilitado', 'true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
+        $crud->columns(['nom_servicio', 'precio_kilo', 'habilitado']);
         $crud->displayAs([
             'nom_servicio' => 'SERVICIO',
             'habilitado' => 'ESTADO',
@@ -114,16 +121,17 @@ class Home extends BaseController
         $crud->unsetPrint();
         $output = $crud->render();
 
-		return $this->_mainOutput($output);
+        return $this->_mainOutput($output);
     }
-    public function users () {
+    public function users()
+    {
         $crud = new GroceryCrud();
 
-	    $crud->setTable('users');
+        $crud->setTable('users');
         $crud->columns(['username', 'role_id', 'habilitado']);
         $crud->setRelation('role_id', 'roles', 'role_name');
         $crud->setSubject('USUARIO DEL SISTEMA');
-        $crud->fieldType('habilitado','true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
+        $crud->fieldType('habilitado', 'true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
         $crud->unsetExport();
         $crud->unsetPrint();
         $crud->displayAs([
@@ -132,9 +140,21 @@ class Home extends BaseController
             'password' => 'CONTRASEÑA',
             'habilitado' => 'ESTADO'
         ]);
+        // Add this callback to transform the username to uppercase in the view
+        $crud->callbackColumn('username', function ($value, $row) {
+            return strtoupper($value);
+        });
+
+        // Modify these callbacks to transform the username to uppercase in the add and edit forms
+        $crud->callbackAddField('username', function () {
+            return '<input class="form-control" type="text" maxlength="50" name="username" style="text-transform:uppercase">';
+        });
+        $crud->callbackEditField('username', function ($value, $primaryKey) {
+            return '<input class="form-control" type="text" maxlength="50" name="username" value="' . strtoupper($value) . '">';
+        });
         $crud->callbackAddField('password', function () {
             return '<input class="form-control" type="password" maxlength="50" name="password" style="width: 500px;max-width: 500px;height: 2.5rem;box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);">';
-        });        
+        });
         $crud->callbackEditField('password', function ($postArray, $primaryKey) {
             return $this->editar_campo_password($postArray, $primaryKey);
         });
@@ -143,34 +163,38 @@ class Home extends BaseController
         });
         $crud->callbackBeforeUpdate(function ($stateParameters) {
             return $this->actualizar_password($stateParameters);
-        });              
+        });
         $output = $crud->render();
 
-		return $this->_mainOutput($output);
+        return $this->_mainOutput($output);
     }
-    public function editar_campo_password($postArray, $primaryKey){
+    public function editar_campo_password($postArray, $primaryKey)
+    {
         return '<input class="form-control" type="password" maxlength="50" name="password" style="width: 500px;max-width: 500px;height: 2.5rem;box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);">';
     }
-    
-    public function encriptar_password($stateParameters) {
+
+    public function encriptar_password($stateParameters)
+    {
         $stateParameters->data['password'] = md5(sha1($stateParameters->data['password']));
         return $stateParameters;
     }
-    
-    public function actualizar_password($stateParameters) {
-        if(!empty($stateParameters->data['password'])) {
+
+    public function actualizar_password($stateParameters)
+    {
+        if (!empty($stateParameters->data['password'])) {
             $stateParameters->data['password'] = md5(sha1($stateParameters->data['password']));
         } else {
             unset($stateParameters->data['password']);
         }
         return $stateParameters;
-    }    
-    public function locales () {
+    }
+    public function locales()
+    {
         $crud = new GroceryCrud();
 
-	    $crud->setTable('locales');
+        $crud->setTable('locales');
         $crud->setSubject('LOCAL');
-        $crud->fieldType('habilitado','true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
+        $crud->fieldType('habilitado', 'true_false', array('0' => 'DESHABILITADO', '1' => 'HABILITADO'));
         $crud->unsetExport();
         $crud->unsetPrint();
         $crud->displayAs([
@@ -182,48 +206,83 @@ class Home extends BaseController
         ]);
         $output = $crud->render();
 
-		return $this->_mainOutput($output);
+        return $this->_mainOutput($output);
     }
-    public function comprobantes() {
+    public function comprobantes()
+    {
         $crud = new GroceryCrud();
 
         $crud->setTable('comprobantes');
         $crud->setSubject('Comprobante');
-        $crud->setRelation('cliente_id','clientes','nombres');        
-        $crud->setRelation('metodo_pago_id','metodo_pago','nom_metodo_pago');
-        $crud->setRelation('estado_comprobante_id','estado_comprobantes','nom_estado');
-        $crud->setRelation('local_id','locales','nombre');
-        $crud->fieldType('user_id', 'hidden', session()->get('role_id'));
+        $crud->setRelation('cliente_id', 'clientes', 'nombres');
+        $crud->setRelation('metodo_pago_id', 'metodo_pago', 'nom_metodo_pago');
+        $crud->setRelation('estado_comprobante_id', 'estado_comprobantes', 'nom_estado');
+        $crud->setRelation('local_id', 'locales', 'nombre');
+        $crud->setRelation('user_id', 'users', 'username');
+        $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios','comprobante_id','servicio_id','nom_servicio');
         $crud->unsetEdit();
         $crud->unsetExport();
         $crud->unsetPrint();
         $crud->unsetAdd();
+        $crud->unsetDelete();
+        $crud->setRead();
         $crud->displayAs([
             'cliente_id' => 'CLIENTE',
             'metodo_pago_id' => 'METODO DE PAGO',
             'estado_comprobante_id' => 'ESTADO',
             'local_id' => 'LOCAL',
-            'observaciones' => 'OBSERVACIONES'
+            'observaciones' => 'OBSERVACIONES',
+            'user_id' => 'REGISTRADO POR',
+            'fecha' => 'FECHA DE REGISTRO',
+            'num_ruc' => 'N° DE RUC',
+            'razon_social' => 'RAZÓN SOCIAL',
+            'tipo_comprobante' => 'TIPO'
         ]);
+        $crud->columns(['tipo_comprobante', 'cliente_id', 'metodo_pago_id', 'estado_comprobante_id', 'user_id']);
+        
+        // Add this callback to modify the tipo_comprobante column in the list view
+        $crud->callbackColumn('tipo_comprobante', array($this, 'displayTipoComprobante'));
+
+        // Add this callback to modify the tipo_comprobante field in the read view
+        $crud->callbackReadField('tipo_comprobante', array($this, 'displayTipoComprobante'));
+
         $output = $crud->render();
         $css_files = $output->css_files;
         $js_files = $output->js_files;
         $css_class = 'comprobantes';
         $output = $output->output;
 
-		return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files,'js_files' => $js_files]);
+        return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
     }
-    public function registrar_comprobante() {
-        $output = (object)[
+    public function displayTipoComprobante($value, $row)
+    {
+        // Define the mapping of values
+        $tipoMapping = [
+            'B' => 'BOLETA',
+            'F' => 'FACTURA',
+            'N' => 'NOTA DE VENTA',
+        ];
+
+        // Check if the value exists in the mapping, if not, display the original value
+        if (array_key_exists($value, $tipoMapping)) {
+            return $tipoMapping[$value];
+        }
+
+        return $value;
+    }
+    public function registrar_comprobante()
+    {
+        $output = (object) [
             'css_files' => [],
-            'js_files' => [],           
+            'js_files' => [],
             'output' => view('registrar_comprobante')
-        ];        
-        return $this->_mainOutput($output);        
+        ];
+        return $this->_mainOutput($output);
     }
-    public function fetchMetodoPago() {
+    public function fetchMetodoPago()
+    {
         $metodoPagoModel = new \App\Models\MetodoPago();
-        
+
         // Get the search term from the request
         $searchTerm = $this->request->getVar('q');
 
@@ -240,12 +299,13 @@ class Home extends BaseController
 
         return $this->response->setJSON($metodopago);
     }
-    public function fetchServicios() {
+    public function fetchServicios()
+    {
         $servicioModel = new \App\Models\Servicios();
-    
+
         // Get the search term from the request
         $searchTerm = $this->request->getVar('q');
-    
+
         // If a search term is provided, filter results
         if ($searchTerm !== null) {
             $servicios = $servicioModel
@@ -256,22 +316,24 @@ class Home extends BaseController
             // If no search term, retrieve all enabled servicios
             $servicios = $servicioModel->where('habilitado', 1)->findAll();
         }
-    
+
         return $this->response->setJSON($servicios);
     }
-    public function fetchServicioDetails() {
+    public function fetchServicioDetails()
+    {
         $servicioModel = new \App\Models\Servicios();
         $servicioId = $this->request->getPost('servicio_id');
         $servicio = $servicioModel->getServicioDetails($servicioId);
 
         return $this->response->setJSON($servicio);
     }
-    public function fetchClientes() {
+    public function fetchClientes()
+    {
         $clientesModel = new \App\Models\Clientes();
-    
+
         // Get the search term from the request
         $searchTerm = $this->request->getVar('q');
-    
+
         // If a search term is provided, filter results
         if ($searchTerm !== null) {
             $clientes = $clientesModel
@@ -281,15 +343,16 @@ class Home extends BaseController
             // If no search term, retrieve all enabled clientes
             $clientes = $clientesModel->findAll();
         }
-    
+
         return $this->response->setJSON($clientes);
     }
-    public function fetchEstadocomprobantes() {
+    public function fetchEstadocomprobantes()
+    {
         $ecModel = new \App\Models\Estadocomprobantes();
-    
+
         // Get the search term from the request
         $searchTerm = $this->request->getVar('q');
-    
+
         // If a search term is provided, filter results
         if ($searchTerm !== null) {
             $ec = $ecModel
@@ -302,15 +365,16 @@ class Home extends BaseController
                 ->where('id !=', 3) // Should not be equal to ANULADO
                 ->findAll();
         }
-    
+
         return $this->response->setJSON($ec);
     }
-    public function submit_comprobantes_form() {
+    public function submit_comprobantes_form()
+    {
         helper(['form', 'url']);
-        
+
         $model_comprobantes = new \App\Models\Comprobantes();
         $model_comprobantes_detalles = new \App\Models\ComprobantesDetalles();
-    
+
         $data_comprobantes = [
             'cliente_id' => $this->request->getPost('clienteDropdown'),
             'metodo_pago_id' => $this->request->getPost('metodopagoDropdown'),
@@ -323,16 +387,16 @@ class Home extends BaseController
             'fecha' => date('Y-m-d H:i:s'),
             'estado_comprobante_id' => $this->request->getPost('estadoComprobante')
         ];
-    
+
         $inserted_id = $model_comprobantes->insert($data_comprobantes);
-    
+
         $val_id_servicio = $this->request->getPost('val_id_servicio');
         $val_kg_ropa_register = $this->request->getPost('val_kg_ropa_register');
         $val_precio_kilo = $this->request->getPost('val_precio_kilo');
-    
+
         $data_comprobantes_detalles = [];
-    
-        foreach($val_id_servicio as $key => $value) {
+
+        foreach ($val_id_servicio as $key => $value) {
             $data_comprobantes_detalles[] = [
                 'servicio_id' => $val_id_servicio[$key],
                 'peso_kg' => $val_kg_ropa_register[$key],
@@ -340,9 +404,9 @@ class Home extends BaseController
                 'comprobante_id' => $inserted_id
             ];
         }
-    
+
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
-    
+
         return redirect()->to('/comprobantes');
     }
 }
