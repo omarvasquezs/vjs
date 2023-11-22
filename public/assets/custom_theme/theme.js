@@ -341,6 +341,37 @@
       $('#num_ruc, #razon_social').prop('required', false);
     });
   });
+
+  // jQuery code to handle the action button click
+  $(document).ready(function () {
+    $('.print-icon-custom').on('click', function (e) {
+      e.preventDefault();
+
+      // Get the URL from the action button's data-url attribute
+      var url = $(this).attr('href');
+
+      // Set the iframe src attribute to the URL with "/58mm" appended
+      $('#printIframe').attr('src', url + '/58mm');
+
+      // Set the iframe src attribute to the URL with "/a4" appended
+      $('#printIframe2').attr('src', url + '/a4');
+
+      // Open the Bootstrap modal
+      $('#printModal').modal('show');
+      return false;
+    });
+  });
+  // Adding print icon on grocery crud flexigrid
+  $(document).ready(function () {
+    // Find all elements with class 'print-icon-custom'
+    $('.print-icon-custom').each(function () {
+      // Create a new <span> element with class 'print-icon'
+      var printIconSpan = $('<span class="print-icon"></span>');
+
+      // Replace the text inside the <a> tag with the created <span> element
+      $(this).html(printIconSpan);
+    });
+  });
 })(jQuery);
 
 /***/ }),

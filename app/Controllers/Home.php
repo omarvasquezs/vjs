@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Libraries\GroceryCrud;
+use Dompdf\Dompdf;
 
 class Home extends BaseController
 {
@@ -219,8 +220,8 @@ class Home extends BaseController
         $crud->setRelation('estado_comprobante_id', 'estado_comprobantes', 'nom_estado');
         $crud->setRelation('local_id', 'locales', 'nombre');
         $crud->setRelation('user_id', 'users', 'username');
-        $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios','comprobante_id','servicio_id','nom_servicio');
-        $crud->unsetEdit();
+        $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
+        //$crud->unsetEdit();
         $crud->unsetExport();
         $crud->unsetPrint();
         $crud->unsetAdd();
@@ -238,8 +239,12 @@ class Home extends BaseController
             'razon_social' => 'RAZÓN SOCIAL',
             'tipo_comprobante' => 'TIPO'
         ]);
-        $crud->columns(['tipo_comprobante', 'cliente_id', 'metodo_pago_id', 'estado_comprobante_id', 'user_id']);
-        
+        $crud->columns(['tipo_comprobante', 'cliente_id', 'metodo_pago_id', 'estado_comprobante_id', 'user_id', 'fecha']);
+
+        $crud->setActionButton('Vista de Impresion', 'print-icon-custom', function ($row) {
+            return site_url('comprobante/' . $row);
+        }, true);
+
         // Add this callback to modify the tipo_comprobante column in the list view
         $crud->callbackColumn('tipo_comprobante', array($this, 'displayTipoComprobante'));
 
@@ -253,6 +258,121 @@ class Home extends BaseController
         $output = $output->output;
 
         return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
+    }
+    public function generatePdfA4($id) {
+        $db = \Config\Database::connect();
+        
+        // Fetch comprobantes data
+        $builder = $db->table('comprobantes');
+        $builder->select('comprobantes.*, clientes.nombres, users.username, metodo_pago.nom_metodo_pago');
+        $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
+        $builder->join('users', 'comprobantes.user_id = users.id');
+        $builder->join('metodo_pago', 'comprobantes.metodo_pago_id = metodo_pago.id');
+        $builder->where('comprobantes.id', $id);
+        $comprobante = $builder->get()->getRowArray();
+    
+        // Fetch comprobantes_detalles data
+        $builder = $db->table('comprobantes_detalles');
+        $builder->join('servicios', 'comprobantes_detalles.servicio_id = servicios.id');
+        $builder->where('comprobante_id', $id);
+        $details = $builder->get()->getResultArray();
+
+        /*ob_start();
+
+        // Display comprobantes data and details
+        // ... (your HTML content for A4 size PDF)
+        // Display comprobantes data
+        echo '<img style="width: 100%;max-width: 20rem;" src="'.base_url().'assets/img/main_logo.jpeg">';
+        echo '<center><h2>VJS LAUNDRY S.A.C.</h2></center>';
+        echo '<br>';
+        echo '<center><h4>DETALLES</h4></center>';
+        echo '<p>ID: ' . $comprobante['id'] . '</p>';
+        echo '<p>Cliente: ' . $comprobante['nombres'] . '</p>';
+        echo '<p>Método de Pago: ' . $comprobante['nom_metodo_pago'] . '</p>';
+        // Add other comprobante fields as needed...
+    
+        // Display comprobantes_detalles data
+        echo '<table border="0">';
+        echo '<tr><th>SERVICIO</th><th>PESO POR KILO</th><th>COSTO POR KILO</th><th>TOTAL</th></tr>';
+        $total = 0;
+        foreach ($details as $detail) {
+            $costoTotal = $detail['peso_kg'] * $detail['costo_kilo'];
+            $total += $costoTotal;
+            echo '<tr>';
+            echo '<td>' . $detail['nom_servicio'] . '</td>';  // Display the nom_servicio field
+            echo '<td style="text-align: center;">' . $detail['peso_kg'] . '</td>';
+            echo '<td style="text-align: center;"> S/. ' . $detail['costo_kilo'] . '</td>';
+            echo '<td style="text-align: center;"> S/. ' . $detail['peso_kg'] * $detail['costo_kilo'] . '</td>';
+            echo '</tr>';
+        }
+        echo '</table>';
+        echo '<br>';
+        echo '<table>';
+        echo '<tr><th style="text-align: left;">SUBTOTAL</th><td>S/. ' . ($total - $total*0.18) . '</td></tr>';
+        echo '<tr><th style="text-align: left;">IGV 18%</th><td>S/. ' . ($total*0.18) . '</td></tr>';
+        echo '<tr><th style="text-align: left;">TOTAL</th><td>S/. ' . $total . '</td></tr>';
+        echo '</table>';
+
+        $html = ob_get_clean();*/
+
+        $data = [
+            'comprobante' => $comprobante,
+            'details' => $details,
+            // Add other data you want to pass to the view...
+        ];
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml(view('pdf_view_a4', $data), 'UTF-8');
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream('comprobante_a4-'.date('YmdHis').'.pdf', ['Attachment' => false]);
+    }
+    public function generatePdf58mm($id) {
+        $db = \Config\Database::connect();
+        
+        // Fetch comprobantes data
+        $builder = $db->table('comprobantes');
+        $builder->select('comprobantes.id as comprobantes_id, comprobantes.*, clientes.*, users.*, metodo_pago.*');
+        $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
+        $builder->join('users', 'comprobantes.user_id = users.id');
+        $builder->join('metodo_pago', 'comprobantes.metodo_pago_id = metodo_pago.id');
+        $builder->where('comprobantes.id', $id);
+        $comprobante = $builder->get()->getRowArray();        
+    
+        // Fetch comprobantes_detalles data
+        $builder = $db->table('comprobantes_detalles');
+        $builder->join('servicios', 'comprobantes_detalles.servicio_id = servicios.id');
+        $builder->where('comprobante_id', $id);
+        $details = $builder->get()->getResultArray();
+
+        $data = [
+            'comprobante' => $comprobante,
+            'details' => $details,
+            // Add other data you want to pass to the view...
+        ];
+        $dompdf = new Dompdf();
+        $dompdf->setPaper([0, 0, 164, 841.89*20]);
+        $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
+        $GLOBALS['bodyHeight'] = 0;
+        $dompdf->setCallbacks([
+            'myCallbacks' => [
+                'event' => 'end_frame', 'f' => function ($frame) {
+                    $node = $frame->get_node();
+                    if (strtolower($node->nodeName) === "body") {
+                        $padding_box = $frame->get_padding_box();
+                        $GLOBALS['bodyHeight'] += $padding_box['h'];
+                    }
+                }
+            ]
+        ]);
+        $dompdf->render();
+        $docHeight = $GLOBALS['bodyHeight'] * 1.25 - 50;
+        unset($dompdf);
+        $dompdf = new Dompdf();
+        $dompdf->setPaper(array(0, 0, 164, $docHeight));
+        $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
+        $dompdf->render();
+        $dompdf->stream('comprobante_58mm-'.date('YmdHis').'.pdf', array("Attachment"=>false));
     }
     public function displayTipoComprobante($value, $row)
     {

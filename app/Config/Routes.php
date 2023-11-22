@@ -50,6 +50,11 @@ $routes->get('fetchClientes','Home::fetchClientes');
 $routes->get('fetchEstadocomprobantes','Home::fetchEstadocomprobantes');
 $routes->post('submit_comprobante','Home::submit_comprobantes_form');
 
+$routes->get('ver_detalles/(:any)','Home::view_details/$1');
+
 $routes->get('logout','Auth::logout');
 $routes->get('login', 'Auth::login');
 $routes->post('authenticate', 'Auth::authenticate');
+
+$routes->get('comprobante/(:num)/a4', 'Home::generatePdfA4/$1');
+$routes->get('comprobante/(:num)/58mm', 'Home::generatePdf58mm/$1');
