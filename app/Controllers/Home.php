@@ -264,7 +264,7 @@ class Home extends BaseController
         
         // Fetch comprobantes data
         $builder = $db->table('comprobantes');
-        $builder->select('comprobantes.*, clientes.nombres, users.username, metodo_pago.nom_metodo_pago');
+        $builder->select('comprobantes.id as comprobantes_id, clientes.dni as dni, clientes.direccion as direccion, comprobantes.*, clientes.nombres, users.username, metodo_pago.nom_metodo_pago');
         $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
         $builder->join('users', 'comprobantes.user_id = users.id');
         $builder->join('metodo_pago', 'comprobantes.metodo_pago_id = metodo_pago.id');
