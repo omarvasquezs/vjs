@@ -358,6 +358,36 @@
     });
 
     // New action button for printing
+    $(document).ready(function () {
+        // Adding print icon on grocery crud flexigrid
+        // Find all elements with class 'print-icon-custom'
+        $('.print-icon-custom').each(function () {
+            // Create a new <span> element with class 'print-icon'
+            var printIconSpan = $('<span class="print-icon"></span>');
+    
+            // Replace the text inside the <a> tag with the created <span> element
+            $(this).html(printIconSpan);
+        });
+    
+        // jQuery code to handle the action button click
+        $('.print-icon-custom').on('click', function (e) {
+            e.preventDefault();
+    
+            // Get the URL from the action button's data-url attribute
+            var url = $(this).attr('href');
+    
+            // Set the iframe src attribute to the URL with "/58mm" appended
+            $('#printIframe').attr('src', url + '/58mm');
+    
+            // Set the iframe src attribute to the URL with "/a4" appended
+            $('#printIframe2').attr('src', url + '/a4');
+    
+            // Open the Bootstrap modal
+            $('#printModal').modal('show');
+            return false;
+        });
+    });
+    
     $(document).ajaxComplete(function () {
         // Adding print icon on grocery crud flexigrid
         // Find all elements with class 'print-icon-custom'
