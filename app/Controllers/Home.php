@@ -360,7 +360,7 @@ class Home extends BaseController
             // Add other data you want to pass to the view...
         ];
 
-        $dompdf = new Dompdf();
+        $dompdf = new Dompdf(['isRemoteEnabled' => true]);
         $dompdf->loadHtml(view('pdf_view_a4', $data), 'UTF-8');
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
@@ -410,7 +410,7 @@ class Home extends BaseController
         $dompdf->render();
         $docHeight = $GLOBALS['bodyHeight'] * 1.25 - 50;
         unset($dompdf);
-        $dompdf = new Dompdf();
+        $dompdf = new Dompdf(['isRemoteEnabled' => true]);
         $dompdf->setPaper(array(0, 0, 164, $docHeight));
         $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
         $dompdf->render();
