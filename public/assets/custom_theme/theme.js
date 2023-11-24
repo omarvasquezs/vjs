@@ -342,6 +342,18 @@
     });
   });
 
+  // Adding print icon on grocery crud flexigrid
+  $(document).ready(function () {
+    // Find all elements with class 'print-icon-custom'
+    $('.print-icon-custom').each(function () {
+      // Create a new <span> element with class 'print-icon'
+      var printIconSpan = $('<span class="print-icon"></span>');
+
+      // Replace the text inside the <a> tag with the created <span> element
+      $(this).html(printIconSpan);
+    });
+  });
+
   // jQuery code to handle the action button click
   $(document).ready(function () {
     $('.print-icon-custom').on('click', function (e) {
@@ -359,24 +371,6 @@
       // Open the Bootstrap modal
       $('#printModal').modal('show');
       return false;
-    });
-  });
-  // Adding print icon on grocery crud flexigrid
-  $(document).ready(function () {
-    // Find all elements with class 'print-icon-custom'
-    $('.print-icon-custom').each(function () {
-      // Create a new <span> element with class 'print-icon'
-      var printIconSpan = $('<span class="print-icon"></span>');
-
-      // Replace the text inside the <a> tag with the created <span> element
-      $(this).html(printIconSpan);
-    });
-  });
-  //
-  $(document).ready(function () {
-    $('.print-icon-custom').attr({
-      'data-bs-toggle': 'modal',
-      'data-bs-target': '#printModal'
     });
   });
 })(jQuery);
