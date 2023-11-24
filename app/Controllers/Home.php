@@ -277,44 +277,6 @@ class Home extends BaseController
         $builder->where('comprobante_id', $id);
         $details = $builder->get()->getResultArray();
 
-        /*ob_start();
-
-        // Display comprobantes data and details
-        // ... (your HTML content for A4 size PDF)
-        // Display comprobantes data
-        echo '<img style="width: 100%;max-width: 20rem;" src="'.base_url().'assets/img/main_logo.jpeg">';
-        echo '<center><h2>VJS LAUNDRY S.A.C.</h2></center>';
-        echo '<br>';
-        echo '<center><h4>DETALLES</h4></center>';
-        echo '<p>ID: ' . $comprobante['id'] . '</p>';
-        echo '<p>Cliente: ' . $comprobante['nombres'] . '</p>';
-        echo '<p>Método de Pago: ' . $comprobante['nom_metodo_pago'] . '</p>';
-        // Add other comprobante fields as needed...
-    
-        // Display comprobantes_detalles data
-        echo '<table border="0">';
-        echo '<tr><th>SERVICIO</th><th>PESO POR KILO</th><th>COSTO POR KILO</th><th>TOTAL</th></tr>';
-        $total = 0;
-        foreach ($details as $detail) {
-            $costoTotal = $detail['peso_kg'] * $detail['costo_kilo'];
-            $total += $costoTotal;
-            echo '<tr>';
-            echo '<td>' . $detail['nom_servicio'] . '</td>';  // Display the nom_servicio field
-            echo '<td style="text-align: center;">' . $detail['peso_kg'] . '</td>';
-            echo '<td style="text-align: center;"> S/. ' . $detail['costo_kilo'] . '</td>';
-            echo '<td style="text-align: center;"> S/. ' . $detail['peso_kg'] * $detail['costo_kilo'] . '</td>';
-            echo '</tr>';
-        }
-        echo '</table>';
-        echo '<br>';
-        echo '<table>';
-        echo '<tr><th style="text-align: left;">SUBTOTAL</th><td>S/. ' . ($total - $total*0.18) . '</td></tr>';
-        echo '<tr><th style="text-align: left;">IGV 18%</th><td>S/. ' . ($total*0.18) . '</td></tr>';
-        echo '<tr><th style="text-align: left;">TOTAL</th><td>S/. ' . $total . '</td></tr>';
-        echo '</table>';
-
-        $html = ob_get_clean();*/
-
         $data = [
             'comprobante' => $comprobante,
             'details' => $details,
