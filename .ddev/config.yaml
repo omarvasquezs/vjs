@@ -1,4 +1,4 @@
-name: ci4test
+name: vjs
 type: php
 docroot: public
 php_version: "8.1"

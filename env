@@ -20,7 +20,7 @@ CI_ENVIRONMENT = production
 # APP
 #--------------------------------------------------------------------
 
-app.baseURL = 'https://ci4test.ddev.site/'
+app.baseURL = 'https://vjs.ddev.site/'
 # If you have trouble with `.`, you could also use `_`.
 # app_baseURL = ''
 # app.forceGlobalSecureRequests = false
