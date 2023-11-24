@@ -12,7 +12,7 @@ class Comprobantes extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cliente_id','metodo_pago_id','tipo_comprobante','num_ruc','razon_social','observaciones','user_id','local_id','fecha','estado_comprobante_id'];
+    protected $allowedFields    = ['cliente_id','metodo_pago_id','tipo_comprobante','num_ruc','razon_social','observaciones','user_id','local_id','fecha','estado_comprobante_id','estado_ropa_id'];
 
     // Dates
     protected $useTimestamps = false;
