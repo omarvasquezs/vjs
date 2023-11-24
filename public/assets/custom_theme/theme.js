@@ -342,8 +342,9 @@
     });
   });
 
-  // Adding print icon on grocery crud flexigrid
-  $(document).ready(function () {
+  // New action button for printing
+  $(document).ajaxComplete(function () {
+    // Adding print icon on grocery crud flexigrid
     // Find all elements with class 'print-icon-custom'
     $('.print-icon-custom').each(function () {
       // Create a new <span> element with class 'print-icon'
@@ -352,10 +353,8 @@
       // Replace the text inside the <a> tag with the created <span> element
       $(this).html(printIconSpan);
     });
-  });
 
-  // jQuery code to handle the action button click
-  $(document).ready(function () {
+    // jQuery code to handle the action button click
     $('.print-icon-custom').on('click', function (e) {
       e.preventDefault();
 
