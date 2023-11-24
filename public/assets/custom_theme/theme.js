@@ -372,6 +372,13 @@
       $(this).html(printIconSpan);
     });
   });
+  //
+  $(document).ready(function () {
+    $('.print-icon-custom').attr({
+      'data-bs-toggle': 'modal',
+      'data-bs-target': '#printModal'
+    });
+  });
 })(jQuery);
 
 /***/ }),

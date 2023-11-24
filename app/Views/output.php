@@ -61,8 +61,8 @@
                                 OPCIONES AVANZADAS
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="consultarDropdown">
-                                <li><a class="dropdown-item" href="<?= base_url() ?>estado_comprobantes">ESTADO
-                                        COMPROBANTES</a></li>
+                                <li><a class="dropdown-item" href="<?= base_url() ?>estado_comprobantes">ESTADO COMPROBANTES</a></li>
+                                <li><a class="dropdown-item" href="<?= base_url() ?>estado_ropa">ESTADO ROPA</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url() ?>locales">LOCALES</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url() ?>metodo_pago">MÉTODOS DE PAGO</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url() ?>roles">ROLES</a></li>

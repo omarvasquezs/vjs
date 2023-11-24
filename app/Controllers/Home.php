@@ -71,6 +71,21 @@ class Home extends BaseController
 
         return $this->_mainOutput($output);
     }
+    public function estado_ropa()
+    {
+        $crud = new GroceryCrud();
+
+        $crud->setTable('estado_ropa');
+        $crud->setSubject('ESTADO ROPA');
+        $crud->displayAs([
+            'nom_estado_ropa' => 'NOMBRE ESTADO ROPA'
+        ]);
+        $crud->unsetExport();
+        $crud->unsetPrint();
+        $output = $crud->render();
+
+        return $this->_mainOutput($output);
+    }
     public function metodo_pago()
     {
         $crud = new GroceryCrud();
@@ -220,7 +235,9 @@ class Home extends BaseController
         $crud->setRelation('estado_comprobante_id', 'estado_comprobantes', 'nom_estado');
         $crud->setRelation('local_id', 'locales', 'nombre');
         $crud->setRelation('user_id', 'users', 'username');
+        $crud->setRelation('estado_ropa_id', 'estado_ropa', 'nom_estado_ropa');
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
+        $crud->editFields(['estado_comprobante_id', 'estado_ropa_id']);
         //$crud->unsetEdit();
         $crud->unsetExport();
         $crud->unsetPrint();
@@ -228,9 +245,12 @@ class Home extends BaseController
         $crud->unsetDelete();
         $crud->setRead();
         $crud->displayAs([
+            'id' => 'COMPROBANTE',
+            'comprobante' => 'COMPROBANTE',
             'cliente_id' => 'CLIENTE',
             'metodo_pago_id' => 'METODO DE PAGO',
-            'estado_comprobante_id' => 'ESTADO',
+            'estado_comprobante_id' => 'ESTADO COMPROBANTE',
+            'estado_ropa_id' => 'ESTADO ROPA',
             'local_id' => 'LOCAL',
             'observaciones' => 'OBSERVACIONES',
             'user_id' => 'REGISTRADO POR',
@@ -239,7 +259,11 @@ class Home extends BaseController
             'razon_social' => 'RAZÓN SOCIAL',
             'tipo_comprobante' => 'TIPO'
         ]);
-        $crud->columns(['tipo_comprobante', 'cliente_id', 'metodo_pago_id', 'estado_comprobante_id', 'user_id', 'fecha']);
+
+        $crud->readFields(['id', 'tipo_comprobante', 'cliente_id', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'SERVICIOS', 'observaciones']);
+
+        // All visible columns on the table, including custom columns
+        $crud->columns(['comprobante', 'tipo_comprobante', 'cliente_id', 'estado_comprobante_id', 'estado_ropa_id', 'user_id', 'fecha']);
 
         $crud->setActionButton('Vista de Impresion', 'print-icon-custom', function ($row) {
             return site_url('comprobante/' . $row);
@@ -251,6 +275,11 @@ class Home extends BaseController
         // Add this callback to modify the tipo_comprobante field in the read view
         $crud->callbackReadField('tipo_comprobante', array($this, 'displayTipoComprobante'));
 
+        // Adding custom column
+        $crud->callbackColumn('comprobante', array($this, 'displayComprobante'));
+
+        $crud->callbackReadField('id', array($this, 'displayIdWithTipoComprobante'));
+
         $output = $crud->render();
         $css_files = $output->css_files;
         $js_files = $output->js_files;
@@ -259,9 +288,57 @@ class Home extends BaseController
 
         return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
     }
-    public function generatePdfA4($id) {
+    public function displayComprobante($value, $row)
+    {
+        // Get the tipo_comprobante value
+        $tipo_comprobante = $row->tipo_comprobante;
+
+        // Modify the id based on the tipo_comprobante value
+        switch ($tipo_comprobante) {
+            case 'B':
+                return 'B001-' . $row->id;
+            case 'F':
+                return 'F001-' . $row->id;
+            case 'N':
+                return 'NV001-' . $row->id;
+            default:
+                return $row->id;
+        }
+    }
+    public function displayIdWithTipoComprobante($value, $row)
+    {
+        // Get the database connection
         $db = \Config\Database::connect();
-        
+    
+        // Query the database to get the tipo_comprobante value for the current id
+        $query = $db->query('SELECT tipo_comprobante FROM comprobantes WHERE id = ?', [$value]);
+        $result = $query->getRow();
+    
+        // Check if the query returned a result
+        if ($result) {
+            $tipo_comprobante = $result->tipo_comprobante;
+        } else {
+            // Handle the case where no result was returned
+            // For example, you might want to return the original id value
+            return $value;
+        }
+    
+        // Modify the id based on the tipo_comprobante value
+        switch ($tipo_comprobante) {
+            case 'B':
+                return 'B001-' . $value;
+            case 'F':
+                return 'F001-' . $value;
+            case 'N':
+                return 'NV001-' . $value;
+            default:
+                return $value;
+        }
+    }        
+    public function generatePdfA4($id)
+    {
+        $db = \Config\Database::connect();
+
         // Fetch comprobantes data
         $builder = $db->table('comprobantes');
         $builder->select('comprobantes.id as comprobantes_id, clientes.dni as dni, clientes.direccion as direccion, comprobantes.*, clientes.nombres, users.username, metodo_pago.nom_metodo_pago');
@@ -270,7 +347,7 @@ class Home extends BaseController
         $builder->join('metodo_pago', 'comprobantes.metodo_pago_id = metodo_pago.id');
         $builder->where('comprobantes.id', $id);
         $comprobante = $builder->get()->getRowArray();
-    
+
         // Fetch comprobantes_detalles data
         $builder = $db->table('comprobantes_detalles');
         $builder->join('servicios', 'comprobantes_detalles.servicio_id = servicios.id');
@@ -287,11 +364,12 @@ class Home extends BaseController
         $dompdf->loadHtml(view('pdf_view_a4', $data), 'UTF-8');
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
-        $dompdf->stream('comprobante_a4-'.date('YmdHis').'.pdf', ['Attachment' => false]);
+        $dompdf->stream('comprobante_a4-' . date('YmdHis') . '.pdf', ['Attachment' => false]);
     }
-    public function generatePdf58mm($id) {
+    public function generatePdf58mm($id)
+    {
         $db = \Config\Database::connect();
-        
+
         // Fetch comprobantes data
         $builder = $db->table('comprobantes');
         $builder->select('comprobantes.id as comprobantes_id, comprobantes.*, clientes.*, users.*, metodo_pago.*');
@@ -299,8 +377,8 @@ class Home extends BaseController
         $builder->join('users', 'comprobantes.user_id = users.id');
         $builder->join('metodo_pago', 'comprobantes.metodo_pago_id = metodo_pago.id');
         $builder->where('comprobantes.id', $id);
-        $comprobante = $builder->get()->getRowArray();        
-    
+        $comprobante = $builder->get()->getRowArray();
+
         // Fetch comprobantes_detalles data
         $builder = $db->table('comprobantes_detalles');
         $builder->join('servicios', 'comprobantes_detalles.servicio_id = servicios.id');
@@ -313,12 +391,13 @@ class Home extends BaseController
             // Add other data you want to pass to the view...
         ];
         $dompdf = new Dompdf();
-        $dompdf->setPaper([0, 0, 164, 841.89*20]);
+        $dompdf->setPaper([0, 0, 164, 841.89 * 20]);
         $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
         $GLOBALS['bodyHeight'] = 0;
         $dompdf->setCallbacks([
             'myCallbacks' => [
-                'event' => 'end_frame', 'f' => function ($frame) {
+                'event' => 'end_frame',
+                'f' => function ($frame) {
                     $node = $frame->get_node();
                     if (strtolower($node->nodeName) === "body") {
                         $padding_box = $frame->get_padding_box();
@@ -334,7 +413,7 @@ class Home extends BaseController
         $dompdf->setPaper(array(0, 0, 164, $docHeight));
         $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
         $dompdf->render();
-        $dompdf->stream('comprobante_58mm-'.date('YmdHis').'.pdf', array("Attachment"=>false));
+        $dompdf->stream('comprobante_58mm-' . date('YmdHis') . '.pdf', array("Attachment" => false));
     }
     public function displayTipoComprobante($value, $row)
     {
@@ -466,6 +545,7 @@ class Home extends BaseController
             'observaciones' => $this->request->getPost('comprobante_observaciones'),
             'user_id' => session()->get('user_id'),
             'local_id' => 5,
+            'estado_ropa_id' => 1,
             'fecha' => date('Y-m-d H:i:s'),
             'estado_comprobante_id' => $this->request->getPost('estadoComprobante')
         ];
