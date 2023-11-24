@@ -365,6 +365,7 @@ class Home extends BaseController
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
         $dompdf->stream('comprobante_a4-' . date('YmdHis') . '.pdf', ['Attachment' => false]);
+        exit();
     }
     public function generatePdf58mm($id)
     {
@@ -414,6 +415,7 @@ class Home extends BaseController
         $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
         $dompdf->render();
         $dompdf->stream('comprobante_58mm-' . date('YmdHis') . '.pdf', array("Attachment" => false));
+        exit();
     }
     public function displayTipoComprobante($value, $row)
     {
