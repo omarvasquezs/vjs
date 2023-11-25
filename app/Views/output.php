@@ -80,7 +80,7 @@
             </div>
             <!-- Bootstrap modal structure -->
             <div class="modal" id="printModal" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-dialog modal-fullscreen" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Vista de Impresion</h5>
@@ -100,11 +100,11 @@
                             <div class="tab-content" id="nav-tabContent">
                                 <div class="tab-pane fade show active" id="nav-58mm" role="tabpanel"
                                     aria-labelledby="nav-58mm-tab" tabindex="0">
-                                    <iframe id="printIframe" width="100%" height="400" frameborder="0"></iframe>
+                                    <iframe id="printIframe" width="100%" height="100%" frameborder="0"></iframe>
                                 </div>
                                 <div class="tab-pane fade" id="nav-a4" role="tabpanel" aria-labelledby="nav-a4-tab"
                                     tabindex="0">
-                                    <iframe id="printIframe2" width="100%" height="400" frameborder="0"></iframe>
+                                    <iframe id="printIframe2" width="100%" height="100%" frameborder="0"></iframe>
                                 </div>
                             </div>
                         </div>
