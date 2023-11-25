@@ -401,6 +401,16 @@
       return false;
     });
   });
+  $(document).ready(function () {
+    $("#copyButton").click(function () {
+      var text = "https://wa.me/34644646089?text=I%20allow%20callmebot%20to%20send%20me%20messages";
+      navigator.clipboard.writeText(text).then(function () {
+        alert('Copiado al portapapeles');
+      })["catch"](function () {
+        alert('Error en copiar');
+      });
+    });
+  });
 })(jQuery);
 
 /***/ }),

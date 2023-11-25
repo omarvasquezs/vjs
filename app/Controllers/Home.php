@@ -20,8 +20,7 @@ class Home extends BaseController
         ];
         return $this->_mainOutput($output);
     }
-    public function clientes()
-    {
+    public function clientes() {
         $crud = new GroceryCrud();
 
         $crud->setTable('clientes');
@@ -43,10 +42,44 @@ class Home extends BaseController
             'dni' => 'DNI',
             'telefono' => 'TELEFONO',
             'email' => 'E-MAIL',
-            'direccion' => 'DIRECCION'
+            'direccion' => 'DIRECCION',
+            'callmebot_api_key' => 'CALL ME BOT API KEY'
         ]);
 
+        // Check if it's the add or edit page based on the 'state' parameter in the URL
+        $uri = service('uri');
+        $segments = $uri->getSegments();
+        $state = null;
+    
+        foreach ($segments as $segment) {
+            if ($segment == 'add') {
+                $state = 'add';
+                break;
+            } elseif ($segment == 'edit') {
+                $state = 'edit';
+                break;
+            }
+        }
+
+        // Render the CRUD
         $output = $crud->render();
+
+        // Additional information or text to be added at the top of the form for add/edit pages
+        $additional_text = '';
+
+        if ($state === 'add' || $state === 'edit') {
+            $additional_text = '<div class="card text-center mx-auto" style="width: 100%;max-width: 98.5%;">
+            <h5 class="card-header">IMPORTANTE</h5>
+            <div class="card-body">              
+              <p class="card-text">Si el cliente quiere que le lleguen notificaciones de whatsapp, debes proporcionarle el link del Call me bot de whatsapp y de ahi él/ella te debe proporcionar el API KEY.</p>
+              <button id="copyButton" class="btn btn-primary">HAZ CLICK AQUÍ PARA COPIAR LINK</button>
+            </div>
+          </div>';
+        }
+
+        // Insert the additional text before the existing output
+        $output->output = $additional_text . $output->output;
+
         $css_files = $output->css_files;
         $js_files = $output->js_files;
         $css_class = 'clientes';
@@ -310,11 +343,11 @@ class Home extends BaseController
     {
         // Get the database connection
         $db = \Config\Database::connect();
-    
+
         // Query the database to get the tipo_comprobante value for the current id
         $query = $db->query('SELECT tipo_comprobante FROM comprobantes WHERE id = ?', [$value]);
         $result = $query->getRow();
-    
+
         // Check if the query returned a result
         if ($result) {
             $tipo_comprobante = $result->tipo_comprobante;
@@ -323,7 +356,7 @@ class Home extends BaseController
             // For example, you might want to return the original id value
             return $value;
         }
-    
+
         // Modify the id based on the tipo_comprobante value
         switch ($tipo_comprobante) {
             case 'B':
@@ -335,7 +368,7 @@ class Home extends BaseController
             default:
                 return $value;
         }
-    }        
+    }
     public function generatePdfA4($id)
     {
         $db = \Config\Database::connect();
