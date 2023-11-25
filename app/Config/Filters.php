@@ -71,8 +71,8 @@ class Filters extends BaseConfig
      * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
      */
     public array $filters = [
-        'authcheck' => ['before' => ['/','registrar_boleta','registrar_boleta/*','boletas','boletas/*','clientes','clientes/*','estado_boletas','estado_boletas/*','metodo_pago','metodo_pago/*','roles','roles/*','servicios','servicios/*','users','users/*','locales','locales/*']],
-        'admincheck' => ['before' => ['estado_boletas','estado_boletas/*','metodo_pago','metodo_pago/*','roles','roles/*','servicios','servicios/*','users','users/*','locales','locales/*']],
+        'authcheck' => ['before' => ['/','registrar_comprobante','registrar_comprobante/*','comprobantes','comprobantes/*','clientes/add']],
+        'admincheck' => ['before' => ['estado_comprobantes','estado_comprobantes/*','metodo_pago','metodo_pago/*','roles','roles/*','servicios','servicios/*','users','users/*','locales','locales/*','estado_ropa','estado_ropa/*']],
         'loggedcheck' => ['before' => ['login']],
     ];
 }
