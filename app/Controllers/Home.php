@@ -238,6 +238,7 @@ class Home extends BaseController
         $crud->setRelation('estado_ropa_id', 'estado_ropa', 'nom_estado_ropa');
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
         $crud->editFields(['estado_comprobante_id', 'estado_ropa_id']);
+        $crud->unsetEditFields(['SERVICIOS']);
         //$crud->unsetEdit();
         $crud->unsetExport();
         $crud->unsetPrint();
