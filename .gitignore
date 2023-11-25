@@ -128,3 +128,6 @@ nb-configuration.xml
 
 # sql files
 *.sql
+
+# swp files
+*.swp
