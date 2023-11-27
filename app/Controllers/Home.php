@@ -73,7 +73,7 @@ class Home extends BaseController
             <h5 class="card-header">IMPORTANTE</h5>
             <div class="card-body">              
               <p class="card-text">Si el cliente quiere que le lleguen notificaciones de whatsapp, debes proporcionarle el link del Call me bot de whatsapp y de ahi él/ella te debe proporcionar el API KEY.</p>
-              <button id="copyButton" class="btn btn-primary">HAZ CLICK AQUÍ PARA COPIAR LINK</button>
+              <button id="copyButton" class="btn btn-primary">HAZ CLICK AQUÍ PARA COPIAR EL LINK DEL CALLMEBOT</button>
             </div>
           </div>';
         }
