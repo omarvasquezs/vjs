@@ -20,7 +20,8 @@ class Home extends BaseController
         ];
         return $this->_mainOutput($output);
     }
-    public function clientes() {
+    public function clientes()
+    {
         $crud = new GroceryCrud();
 
         $crud->setTable('clientes');
@@ -50,7 +51,7 @@ class Home extends BaseController
         $uri = service('uri');
         $segments = $uri->getSegments();
         $state = null;
-    
+
         foreach ($segments as $segment) {
             if ($segment == 'add') {
                 $state = 'add';
@@ -270,9 +271,8 @@ class Home extends BaseController
         $crud->setRelation('user_id', 'users', 'username');
         $crud->setRelation('estado_ropa_id', 'estado_ropa', 'nom_estado_ropa');
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
-        $crud->editFields(['estado_comprobante_id', 'estado_ropa_id']);
+        $crud->editFields(['cliente_id', 'estado_comprobante_id', 'estado_ropa_id']);
         $crud->unsetEditFields(['SERVICIOS']);
-        //$crud->unsetEdit();
         $crud->unsetExport();
         $crud->unsetPrint();
         $crud->unsetAdd();
@@ -314,6 +314,37 @@ class Home extends BaseController
 
         $crud->callbackReadField('id', array($this, 'displayIdWithTipoComprobante'));
 
+        $db = \Config\Database::connect();
+
+        // Add beforeUpdate event
+        $crud->callbackBeforeUpdate(function ($stateParameters) use ($db) {
+            $newEstadoRopaId = $stateParameters->data['estado_ropa_id'] ?? null;
+
+            if ($newEstadoRopaId === '3') {
+
+                // Get the cliente_id
+                $cliente_id = $stateParameters->data['cliente_id'];
+
+                // Query the clientes table to get the callmebot_api_key and telefono
+                $query = $db->table('clientes')->getWhere(['id' => $cliente_id]);
+                $row = $query->getRow();
+
+                // Check if callmebot_api_key is not NULL and telefono is not NULL, has 9 digits, and starts with 9
+                if (!empty($row) && !is_null($row->callmebot_api_key) && !is_null($row->telefono) && strlen($row->telefono) == 9 && $row->telefono[0] == '9') {
+                    // Get the phone number and API key
+                    $phone_number = '+51' . $row->telefono;
+                    $api_key = $row->callmebot_api_key;
+
+                    // The message to send
+                    $message = "VJS Lavanderias le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local y, de no haber pagado aún, se le retendrá la ropa hasta que no termine de cancelar.";
+
+                    $this->whatsapp($phone_number, $api_key, $message);
+                }
+            }
+
+            return $stateParameters;
+        });
+
         $output = $crud->render();
         $css_files = $output->css_files;
         $js_files = $output->js_files;
@@ -321,6 +352,22 @@ class Home extends BaseController
         $output = $output->output;
 
         return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
+    }
+    public function whatsapp($phone_number, $api_key, $message)
+    {
+        $url = 'https://api.callmebot.com/whatsapp.php?source=php&phone=' . $phone_number . '&text=' . urlencode($message) . '&apikey=' . $api_key;
+
+        if ($ch = curl_init($url)) {
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $html = curl_exec($ch);
+            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            // echo "Output:".$html;  // you can print the output for troubleshooting
+            curl_close($ch);
+            return (int) $status;
+        } else {
+            return false;
+        }
     }
     public function displayComprobante($value, $row)
     {
