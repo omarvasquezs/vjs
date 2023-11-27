@@ -24,7 +24,7 @@
                         required>
                 </div>
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary login-button">Login</button>
+                    <button type="submit" class="btn btn-primary login-button">ACCEDER</button>
                 </div>
             </form>
         </div>
