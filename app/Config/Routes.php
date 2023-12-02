@@ -61,6 +61,7 @@ $routes->get('login', 'Auth::login');
 $routes->post('authenticate', 'Auth::authenticate');
 
 $routes->get('comprobante/(:num)/a4', 'Home::generatePdfA4/$1');
+$routes->get('comprobante/(:num)/a4_wsp', 'Home::wspPdfA4/$1');
 $routes->get('comprobante/(:num)/58mm', 'Home::generatePdf58mm/$1');
 
 $routes->get('whatsapp','Home::whatsapp');
