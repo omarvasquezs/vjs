@@ -325,20 +325,19 @@ class Home extends BaseController
                 // Get the cliente_id
                 $cliente_id = $stateParameters->data['cliente_id'];
 
-                // Query the clientes table to get the callmebot_api_key and telefono
+                // Query the clientes table to get the telefono
                 $query = $db->table('clientes')->getWhere(['id' => $cliente_id]);
                 $row = $query->getRow();
 
-                // Check if callmebot_api_key is not NULL and telefono is not NULL, has 9 digits, and starts with 9
-                if (!empty($row) && !is_null($row->callmebot_api_key) && !is_null($row->telefono) && strlen($row->telefono) == 9 && $row->telefono[0] == '9') {
+                // Check if telefono is not NULL, has 9 digits, and starts with 9
+                if (!empty($row) && !is_null($row->telefono) && strlen($row->telefono) == 9 && $row->telefono[0] == '9') {
                     // Get the phone number and API key
-                    $phone_number = '+51' . $row->telefono;
-                    $api_key = $row->callmebot_api_key;
+                    $phone_number = '+51' . $row->telefono;                    
 
                     // The message to send
                     $message = "VJS Lavanderias le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local y, de no haber pagado aún, se le retendrá la ropa hasta que no termine de cancelar.";
 
-                    $this->whatsapp($phone_number, $api_key, $message);
+                    $this->whatsapp($phone_number, $row, $message);
                 }
             }
 
@@ -353,9 +352,9 @@ class Home extends BaseController
 
         return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
     }
-    public function whatsapp($phone_number, $api_key, $message)
+    public function whatsapp($phone_number, $row, $message)
     {
-        $url = 'https://api.callmebot.com/whatsapp.php?source=php&phone=' . $phone_number . '&text=' . urlencode($message) . '&apikey=' . $api_key;
+        $url = 'https://api.textmebot.com/send.php?recipient='.$phone_number.'&apikey=hCS2aZ9aHwhF&text='.urlencode($message).'&document='.base_url().'/comprobante/'.$row.'/a4/comprobante_a4-' . date('YmdHis') . '.pdf';
 
         if ($ch = curl_init($url)) {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
