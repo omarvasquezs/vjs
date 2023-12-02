@@ -337,8 +337,7 @@ class Home extends BaseController
                     // The message to send
                     $message = "VJS Lavanderias le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local y, de no haber pagado aún, se le retendrá la ropa hasta que no termine de cancelar.";
 
-                    $this->whatsapp_message($phone_number, $message);
-                    $this->whatsapp_pdf($phone_number, $row);
+                    $this->whatsapp_message_and_pdf($phone_number, $message, $row);
                 }
             }
 
@@ -353,32 +352,26 @@ class Home extends BaseController
 
         return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
     }
-    public function whatsapp_message($phone_number, $message)
+    public function whatsapp_message_and_pdf($phone_number, $message, $row)
     {
-        $url = 'https://api.textmebot.com/send.php?recipient='.$phone_number.'&apikey=hCS2aZ9aHwhF&text='.urlencode($message);
-        
-        if ($ch = curl_init($url)) {
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            $html = curl_exec($ch);
-            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            // echo "Output:".$html;  // you can print the output for troubleshooting
-            curl_close($ch);
-            return (int) $status;
-        } else {
-            return false;
-        }
+        // Send message
+        $url_message = 'https://api.textmebot.com/send.php?recipient='.$phone_number.'&apikey=hCS2aZ9aHwhF&text='.urlencode($message);
+        $status_message = $this->send_request($url_message);
+    
+        // Send PDF
+        $url_pdf = 'https://api.textmebot.com/send.php?recipient='.$phone_number.'&apikey=hCS2aZ9aHwhF&document='.base_url().'/comprobante/'.$row->id.'/a4/comprobante_a4-' . date('YmdHis') . '.pdf';
+        $status_pdf = $this->send_request($url_pdf);
+    
+        return ['status_message' => $status_message, 'status_pdf' => $status_pdf];
     }
-    public function whatsapp_pdf($phone_number, $row)
+    
+    private function send_request($url)
     {
-        $url = 'https://api.textmebot.com/send.php?recipient='.$phone_number.'&apikey=hCS2aZ9aHwhF&document='.base_url().'/comprobante/'.$row->id.'/a4/comprobante_a4-' . date('YmdHis') . '.pdf';
-
         if ($ch = curl_init($url)) {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
             $html = curl_exec($ch);
             $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            // echo "Output:".$html;  // you can print the output for troubleshooting
             curl_close($ch);
             return (int) $status;
         } else {
