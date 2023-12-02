@@ -448,38 +448,6 @@ class Home extends BaseController
         $dompdf->stream('comprobante_a4-' . date('YmdHis') . '.pdf', ['Attachment' => false]);
         exit();
     }
-    public function wspPdfA4($id)
-    {
-        $db = \Config\Database::connect();
-
-        // Fetch comprobantes data
-        $builder = $db->table('comprobantes');
-        $builder->select('comprobantes.id as comprobantes_id, clientes.dni as dni, clientes.direccion as direccion, comprobantes.*, clientes.nombres, users.username, metodo_pago.nom_metodo_pago');
-        $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
-        $builder->join('users', 'comprobantes.user_id = users.id');
-        $builder->join('metodo_pago', 'comprobantes.metodo_pago_id = metodo_pago.id');
-        $builder->where('comprobantes.id', $id);
-        $comprobante = $builder->get()->getRowArray();
-
-        // Fetch comprobantes_detalles data
-        $builder = $db->table('comprobantes_detalles');
-        $builder->join('servicios', 'comprobantes_detalles.servicio_id = servicios.id');
-        $builder->where('comprobante_id', $id);
-        $details = $builder->get()->getResultArray();
-
-        $data = [
-            'comprobante' => $comprobante,
-            'details' => $details,
-            // Add other data you want to pass to the view...
-        ];
-
-        $dompdf = new Dompdf(['isRemoteEnabled' => true]);
-        $dompdf->loadHtml(view('pdf_view_a4', $data), 'UTF-8');
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-        $dompdf->stream('comprobante_a4-' . date('YmdHis') . '.pdf', ['Attachment' => true]);
-        exit();
-    }
     public function generatePdf58mm($id)
     {
         $db = \Config\Database::connect();
