@@ -659,9 +659,9 @@ class Home extends BaseController
 
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
 
-        $telefono = $model_clientes->where('id', $this->request->getPost('clienteDropdown'))->first()->telefono;
+        $clientes = $model_clientes->where('id', $this->request->getPost('clienteDropdown'))->first();
 
-        $this->whatsapp_pdf($inserted_id, $telefono);
+        $this->whatsapp_pdf($model_comprobantes->getInsertID(), $clientes['telefono']);
 
         return redirect()->to('/comprobantes');
     }
