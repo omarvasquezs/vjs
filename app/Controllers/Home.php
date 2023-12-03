@@ -271,7 +271,7 @@ class Home extends BaseController
         $crud->setRelation('user_id', 'users', 'username');
         $crud->setRelation('estado_ropa_id', 'estado_ropa', 'nom_estado_ropa');
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
-        $crud->editFields(['cliente_id', 'estado_comprobante_id', 'estado_ropa_id']);
+        $crud->editFields(['tipo_comprobante', 'cliente_id', 'estado_comprobante_id', 'estado_ropa_id','observaciones']);
         $crud->unsetEditFields(['SERVICIOS']);
         $crud->unsetExport();
         $crud->unsetPrint();
@@ -333,7 +333,8 @@ class Home extends BaseController
                 if (!empty($row_cliente) && !is_null($row_cliente->telefono) && strlen($row_cliente->telefono) == 9 && $row_cliente->telefono[0] == '9') {
 
                     // The message to send
-                    $message = "VJ's Lavanderias le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local. Si no ha pagado aún o tiene un deuda pendiente con nosotros, favor de pagarlo lo antes posible, ya que sino se le retendrá la ropa.";
+                    $message = "VJ's Laundry le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local. Si no ha pagado aún o tiene un deuda pendiente con nosotros, favor de pagarlo lo antes posible, ya que sino se le retendrá la ropa. Su código de comprobante es ".$this->displayComprobanteWSP($stateParameters->data['tipo_comprobante'], $stateParameters->primaryKeyValue);
+
 
                     $this->whatsapp_message($row_cliente->telefono, $message);
                 }
@@ -390,6 +391,20 @@ class Home extends BaseController
                 return 'NV001-' . $row->id;
             default:
                 return $row->id;
+        }
+    }
+    private function displayComprobanteWSP($tipo_comprobante, $comprobante_id)
+    {
+        // Modify the id based on the tipo_comprobante value
+        switch ($tipo_comprobante) {
+            case 'B':
+                return 'B001-' . $comprobante_id;
+            case 'F':
+                return 'F001-' . $comprobante_id;
+            case 'N':
+                return 'NV001-' . $comprobante_id;
+            default:
+                return $comprobante_id;
         }
     }
     public function displayIdWithTipoComprobante($value, $row)

@@ -111,6 +111,10 @@ body.login-page {
   background-color: #e9ecef !important;
 }
 
+#tipo_comprobante_field_box, #cliente_id_field_box {
+  display: none;
+}
+
 .footer {
   margin-top: auto;
 }
