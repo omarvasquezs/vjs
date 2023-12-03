@@ -327,17 +327,15 @@ class Home extends BaseController
 
                 // Query the clientes table to get the telefono
                 $query = $db->table('clientes')->getWhere(['id' => $cliente_id]);
-                $row = $query->getRow();
+                $row_cliente = $query->getRow();
 
                 // Check if telefono is not NULL, has 9 digits, and starts with 9
-                if (!empty($row) && !is_null($row->telefono) && strlen($row->telefono) == 9 && $row->telefono[0] == '9') {
-                    // Get the phone number and API key
-                    $phone_number = '+51' . $row->telefono;                    
+                if (!empty($row_cliente) && !is_null($row_cliente->telefono) && strlen($row_cliente->telefono) == 9 && $row_cliente->telefono[0] == '9') {
 
                     // The message to send
-                    $message = "VJS Lavanderias le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local y, de no haber pagado aún, se le retendrá la ropa hasta que no termine de cancelar.";
+                    $message = "VJ's Lavanderias le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local. Si no ha pagado aún o tiene un deuda pendiente con nosotros, favor de pagarlo lo antes posible, ya que sino se le retendrá la ropa.";
 
-                    $this->whatsapp_message_and_pdf($phone_number, $message, $row);
+                    $this->whatsapp_message($row_cliente->telefono, $message);
                 }
             }
 
@@ -352,19 +350,18 @@ class Home extends BaseController
 
         return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
     }
-    public function whatsapp_message_and_pdf($phone_number, $message, $row)
+    private function whatsapp_message($phone_number, $message)
     {
-        // Send message
-        $url_message = 'https://api.textmebot.com/send.php?recipient='.$phone_number.'&apikey=hCS2aZ9aHwhF&text='.urlencode($message);
-        $status_message = $this->send_request($url_message);
-    
-        // Send PDF
-        $url_pdf = 'https://api.textmebot.com/send.php?recipient='.$phone_number.'&apikey=hCS2aZ9aHwhF&document='.base_url().'/comprobante/'.$row->id.'/a4/comprobante_a4-' . date('YmdHis') . '.pdf';
-        $status_pdf = $this->send_request($url_pdf);
-    
-        return ['status_message' => $status_message, 'status_pdf' => $status_pdf];
+        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=hCS2aZ9aHwhF&text=' . urlencode($message);
+
+        return $this->send_request($url);
     }
-    
+    private function whatsapp_pdf($comprobante_id, $phone_number)
+    {
+        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=hCS2aZ9aHwhF&document=' . base_url() . 'comprobante/' . $comprobante_id . '/a4/comprobante_A4_' . date('YmdHis') . '.pdf';
+
+        return $this->send_request($url);
+    }
     private function send_request($url)
     {
         if ($ch = curl_init($url)) {
@@ -627,6 +624,7 @@ class Home extends BaseController
 
         $model_comprobantes = new \App\Models\Comprobantes();
         $model_comprobantes_detalles = new \App\Models\ComprobantesDetalles();
+        $model_clientes = new \App\Models\Clientes();
 
         $data_comprobantes = [
             'cliente_id' => $this->request->getPost('clienteDropdown'),
@@ -660,6 +658,10 @@ class Home extends BaseController
         }
 
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
+
+        $telefono = $model_clientes->where('id', $this->request->getPost('clienteDropdown'))->first()->telefono;
+
+        $this->whatsapp_pdf($inserted_id, $telefono);
 
         return redirect()->to('/comprobantes');
     }
