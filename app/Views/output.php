@@ -50,7 +50,11 @@
                             CONSULTAR
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="consultarDropdown">
-                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes">COMPROBANTES</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes">COMPROBANTES TODOS</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_en_curso">COMPROBANTES EN CURSO</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_pagados">COMPROBANTES PAGADOS</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_pendiente_pago">COMPROBANTES PENDIENTE DE PAGO</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_recojo">COMPROBANTES PARA RECOJO</a></li>
                             <li><a class="dropdown-item" href="<?= base_url() ?>clientes">CLIENTES</a></li>
                         </ul>
                     </li>

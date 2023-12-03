@@ -19,7 +19,7 @@ class GroceryCrud
      * The default per page when a user firstly see a list page
      * @var int
      */
-    public $default_per_page = 10;
+    public $default_per_page = 100;
 
     /**
      * You can choose between 'ckeditor','tinymce' or 'markitup'
@@ -44,7 +44,7 @@ class GroceryCrud
      * Make sure that the number of default_per_page variable is included to this array.
      * @var array
      */
-    public $paging_options = ['10','25','50','100'];
+    public $paging_options = ['50','100','1000'];
 
     /**
      * Default theme for grocery CRUD. You can choose between 'flexigrid', 'datatables', 'bootstrap', 'bootstrap-v4'

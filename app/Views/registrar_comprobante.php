@@ -83,8 +83,8 @@
                     </div>
                     <div class="row">
                         <div class="d-grid gap-2 py-2">
-                            <select class="form-select is-required" name="estadoComprobante" id="estadoComprobante" required></select>
-                            <!-- Estado Comprobante will be populated here through JavaScript -->
+                            <h5 style="font-weight: bold;">MONTO ABONADO:</h5>
+                            <input class="form-control" type="number" step="0.01" id="monto_abonado" name="monto_abonado">
                         </div>
                     </div>
                     <div class="row total-block">
