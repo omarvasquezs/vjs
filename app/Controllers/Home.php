@@ -245,8 +245,8 @@ class Home extends BaseController
         $crud->setRelation('last_updated_by', 'users', 'username');
         $crud->setRelation('estado_ropa_id', 'estado_ropa', 'nom_estado_ropa');
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
-        $crud->readFields(['id', 'tipo_comprobante', 'cliente_id', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'SERVICIOS', 'monto_abonado', 'observaciones','last_updated_by']);
-        $crud->columns(['comprobante', 'tipo_comprobante', 'cliente_id', 'estado_comprobante_id', 'estado_ropa_id', 'fecha']);
+        $crud->readFields(['cod_comprobante', 'tipo_comprobante', 'cliente_id', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'SERVICIOS', 'monto_abonado', 'observaciones','last_updated_by']);
+        $crud->columns(['cod_comprobante', 'tipo_comprobante', 'cliente_id', 'estado_comprobante_id', 'estado_ropa_id', 'fecha']);
         $crud->editFields(['tipo_comprobante', 'cliente_id', 'estado_comprobante_id', 'estado_ropa_id', /*'monto_abonado',*/ 'observaciones']);
 
         $uri = service('uri');
@@ -287,8 +287,7 @@ class Home extends BaseController
         $crud->setRead();
         //$crud->requiredFields(['monto_abonado']);
         $crud->displayAs([
-            'id' => 'COMPROBANTE',
-            'comprobante' => 'COMPROBANTE',
+            'cod_comprobante' => 'COD COMPROBANTE',
             'cliente_id' => 'CLIENTE',
             'metodo_pago_id' => 'METODO DE PAGO',
             'estado_comprobante_id' => 'ESTADO COMPROBANTE',
@@ -325,9 +324,9 @@ class Home extends BaseController
         $crud->callbackReadField('tipo_comprobante', array($this, 'displayTipoComprobante'));
 
         // Adding custom column
-        $crud->callbackColumn('comprobante', array($this, 'displayComprobante'));
+        //$crud->callbackColumn('comprobante', array($this, 'displayComprobante'));
 
-        $crud->callbackReadField('id', array($this, 'displayIdWithTipoComprobante'));
+        //$crud->callbackReadField('id', array($this, 'displayIdWithTipoComprobante'));
 
         $db = \Config\Database::connect();
 
@@ -352,7 +351,7 @@ class Home extends BaseController
                 if (!empty($row_cliente) && !is_null($row_cliente->telefono) && strlen($row_cliente->telefono) == 9 && $row_cliente->telefono[0] == '9') {
 
                     // The message to send
-                    $message = "VJ's Laundry le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local. Si no ha pagado aún o tiene un deuda pendiente con nosotros, favor de pagarlo lo antes posible, ya que sino se le retendrá la ropa. Su código de comprobante es ".$this->displayComprobanteWSP($stateParameters->data['tipo_comprobante'], $stateParameters->primaryKeyValue);
+                    $message = "VJ's Laundry le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local. Si no ha pagado aún o tiene un deuda pendiente con nosotros, favor de pagarlo lo antes posible, ya que sino se le retendrá la ropa. Su código de comprobante es ".$this->displayComprobanteWSP($stateParameters->primaryKeyValue);
 
 
                     $this->whatsapp_message($row_cliente->telefono, $message);
@@ -444,19 +443,14 @@ class Home extends BaseController
                 return $row->id;
         }
     }
-    private function displayComprobanteWSP($tipo_comprobante, $comprobante_id)
+    private function displayComprobanteWSP($comprobante_id)
     {
-        // Modify the id based on the tipo_comprobante value
-        switch ($tipo_comprobante) {
-            case 'B':
-                return 'B001-' . $comprobante_id;
-            case 'F':
-                return 'F001-' . $comprobante_id;
-            case 'N':
-                return 'NV001-' . $comprobante_id;
-            default:
-                return $comprobante_id;
-        }
+        // Get the database connection
+        $db = \Config\Database::connect();
+        // Query the database to get the cod_comprobante value for the current id
+        $query = $db->query('SELECT cod_comprobante FROM comprobantes WHERE id = ?', [$comprobante_id]);
+        $result = $query->getRow();
+        return $result->cod_comprobante;
     }
     public function displayIdWithTipoComprobante($value, $row)
     {
@@ -494,7 +488,7 @@ class Home extends BaseController
 
         // Fetch comprobantes data
         $builder = $db->table('comprobantes');
-        $builder->select('comprobantes.estado_comprobante_id as estado_comprobante_id, comprobantes.id as comprobantes_id, clientes.dni as dni, clientes.direccion as direccion, comprobantes.*, clientes.nombres, users.username, metodo_pago.nom_metodo_pago');
+        $builder->select('comprobantes.cod_comprobante as cod_comprobante, comprobantes.estado_comprobante_id as estado_comprobante_id, comprobantes.id as comprobantes_id, clientes.dni as dni, clientes.direccion as direccion, comprobantes.*, clientes.nombres, users.username, metodo_pago.nom_metodo_pago');
         $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
         $builder->join('users', 'comprobantes.user_id = users.id');
         $builder->join('metodo_pago', 'comprobantes.metodo_pago_id = metodo_pago.id');
@@ -574,7 +568,7 @@ class Home extends BaseController
 
         // Fetch comprobantes data
         $builder = $db->table('comprobantes');
-        $builder->select('comprobantes.id as comprobantes_id, comprobantes.*, clientes.*, users.*, metodo_pago.*');
+        $builder->select('comprobantes.cod_comprobante as cod_comprobante, comprobantes.id as comprobantes_id, comprobantes.*, clientes.*, users.*, metodo_pago.*');
         $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
         $builder->join('users', 'comprobantes.user_id = users.id');
         $builder->join('metodo_pago', 'comprobantes.metodo_pago_id = metodo_pago.id');
@@ -808,11 +802,45 @@ class Home extends BaseController
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
 
         $this->updateEstadoComprobantesId($model_comprobantes->getInsertID(), $this->request->getPost('monto_abonado'));
+        $this->incrementComprobanteCounter($model_comprobantes->getInsertID(), $this->request->getPost('btnradio'));
 
         $clientes = $model_clientes->where('id', $this->request->getPost('clienteDropdown'))->first();
 
         $this->whatsapp_pdf($model_comprobantes->getInsertID(), $clientes['telefono']);
 
         return redirect()->to('/comprobantes');
+    }
+    public function incrementComprobanteCounter($id, $tipo_comprobante) {
+        $db = \Config\Database::connect();
+    
+        // Get the last_value for the tipo_comprobante
+        $query = $db->query("SELECT last_value FROM comprobante_counter WHERE tipo_comprobante = ?", [$tipo_comprobante]);
+        $row = $query->getRow();
+    
+        // If this tipo_comprobante is not in the comprobante_counter table yet, initialize it
+        if ($row === null) {
+            $db->query("INSERT INTO comprobante_counter(tipo_comprobante, last_value) VALUES (?, 1)", [$tipo_comprobante]);
+            $last_value = 1;
+        } else {
+            $last_value = $row->last_value + 1;
+            $db->query("UPDATE comprobante_counter SET last_value = ? WHERE tipo_comprobante = ?", [$last_value, $tipo_comprobante]);
+        }
+    
+        // Generate the cod_comprobante
+        $prefix = '';
+        switch ($tipo_comprobante) {
+            case 'N':
+                $prefix = 'NV';
+                break;
+            case 'B':
+                $prefix = 'B';
+                break;
+            case 'F':
+                $prefix = 'F';
+                break;
+        }
+        $cod_comprobante = $prefix . '001-' . $last_value;
+
+        $db->query("UPDATE comprobantes SET cod_comprobante = ? WHERE id = ?", [$cod_comprobante, $id]);
     }
 }

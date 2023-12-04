@@ -59,9 +59,9 @@
         </div>
             <?php
                 $comprobanteTypes = [
-                    'B' => ['label' => 'BOLETA DE VENTA ELECTRÓNICA', 'prefix' => 'B001-'],
-                    'F' => ['label' => 'FACTURA DE VENTA ELECTRÓNICA', 'prefix' => 'F001-'],
-                    'N' => ['label' => 'NOTA DE VENTA ELECTRÓNICA', 'prefix' => 'NV001-']
+                    'B' => ['label' => 'BOLETA DE VENTA ELECTRÓNICA'],
+                    'F' => ['label' => 'FACTURA DE VENTA ELECTRÓNICA'],
+                    'N' => ['label' => 'NOTA DE VENTA ELECTRÓNICA']
                 ];
 
                 $tipoComprobante = $comprobante['tipo_comprobante'];
@@ -70,7 +70,7 @@
                     $typeInfo = $comprobanteTypes[$tipoComprobante];
                     echo '<h3 class="fw-bolder text-center mb-3">';
                     echo $typeInfo['label'] . "<br>";
-                    echo $typeInfo['prefix'] . $comprobante['comprobantes_id'];
+                    echo $comprobante['cod_comprobante'];
                     echo '</h3>';
             ?>
                 <p class="mt-0 pt-0 mb-2 pb-0"><span class="fw-bold">FECHA Y HORA:</span>

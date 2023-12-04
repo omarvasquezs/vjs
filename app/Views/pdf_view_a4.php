@@ -63,16 +63,16 @@
 
                 <?php
                 $comprobanteTypes = [
-                    'B' => ['label' => 'BOLETA DE VENTA ELECTRÓNICA', 'prefix' => 'B001-'],
-                    'F' => ['label' => 'FACTURA DE VENTA ELECTRÓNICA', 'prefix' => 'F001-'],
-                    'N' => ['label' => 'NOTA DE VENTA ELECTRÓNICA', 'prefix' => 'NV001-']
+                    'B' => ['label' => 'BOLETA DE VENTA ELECTRÓNICA'],
+                    'F' => ['label' => 'FACTURA DE VENTA ELECTRÓNICA'],
+                    'N' => ['label' => 'NOTA DE VENTA ELECTRÓNICA']
                 ];
                 $tipoComprobante = $comprobante['tipo_comprobante'];
                 if (array_key_exists($tipoComprobante, $comprobanteTypes)) {
                     $typeInfo = $comprobanteTypes[$tipoComprobante];
                 ?>
                 <h2 class="invoice-title"><?=$typeInfo['label']?></h2>
-                <h2 class="invoice-title"><?=$typeInfo['prefix'] . $comprobante['comprobantes_id']?></h2>
+                <h2 class="invoice-title"><?=$comprobante['cod_comprobante']?></h2>
                 <?php
                 } else {
                     echo 'Unknown type';
