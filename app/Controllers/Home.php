@@ -843,4 +843,30 @@ class Home extends BaseController
 
         $db->query("UPDATE comprobantes SET cod_comprobante = ? WHERE id = ?", [$cod_comprobante, $id]);
     }
+    public function exportCSV()
+    {
+        // file name
+        $filename = 'comprobantes_'.date('YmdHis').'.csv';
+        header("Content-Description: File Transfer");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Content-Type: application/csv; ");
+
+        $start_date = $this->request->getPost('start_date');
+        $end_date = $this->request->getPost('end_date');
+
+        // get data
+        $comprobantes = new \App\Models\Comprobantes();
+        $comprobantesData = $comprobantes->select('cod_comprobante,fecha,monto_abonado')->findAll();
+
+        // file creation
+        $file = fopen('php://output', 'w');
+
+        $header = array("cod_comprobante","fecha","monto_abonado"); 
+        fputcsv($file, $header);
+        foreach ($comprobantesData as $key=>$line){ 
+        fputcsv($file,$line); 
+        }
+        fclose($file); 
+        exit; 
+    }
 }
