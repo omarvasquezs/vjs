@@ -16,6 +16,10 @@ class Home extends BaseController
     {
         return view('output', (array) $output);
     }
+    private function _crudOutput($output = null)
+    {
+        return view('crud_output', (array) $output);
+    }
     public function index()
     {
         $output = (object) [
@@ -51,6 +55,13 @@ class Home extends BaseController
             'direccion' => 'DIRECCION'
         ]);
 
+        $uri = service('uri');
+        $segment = $uri->getSegment(1); // get the first segment of the URL
+
+        if ($segment == 'registrar_cliente') {
+            $crud->unsetBackToDatagrid();
+        }
+
         // Render the CRUD
         $output = $crud->render();
 
@@ -59,7 +70,11 @@ class Home extends BaseController
         $css_class = 'clientes';
         $output = $output->output;
 
-        return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
+        if ($segment == 'registrar_cliente') {
+            return $this->_crudOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
+        } else {
+            return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
+        }
     }
     public function estado_comprobantes()
     {

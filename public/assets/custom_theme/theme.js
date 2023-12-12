@@ -371,6 +371,16 @@
       return false;
     });
   });
+  // Adding new cliente through registrar comprobante form
+  $(document).ready(function () {
+    // jQuery code to handle the action button click
+    $('#addNewCliente').on('click', function (e) {
+      e.preventDefault();
+      // Open the Bootstrap modal
+      $('#clienteModal').modal('show');
+      return false;
+    });
+  });
 })(jQuery);
 
 /***/ }),

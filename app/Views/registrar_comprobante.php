@@ -5,10 +5,13 @@
             <div class="row g-5">
                 <div class="col-lg-8 col-md-12">
                     <div class="row mb-4">
-                        <div class="col-md-12 input-group-lg">
+                        <div class="col-md-8 input-group-lg">
                             <select class="form-select is-required" name="clienteDropdown" id="clienteDropdown" required>
                                 <!-- Clientes will be populated here through js -->
                             </select>
+                        </div>
+                        <div class="col-md-4 d-grid gap-2">
+                            <a class="btn btn-primary" id="addNewCliente">AÑADIR NUEVO CLIENTE</a>
                         </div>
                     </div>
                     <div class="row mb-4">

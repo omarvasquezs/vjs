@@ -82,7 +82,7 @@
                     </li>
                 </ul>
             </div>
-            <!-- Bootstrap modal structure -->
+            <!-- Bootstrap modal for Print -->
             <div class="modal" id="printModal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-fullscreen" role="document">
                     <div class="modal-content">
@@ -111,6 +111,23 @@
                                     <iframe id="printIframe2" width="100%" height="100%" frameborder="0"></iframe>
                                 </div>
                             </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bootstrap modal for new Cliente -->
+            <div class="modal" id="clienteModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-fullscreen" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">REGISTRAR NUEVO CLIENTE</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <iframe src="<?=base_url()?>registrar_cliente/add" width="100%" height="100%" frameborder="0"></iframe>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
