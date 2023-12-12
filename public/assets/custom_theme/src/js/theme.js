@@ -313,6 +313,15 @@
             $(this).html(printIconSpan);
         });
 
+        // Find all elements with class 'whatsapp-icon-custom'
+        $('.whatsapp-icon-custom').each(function () {
+            // Create a new <span> element with class 'whatsapp-icon'
+            var whatsappIconSpan = $('<span class="whatsapp-icon"></span>');
+
+            // Replace the text inside the <a> tag with the created <span> element
+            $(this).html(whatsappIconSpan);
+        });
+
         // jQuery code to handle the action button click
         $('.print-icon-custom').on('click', function (e) {
             e.preventDefault();
@@ -341,6 +350,15 @@
 
             // Replace the text inside the <a> tag with the created <span> element
             $(this).html(printIconSpan);
+        });
+
+        // Find all elements with class 'whatsapp-icon-custom'
+        $('.whatsapp-icon-custom').each(function () {
+            // Create a new <span> element with class 'whatsapp-icon'
+            var whatsappIconSpan = $('<span class="whatsapp-icon"></span>');
+
+            // Replace the text inside the <a> tag with the created <span> element
+            $(this).html(whatsappIconSpan);
         });
 
         // jQuery code to handle the action button click

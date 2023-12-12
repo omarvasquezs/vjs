@@ -260,38 +260,28 @@ class Home extends BaseController
         $crud->setRelation('last_updated_by', 'users', 'username');
         $crud->setRelation('estado_ropa_id', 'estado_ropa', 'nom_estado_ropa');
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
-        $crud->readFields(['cod_comprobante', 'tipo_comprobante', 'cliente_id', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'SERVICIOS', 'monto_abonado', 'observaciones','last_updated_by']);
-        $crud->columns(['cod_comprobante', 'tipo_comprobante', 'cliente_id', 'estado_comprobante_id', 'estado_ropa_id', 'fecha']);
-        $crud->editFields(['tipo_comprobante', 'cliente_id', 'estado_comprobante_id', 'estado_ropa_id', /*'monto_abonado',*/ 'observaciones']);
+        $crud->readFields(['cod_comprobante', 'tipo_comprobante', 'cliente_id', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'SERVICIOS', 'monto_abonado', 'observaciones', 'last_updated_by']);
+        $crud->columns(['cod_comprobante', 'cliente_id', 'estado_ropa_id', 'fecha']);
+        $crud->editFields(['tipo_comprobante', 'cliente_id', 'estado_comprobante_id', 'estado_ropa_id', /*'monto_abonado',*/'observaciones']);
 
         $uri = service('uri');
         $segment = $uri->getSegment(1); // get the first segment of the URL
 
-            
+        $crud->where("comprobantes.estado_ropa_id != '4'");
+
         switch ($segment) {
-            case 'comprobantes':
-                // code to execute if the URL contains 'comprobantes'
-                echo '';
-                break;
-            case 'comprobantes_en_curso':
-                // code to execute if the URL contains 'comprobantes_en_curso'
-                $crud->where("comprobantes.estado_ropa_id = '2'");
-                break;
-            case 'comprobantes_pagados':
+            case 'comprobantes_abonados':
                 // code to execute if the URL contains 'comprobantes_pagados'
-                $crud->where("comprobantes.estado_comprobante_id = '4'");
+                $crud->where("comprobantes.estado_comprobante_id = '2'");
                 break;
             case 'comprobantes_pendiente_pago':
                 // code to execute if the URL contains 'comprobantes_pendiente_pago'
-                $crud->where("comprobantes.estado_comprobante_id IN ('1', '2')");
-                break;
-            case 'comprobantes_recojo':
-                // code to execute if the URL contains 'comprobantes_recojo'
-                $crud->where("estado_ropa_id = '3'");
+                $crud->where("comprobantes.estado_comprobante_id = '1'");
                 break;
             default:
                 // code to execute if the URL doesn't contain any of the above
-                echo '';
+                $crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
+                break;
         }
 
         $crud->unsetEditFields(['SERVICIOS']);
@@ -316,11 +306,11 @@ class Home extends BaseController
             'tipo_comprobante' => 'TIPO',
             'last_updated_by' => 'ACTUALIZADO POR'
         ]);
-        
+
         // Replace $id with the actual comprobante_id
         $maxValue = $this->calculateTotalCost(service('uri')->getSegment(service('uri')->getTotalSegments()));
 
-        if ($crud->getState() == 'edit') {            
+        if ($crud->getState() == 'edit') {
             $crud->displayAs('monto_abonado', 'MONTO ABONADO (Máximo a abonar: ' . $maxValue . ')');
         } elseif ($crud->getState() == 'read') {
             $crud->displayAs('monto_abonado', 'MONTO ABONADO AL REGISTRO (COSTO TOTAL: S/. ' . $maxValue . ')');
@@ -331,6 +321,10 @@ class Home extends BaseController
         $crud->setActionButton('Vista de Impresion', 'print-icon-custom', function ($row) {
             return site_url('comprobante/' . $row);
         }, true);
+
+        $crud->setActionButton('Reenviar Comprobante', 'whatsapp-icon-custom', function ($row) {
+            return site_url('reenviarpdf/' . $row);
+        }, false);
 
         // Add this callback to modify the tipo_comprobante column in the list view
         $crud->callbackColumn('tipo_comprobante', array($this, 'displayTipoComprobante'));
@@ -347,7 +341,7 @@ class Home extends BaseController
 
         // Add beforeUpdate event
         $crud->callbackBeforeUpdate(function ($stateParameters) use ($db) {
-        
+
             //$this->updateEstadoComprobantesId($stateParameters->primaryKeyValue, $stateParameters->data['monto_abonado']);
             $this->updateLastUpdatedBy($stateParameters->primaryKeyValue);
 
@@ -366,7 +360,7 @@ class Home extends BaseController
                 if (!empty($row_cliente) && !is_null($row_cliente->telefono) && strlen($row_cliente->telefono) == 9 && $row_cliente->telefono[0] == '9') {
 
                     // The message to send
-                    $message = "VJ's Laundry le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local. Si no ha pagado aún o tiene un deuda pendiente con nosotros, favor de pagarlo lo antes posible, ya que sino se le retendrá la ropa. Su código de comprobante es ".$this->displayComprobanteWSP($stateParameters->primaryKeyValue);
+                    $message = "VJ's Laundry le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local. Si no ha pagado aún o tiene un deuda pendiente con nosotros, favor de pagarlo lo antes posible, ya que sino se le retendrá la ropa. Su código de comprobante es " . $this->displayComprobanteWSP($stateParameters->primaryKeyValue);
 
 
                     $this->whatsapp_message($row_cliente->telefono, $message);
@@ -384,20 +378,22 @@ class Home extends BaseController
 
         return $this->_mainOutput(['output' => $output, 'css_class' => $css_class, 'css_files' => $css_files, 'js_files' => $js_files]);
     }
-    public function calculateTotalCost($comprobante_id) {
+    public function calculateTotalCost($comprobante_id)
+    {
         $db = \Config\Database::connect();
-    
+
         $query = $db->query("SELECT SUM(peso_kg * costo_kilo) as costo_total FROM comprobantes_detalles WHERE comprobante_id = ?", [$comprobante_id]);
         $result = $query->getRowArray();
-    
+
         return $result['costo_total'];
     }
-    public function updateEstadoComprobantesId($comprobante_id, $monto_abonado) {
+    public function updateEstadoComprobantesId($comprobante_id, $monto_abonado)
+    {
         $db = \Config\Database::connect();
-    
+
         // Calculate the total cost
         $total_cost = $this->calculateTotalCost($comprobante_id);
-    
+
         // Compare the total cost with monto_abonado and update estado_comprobante_id accordingly
         if ($monto_abonado >= $total_cost) {
             $db->query("UPDATE comprobantes SET estado_comprobante_id = ? WHERE id = ?", [4, $comprobante_id]);
@@ -407,15 +403,16 @@ class Home extends BaseController
             $db->query("UPDATE comprobantes SET estado_comprobante_id = ? WHERE id = ?", [1, $comprobante_id]);
         }
     }
-    public function updateLastUpdatedBy($comprobante_id) {
+    public function updateLastUpdatedBy($comprobante_id)
+    {
         $db = \Config\Database::connect();
-        
+
         // Get the user_id from the session
         $user_id = session()->get('user_id');
-    
+
         // Update the last_updated_by field in the comprobantes table
         $db->query("UPDATE comprobantes SET last_updated_by = ? WHERE id = ?", [$user_id, $comprobante_id]);
-    }    
+    }
     private function whatsapp_message($phone_number, $message)
     {
         $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=hCS2aZ9aHwhF&text=' . urlencode($message);
@@ -522,22 +519,22 @@ class Home extends BaseController
             // Add other data you want to pass to the view...
         ];
         // Set options to enable embedded PHP 
-        $options = new Options(); 
-        $options->set('isPhpEnabled', 'true'); 
+        $options = new Options();
+        $options->set('isPhpEnabled', 'true');
         $dompdf = new Dompdf(['isRemoteEnabled' => true]);
         $dompdf->loadHtml(view('pdf_view_a4', $data), 'UTF-8');
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
         // Instantiate canvas instance 
-        $canvas = $dompdf->getCanvas(); 
-        
+        $canvas = $dompdf->getCanvas();
+
         // Instantiate font metrics class 
-        $fontMetrics = new FontMetrics($canvas, $options); 
-        
+        $fontMetrics = new FontMetrics($canvas, $options);
+
         // Get height and width of page 
-        $w = $canvas->get_width(); 
-        $h = $canvas->get_height(); 
-        
+        $w = $canvas->get_width();
+        $h = $canvas->get_height();
+
         // Get font family file 
         $font = $fontMetrics->getFont('times');
 
@@ -559,21 +556,21 @@ class Home extends BaseController
                 $text = "";
                 $fontSize = 0;
                 break;
-        }        
-        
+        }
+
         // Get height and width of text 
-        $txtHeight = $fontMetrics->getFontHeight($font, $fontSize); 
-        $textWidth = $fontMetrics->getTextWidth($text, $font, $fontSize); 
-        
+        $txtHeight = $fontMetrics->getFontHeight($font, $fontSize);
+        $textWidth = $fontMetrics->getTextWidth($text, $font, $fontSize);
+
         // Set text opacity 
-        $canvas->set_opacity(.2); 
-        
+        $canvas->set_opacity(.2);
+
         // Specify horizontal and vertical position 
-        $x = (($w-$textWidth)/2); 
-        $y = (($h-$txtHeight)/3); 
-        
+        $x = (($w - $textWidth) / 2);
+        $y = (($h - $txtHeight) / 3);
+
         // Writes text at the specified x and y coordinates 
-        $canvas->text($x, $y, $text, $font, $fontSize, array(255, 0, 0), '', '', 20); 
+        $canvas->text($x, $y, $text, $font, $fontSize, array(255, 0, 0), '', '', 20);
         $dompdf->stream('comprobante_a4-' . date('YmdHis') . '.pdf', ['Attachment' => false]);
         exit();
     }
@@ -602,8 +599,8 @@ class Home extends BaseController
             // Add other data you want to pass to the view...
         ];
         // Set options to enable embedded PHP 
-        $options = new Options(); 
-        $options->set('isPhpEnabled', 'true'); 
+        $options = new Options();
+        $options->set('isPhpEnabled', 'true');
         $dompdf = new Dompdf();
         $dompdf->setPaper([0, 0, 164, 841.89 * 20]);
         $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
@@ -628,34 +625,34 @@ class Home extends BaseController
         $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
         $dompdf->render();
         // Instantiate canvas instance 
-        $canvas = $dompdf->getCanvas(); 
-        
+        $canvas = $dompdf->getCanvas();
+
         // Instantiate font metrics class 
-        $fontMetrics = new FontMetrics($canvas, $options); 
-        
+        $fontMetrics = new FontMetrics($canvas, $options);
+
         // Get height and width of page 
-        $w = $canvas->get_width(); 
-        $h = $canvas->get_height(); 
-        
+        $w = $canvas->get_width();
+        $h = $canvas->get_height();
+
         // Get font family file 
-        $font = $fontMetrics->getFont('times'); 
-        
+        $font = $fontMetrics->getFont('times');
+
         // Specify watermark text 
-        $text = ""; 
-        
+        $text = "";
+
         // Get height and width of text 
-        $txtHeight = $fontMetrics->getFontHeight($font, 75); 
-        $textWidth = $fontMetrics->getTextWidth($text, $font, 75); 
-        
+        $txtHeight = $fontMetrics->getFontHeight($font, 75);
+        $textWidth = $fontMetrics->getTextWidth($text, $font, 75);
+
         // Set text opacity 
-        $canvas->set_opacity(.2); 
-        
+        $canvas->set_opacity(.2);
+
         // Specify horizontal and vertical position 
-        $x = (($w-$textWidth)/2); 
-        $y = (($h-$txtHeight)/2); 
-        
+        $x = (($w - $textWidth) / 2);
+        $y = (($h - $txtHeight) / 2);
+
         // Writes text at the specified x and y coordinates 
-        $canvas->text($x, $y, $text, $font, 75); 
+        $canvas->text($x, $y, $text, $font, 75);
         $dompdf->stream('comprobante_58mm-' . date('YmdHis') . '.pdf', array("Attachment" => false));
         exit();
     }
@@ -825,13 +822,27 @@ class Home extends BaseController
 
         return redirect()->to('/comprobantes');
     }
-    public function incrementComprobanteCounter($id, $tipo_comprobante) {
+    public function reenviarPDF($comprobante_id)
+    {
+        $model_comprobantes = new \App\Models\Comprobantes();
+        $model_clientes = new \App\Models\Clientes();
+
+        $cliente_id = $model_comprobantes->where('id', $comprobante_id)->first()['cliente_id'];
+
+        $telefono = $model_clientes->where('id', $cliente_id)->first()['telefono'];
+
+        $this->whatsapp_pdf($comprobante_id, $telefono);
+
+        return redirect()->to(previous_url());
+    }
+    public function incrementComprobanteCounter($id, $tipo_comprobante)
+    {
         $db = \Config\Database::connect();
-    
+
         // Get the last_value for the tipo_comprobante
         $query = $db->query("SELECT last_value FROM comprobante_counter WHERE tipo_comprobante = ?", [$tipo_comprobante]);
         $row = $query->getRow();
-    
+
         // If this tipo_comprobante is not in the comprobante_counter table yet, initialize it
         if ($row === null) {
             $db->query("INSERT INTO comprobante_counter(tipo_comprobante, last_value) VALUES (?, 1)", [$tipo_comprobante]);
@@ -840,7 +851,7 @@ class Home extends BaseController
             $last_value = $row->last_value + 1;
             $db->query("UPDATE comprobante_counter SET last_value = ? WHERE tipo_comprobante = ?", [$last_value, $tipo_comprobante]);
         }
-    
+
         // Generate the cod_comprobante
         $prefix = '';
         switch ($tipo_comprobante) {
@@ -861,7 +872,7 @@ class Home extends BaseController
     public function exportCSV()
     {
         // file name
-        $filename = 'comprobantes_'.date('YmdHis').'.csv';
+        $filename = 'comprobantes_' . date('YmdHis') . '.csv';
         header("Content-Description: File Transfer");
         header("Content-Disposition: attachment; filename=$filename");
         header("Content-Type: application/csv; ");
@@ -876,12 +887,12 @@ class Home extends BaseController
         // file creation
         $file = fopen('php://output', 'w');
 
-        $header = array("cod_comprobante","fecha","monto_abonado"); 
+        $header = array("cod_comprobante", "fecha", "monto_abonado");
         fputcsv($file, $header);
-        foreach ($comprobantesData as $key=>$line){ 
-        fputcsv($file,$line); 
+        foreach ($comprobantesData as $key => $line) {
+            fputcsv($file, $line);
         }
-        fclose($file); 
-        exit; 
+        fclose($file);
+        exit;
     }
 }
