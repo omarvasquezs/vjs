@@ -73,6 +73,9 @@
                             </ul>
                         </li>
                     <?php } ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?=base_url()?>">INGRESOS</a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">

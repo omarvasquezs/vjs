@@ -16,7 +16,7 @@
                     </div>
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <select class="form-select is-required" name="metodopagoDropdown" id="metodopagoDropdown" required>                                
+                            <select class="form-select is-required" name="estadoComprobante" id="estadoComprobante" required>                                
                                 <!-- Metodo de Pago will be populated here through JavaScript -->
                             </select>
                         </div>
@@ -34,6 +34,13 @@
                                     autocomplete="off">
                                 <label class="btn btn-outline-primary" for="btnradio3">FACTURA</label>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <select class="form-select" name="metodopagoDropdown" id="metodopagoDropdown" disabled>
+                                <!-- Metodo de Pago will be populated here through JavaScript -->
+                            </select>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -83,11 +90,12 @@
                         <h5>OP. GRAVADAS: <span id="sub_total_register"></span></h5>
                         <h5 class="mb-4">IGV 18%: <span id="igv_register"></span></h5>
                         <h5>TOTAL A PAGAR: <span id="total_register"></span></h5>
+                        <input type="hidden" name="total_register_input" id="total_register_input">
                     </div>
                     <div class="row">
                         <div class="d-grid gap-2 py-2">
                             <h5 style="font-weight: bold;">MONTO ABONADO:</h5>
-                            <input class="form-control" type="number" step="0.01" id="monto_abonado" name="monto_abonado">
+                            <input class="form-control" type="number" step="0.01" id="monto_abonado" name="monto_abonado" disabled>
                         </div>
                     </div>
                     <div class="row total-block">

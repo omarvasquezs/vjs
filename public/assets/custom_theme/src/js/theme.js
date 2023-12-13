@@ -32,6 +32,7 @@
             var igv = total * 0.18;
             var subtotal = total - igv;
             $("#total_register").text('S/. ' + total.toFixed(2));
+            $("#total_register_input").val(total.toFixed(2));
             $("#igv_register").text('S/. ' + igv.toFixed(2));
             $("#sub_total_register").text('S/. ' + subtotal.toFixed(2));
         }
@@ -183,7 +184,7 @@
         // Fetch and populate estado comprobantes using select2
         var ecDropdown = $('#estadoComprobante');
         ecDropdown.select2({
-            placeholder: "-- ESTADO --",
+            placeholder: "-- ESTADO COMPROBANTE --",
             allowClear: true,
             theme: "bootstrap-5",
             minimumInputLength: 0, // Minimum characters to start searching
@@ -222,6 +223,18 @@
                     };
                 },
                 cache: true,
+            }
+        }).on('change', function () {
+            var selectedValue = $(this).val();
+            if (selectedValue == '2') {
+                $('#monto_abonado').prop('disabled', false);
+                $('#metodopagoDropdown').prop('disabled', false);
+            } else if (selectedValue == '4') {
+                $('#monto_abonado').prop('disabled', true).val(''); // Reset monto_abonado input
+                $('#metodopagoDropdown').prop('disabled', false);
+            } else {
+                $('#monto_abonado').prop('disabled', true).val(''); // Reset monto_abonado input
+                $('#metodopagoDropdown').prop('disabled', true).val('').trigger('change'); // Reset metodopagoDropdown select
             }
         });
 

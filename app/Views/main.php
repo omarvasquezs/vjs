@@ -1,4 +1,4 @@
-<h1 class="mt-4">Reportes</h1>
+<h1 class="mt-4">REPORTE INGRESOS</h1>
 
 <div class="row mt-5">
     <!-- Left Column: Graphics -->

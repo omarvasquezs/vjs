@@ -253,16 +253,16 @@ class Home extends BaseController
         $crud->setTable('comprobantes');
         $crud->setSubject('Comprobante');
         $crud->setRelation('cliente_id', 'clientes', 'nombres');
-        $crud->setRelation('metodo_pago_id', 'metodo_pago', 'nom_metodo_pago');
-        $crud->setRelation('estado_comprobante_id', 'estado_comprobantes', 'nom_estado');
+        $crud->setRelation('metodo_pago_id', 'metodo_pago', 'nom_metodo_pago', ['habilitado' => '1']);
+        $crud->setRelation('estado_comprobante_id', 'estado_comprobantes', 'nom_estado', ['habilitado' => '1']);
         $crud->setRelation('local_id', 'locales', 'nombre');
         $crud->setRelation('user_id', 'users', 'username');
         $crud->setRelation('last_updated_by', 'users', 'username');
         $crud->setRelation('estado_ropa_id', 'estado_ropa', 'nom_estado_ropa');
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
         $crud->readFields(['cod_comprobante', 'tipo_comprobante', 'cliente_id', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'SERVICIOS', 'monto_abonado', 'observaciones', 'last_updated_by']);
-        $crud->columns(['cod_comprobante', 'cliente_id', 'estado_ropa_id', 'fecha']);
-        $crud->editFields(['tipo_comprobante', 'cliente_id', 'estado_comprobante_id', 'estado_ropa_id', /*'monto_abonado',*/'observaciones']);
+        $crud->columns(['cod_comprobante', 'cliente_id', 'estado_ropa_id', 'costo_total', 'deuda', 'fecha']);
+        $crud->editFields(['cliente_id', 'cod_comprobante','estado_comprobante_id', 'estado_ropa_id', 'metodo_pago_id', 'monto_abonado', 'costo_total', 'observaciones']);
 
         $uri = service('uri');
         $segment = $uri->getSegment(1); // get the first segment of the URL
@@ -282,7 +282,7 @@ class Home extends BaseController
                 // code to execute if the URL doesn't contain any of the above
                 $crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
                 break;
-        }
+        }      
 
         $crud->unsetEditFields(['SERVICIOS']);
         $crud->unsetExport();
@@ -304,16 +304,30 @@ class Home extends BaseController
             'num_ruc' => 'N° DE RUC',
             'razon_social' => 'RAZÓN SOCIAL',
             'tipo_comprobante' => 'TIPO',
-            'last_updated_by' => 'ACTUALIZADO POR'
+            'last_updated_by' => 'ACTUALIZADO POR',
+            'costo_total' => 'COSTO TOTAL (S/.)',
+            'deuda' => 'DEUDA (S/.)'
         ]);
 
         // Replace $id with the actual comprobante_id
-        $maxValue = $this->calculateTotalCost(service('uri')->getSegment(service('uri')->getTotalSegments()));
+        $maxValue = $this->calculateTotalCost(service('uri')->getSegment(service('uri')->getTotalSegments()));        
 
         if ($crud->getState() == 'edit') {
-            $crud->displayAs('monto_abonado', 'MONTO ABONADO (Máximo a abonar: ' . $maxValue . ')');
+            $montoAbonado = $this->getMontoAbonado(service('uri')->getSegment(service('uri')->getTotalSegments()));
+            $remaining = number_format($maxValue - $montoAbonado, 2, '.', '');
+            $crud->displayAs('monto_abonado', 'MONTO ABONADO (Máximo a abonar: ' . $remaining . ')');
+            if($maxValue == $montoAbonado) {
+                $crud->callbackEditField('monto_abonado', function ($value, $primary_key) {
+                    return '<input type="number" step="0.01" name="monto_abonado" value="" style="width: 100%;" disabled>';
+                });
+                echo '<style>#estado_comprobante_id_field_box, #metodo_pago_id_field_box {display: none;}</style>';
+            } else {
+                $crud->callbackEditField('monto_abonado', function ($value, $primary_key) {
+                    return '<input type="number" step="0.01" name="monto_abonado" value="" style="width: 100%;">';
+                });
+            }
         } elseif ($crud->getState() == 'read') {
-            $crud->displayAs('monto_abonado', 'MONTO ABONADO AL REGISTRO (COSTO TOTAL: S/. ' . $maxValue . ')');
+            $crud->displayAs('monto_abonado', 'MONTO ABONADO HASTA EL MOMENTO (COSTO TOTAL DEL COMPROBANTE: S/. ' . $maxValue . ')');
         } else {
             $crud->displayAs('monto_abonado', 'MONTO ABONADO AL REGISTRO');
         }
@@ -334,6 +348,7 @@ class Home extends BaseController
 
         // Adding custom column
         //$crud->callbackColumn('comprobante', array($this, 'displayComprobante'));
+        $crud->callbackColumn('deuda', array($this, 'displayDeuda'));
 
         //$crud->callbackReadField('id', array($this, 'displayIdWithTipoComprobante'));
 
@@ -343,6 +358,27 @@ class Home extends BaseController
         $crud->callbackBeforeUpdate(function ($stateParameters) use ($db) {
 
             //$this->updateEstadoComprobantesId($stateParameters->primaryKeyValue, $stateParameters->data['monto_abonado']);
+            if ($stateParameters->data['monto_abonado'] === '') {
+                unset($stateParameters->data['monto_abonado']);
+            } else {
+                $model_comprobantes = new \App\Models\Comprobantes();
+                $monto_abonado_previo = $model_comprobantes->where('id', $stateParameters->primaryKeyValue)->first()['monto_abonado'];
+                $monto_abonado_nuevo = $stateParameters->data['monto_abonado'];
+                $monto_abonado_actualizado = $monto_abonado_previo + $monto_abonado_nuevo;
+                $stateParameters->data['monto_abonado'] = $monto_abonado_actualizado;
+            
+                $model_reporte_ingresos = new \App\Models\ReporteIngresos();
+                $data_ingresos = [
+                    'cod_comprobante' => $stateParameters->data['cod_comprobante'],
+                    'cliente_id' => $stateParameters->data['cliente_id'],
+                    'metodo_pago_id' => $stateParameters->data['metodo_pago_id'],
+                    'fecha' => date('Y-m-d H:i:s'),
+                    'monto_abonado' => $monto_abonado_nuevo,  // use the new monto_abonado
+                    'costo_total' => $stateParameters->data['costo_total']
+                ];
+                $model_reporte_ingresos->insert($data_ingresos);
+            }
+
             $this->updateLastUpdatedBy($stateParameters->primaryKeyValue);
 
             $newEstadoRopaId = $stateParameters->data['estado_ropa_id'] ?? null;
@@ -386,6 +422,15 @@ class Home extends BaseController
         $result = $query->getRowArray();
 
         return $result['costo_total'];
+    }
+    public function getMontoAbonado($comprobante_id)
+    {
+        $db = \Config\Database::connect();
+
+        $query = $db->query("SELECT monto_abonado as monto_abonado FROM comprobantes WHERE id = ?", [$comprobante_id]);
+        $result = $query->getRowArray();
+
+        return $result['monto_abonado'];
     }
     public function updateEstadoComprobantesId($comprobante_id, $monto_abonado)
     {
@@ -437,6 +482,10 @@ class Home extends BaseController
         } else {
             return false;
         }
+    }
+    public function displayDeuda($value, $row)
+    {
+        return $row->costo_total - $row->monto_abonado;
     }
     public function displayComprobante($value, $row)
     {
@@ -777,7 +826,18 @@ class Home extends BaseController
         $model_comprobantes = new \App\Models\Comprobantes();
         $model_comprobantes_detalles = new \App\Models\ComprobantesDetalles();
         $model_clientes = new \App\Models\Clientes();
+        $model_reporte_ingresos = new \App\Models\ReporteIngresos();
 
+        $estadoComprobante = $this->request->getPost('estadoComprobante');
+        $montoAbonado = $this->request->getPost('monto_abonado');
+        $totalRegisterInput = $this->request->getPost('total_register_input');
+        
+        if ($estadoComprobante == '1') {
+            $montoAbonado = 0;
+        } elseif ($estadoComprobante == '4') {
+            $montoAbonado = $totalRegisterInput;
+        }
+        
         $data_comprobantes = [
             'cliente_id' => $this->request->getPost('clienteDropdown'),
             'metodo_pago_id' => $this->request->getPost('metodopagoDropdown'),
@@ -789,9 +849,10 @@ class Home extends BaseController
             'local_id' => 5,
             'estado_ropa_id' => 1,
             'fecha' => date('Y-m-d H:i:s'),
-            'estado_comprobante_id' => $this->request->getPost('estadoComprobante'),
-            'monto_abonado' => $this->request->getPost('monto_abonado'),
-            'last_updated_by' => session()->get('user_id')
+            'estado_comprobante_id' => $estadoComprobante,
+            'monto_abonado' => $montoAbonado,
+            'last_updated_by' => session()->get('user_id'),
+            'costo_total' => $totalRegisterInput
         ];
 
         $inserted_id = $model_comprobantes->insert($data_comprobantes);
@@ -813,12 +874,23 @@ class Home extends BaseController
 
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
 
-        $this->updateEstadoComprobantesId($model_comprobantes->getInsertID(), $this->request->getPost('monto_abonado'));
+        //$this->updateEstadoComprobantesId($model_comprobantes->getInsertID(), $this->request->getPost('monto_abonado'));
         $this->incrementComprobanteCounter($model_comprobantes->getInsertID(), $this->request->getPost('btnradio'));
 
         $clientes = $model_clientes->where('id', $this->request->getPost('clienteDropdown'))->first();
 
         $this->whatsapp_pdf($model_comprobantes->getInsertID(), $clientes['telefono']);
+
+        $data_ingresos = [
+            'cod_comprobante' => $model_comprobantes->where('id', $model_comprobantes->getInsertID())->first()['cod_comprobante'],
+            'cliente_id' => $this->request->getPost('clienteDropdown'),
+            'metodo_pago_id' => $this->request->getPost('metodopagoDropdown'),
+            'fecha' => date('Y-m-d H:i:s'),
+            'monto_abonado' => $montoAbonado,
+            'costo_total' => $totalRegisterInput
+        ];
+
+        $model_reporte_ingresos->insert($data_ingresos);
 
         return redirect()->to('/comprobantes');
     }
@@ -876,23 +948,30 @@ class Home extends BaseController
         header("Content-Description: File Transfer");
         header("Content-Disposition: attachment; filename=$filename");
         header("Content-Type: application/csv; ");
-
+    
         $start_date = $this->request->getPost('start_date');
         $end_date = $this->request->getPost('end_date');
-
+    
         // get data
-        $comprobantes = new \App\Models\Comprobantes();
-        $comprobantesData = $comprobantes->select('cod_comprobante,fecha,monto_abonado')->findAll();
-
+        $db = \Config\Database::connect();
+        $builder = $db->table('reporte_ingresos');
+        $builder->select('reporte_ingresos.cod_comprobante, reporte_ingresos.fecha, reporte_ingresos.monto_abonado, reporte_ingresos.costo_total, metodo_pago.nom_metodo_pago');
+        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id');
+        if (!empty($start_date) && !empty($end_date)) {
+            $builder->where('reporte_ingresos.fecha >=', $start_date);
+            $builder->where('reporte_ingresos.fecha <=', $end_date);
+        }
+        $comprobantesData = $builder->get()->getResultArray();
+    
         // file creation
         $file = fopen('php://output', 'w');
-
-        $header = array("cod_comprobante", "fecha", "monto_abonado");
+    
+        $header = array("cod_comprobante", "fecha", "monto_abonado", "costo_total", "nom_metodo_pago");
         fputcsv($file, $header);
         foreach ($comprobantesData as $key => $line) {
             fputcsv($file, $line);
         }
         fclose($file);
         exit;
-    }
+    }    
 }

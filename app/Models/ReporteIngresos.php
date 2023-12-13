@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Comprobantes extends Model
+class ReporteIngresos extends Model
 {
-    protected $table            = 'comprobantes';
+    protected $table            = 'reporte_ingresos';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['cliente_id','metodo_pago_id','tipo_comprobante','num_ruc','razon_social','observaciones','user_id','local_id','fecha','estado_comprobante_id','estado_ropa_id','monto_abonado','last_updated_by','costo_total'];
+    protected $allowedFields    = ['id', 'cod_comprobante', 'cliente_id', 'metodo_pago_id', 'fecha', 'monto_abonado', 'costo_total'];
 
     // Dates
     protected $useTimestamps = false;
