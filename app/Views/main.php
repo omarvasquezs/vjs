@@ -3,7 +3,7 @@
 <div class="row mt-5">
     <!-- Left Column: Graphics -->
     <div class="col-lg-4 col-md-12">
-        <form method="post" action="/exportcsv">
+        <form method="post" name="reporte_ingresos" id="reporte_ingresos" action="/exportcsv">
             <div class="mb-3">
                 <label for="start_date" class="form-label">FECHA INICIO:</label>
                 <input type="date" id="start_date" name="start_date" class="form-control">

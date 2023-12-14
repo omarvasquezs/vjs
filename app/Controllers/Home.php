@@ -961,8 +961,8 @@ class Home extends BaseController
         $builder->select('reporte_ingresos.cod_comprobante, reporte_ingresos.fecha, reporte_ingresos.monto_abonado, reporte_ingresos.costo_total, metodo_pago.nom_metodo_pago');
         $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
         if (!empty($start_date) && !empty($end_date)) {
-            $builder->where('reporte_ingresos.fecha >=', $start_date);
-            $builder->where('reporte_ingresos.fecha <=', $end_date);
+            $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
+            $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
         }
         $comprobantesData = $builder->get()->getResultArray();
     

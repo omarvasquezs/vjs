@@ -402,4 +402,18 @@
             return false;
         });
     });
+    $(document).ready(function() {
+        $('#reporte_ingresos').submit(function(e) {
+            var start_date = $('#start_date').val();
+            var end_date = $('#end_date').val();
+    
+            if (!start_date || !end_date) {
+                alert('Asegurese que los campos no esten vacios.');
+                e.preventDefault(); // prevent form from submitting
+            } else if (new Date(start_date) > new Date(end_date)) {
+                alert('Fecha Fin no puede ser mas antiguo que Fecha Inicio.');
+                e.preventDefault(); // prevent form from submitting
+            }
+        });
+    });    
 })(jQuery);

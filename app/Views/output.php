@@ -75,7 +75,7 @@
                         </li>
                     <?php } ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?=base_url()?>">INGRESOS</a>
+                        <a class="nav-link" href="<?=base_url()?>">REPORTE DE INGRESOS</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
