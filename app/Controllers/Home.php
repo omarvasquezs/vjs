@@ -1011,8 +1011,6 @@ class Home extends BaseController
         foreach ($comprobantesData as $dataRow) {
             $column = 1;
             foreach ($dataRow as $value) {
-                // Remove special characters
-                $value = preg_replace('/[^A-Za-z0-9\-]/', ' ', $value);
                 // Encode special characters
                 $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
                 $sheet->setCellValueByColumnAndRow($column, $rowNumber, $value);
