@@ -1,18 +1,23 @@
 <h1 class="mt-4">REPORTE INGRESOS</h1>
 
-<div class="row mt-5">
-    <!-- Left Column: Graphics -->
-    <div class="col-lg-4 col-md-12">
-        <form method="post" name="reporte_ingresos" id="reporte_ingresos" action="/exportcsv">
-            <div class="mb-3">
+<form method="post" name="reporte_ingresos" id="reporte_ingresos" action="/exportcsv">
+    <div class="row mt-5 align-items-end">
+        <div class="col-lg-3 col-md-12 mb-3">
+            <div class="form-group">
                 <label for="start_date" class="form-label">FECHA INICIO:</label>
                 <input type="date" id="start_date" name="start_date" class="form-control">
             </div>
-            <div class="mb-3">
+        </div>
+        <div class="col-lg-3 col-md-12 mb-3">
+            <div class="form-group">
                 <label for="end_date" class="form-label">FECHA FIN:</label>
                 <input type="date" id="end_date" name="end_date" class="form-control">
             </div>
-            <button type="submit" class="btn btn-primary">DESCARGAR CSV</button>
-        </form>
+        </div>
+        <div class="col-lg-3 col-md-12 mb-3">
+            <div class="form-group">
+                <button type="submit" class="w-100 btn btn-primary">DESCARGAR CSV</button>
+            </div>
+        </div>
     </div>
-</div>
+</form>
