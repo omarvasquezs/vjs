@@ -85,6 +85,8 @@ $routes->get('comprobante/(:num)/58mm/(:any)', 'Home::generatePdf58mm/$1');
 $routes->get('whatsapp','Home::whatsapp');
 
 $routes->post('exportcsv','Home::exportCSV');
+$routes->post('exportexcel','Home::exportExcel');
+$routes->post('fetch_reporte_ingresos_web','Home::fetch_reporte_ingresos_web');
 
 $routes->get('registrar_cliente/(:any)', 'Home::clientes/$1');
 $routes->post('registrar_cliente', 'Home::clientes');

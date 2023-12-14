@@ -9,6 +9,9 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 // Reference the Font Metrics namespace
 use Dompdf\FontMetrics;
+// phpoffice for reports
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Home extends BaseController
 {
@@ -262,7 +265,7 @@ class Home extends BaseController
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
         $crud->readFields(['cod_comprobante', 'tipo_comprobante', 'cliente_id', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'SERVICIOS', 'monto_abonado', 'observaciones', 'last_updated_by']);
         $crud->columns(['cod_comprobante', 'cliente_id', 'estado_ropa_id', 'costo_total', 'deuda', 'fecha']);
-        $crud->editFields(['cliente_id', 'cod_comprobante','estado_comprobante_id', 'estado_ropa_id', 'metodo_pago_id', 'monto_abonado', 'costo_total', 'observaciones']);
+        $crud->editFields(['cliente_id', 'cod_comprobante', 'estado_comprobante_id', 'estado_ropa_id', 'metodo_pago_id', 'monto_abonado', 'costo_total', 'observaciones']);
 
         $uri = service('uri');
         $segment = $uri->getSegment(1); // get the first segment of the URL
@@ -287,7 +290,7 @@ class Home extends BaseController
                 $crud->where("comprobantes.estado_ropa_id != '4'");
                 $crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
                 break;
-        }      
+        }
 
         $crud->unsetEditFields(['SERVICIOS']);
         $crud->unsetExport();
@@ -315,13 +318,13 @@ class Home extends BaseController
         ]);
 
         // Replace $id with the actual comprobante_id
-        $maxValue = $this->calculateTotalCost(service('uri')->getSegment(service('uri')->getTotalSegments()));        
+        $maxValue = $this->calculateTotalCost(service('uri')->getSegment(service('uri')->getTotalSegments()));
 
         if ($crud->getState() == 'edit') {
             $montoAbonado = $this->getMontoAbonado(service('uri')->getSegment(service('uri')->getTotalSegments()));
             $remaining = number_format($maxValue - $montoAbonado, 2, '.', '');
             $crud->displayAs('monto_abonado', 'MONTO ABONADO (Máximo a abonar: ' . $remaining . ')');
-            if(number_format($maxValue, 2, '.', '') == number_format($montoAbonado, 2, '.', '')) {
+            if (number_format($maxValue, 2, '.', '') == number_format($montoAbonado, 2, '.', '')) {
                 $crud->callbackEditField('monto_abonado', function ($value, $primary_key) {
                     return '<input type="number" step="0.01" name="monto_abonado" value="" style="width: 100%;" disabled>';
                 });
@@ -371,7 +374,7 @@ class Home extends BaseController
                 $monto_abonado_nuevo = $stateParameters->data['monto_abonado'];
                 $monto_abonado_actualizado = $monto_abonado_previo + $monto_abonado_nuevo;
                 $stateParameters->data['monto_abonado'] = $monto_abonado_actualizado;
-            
+
                 $model_reporte_ingresos = new \App\Models\ReporteIngresos();
                 $data_ingresos = [
                     'cod_comprobante' => $stateParameters->data['cod_comprobante'],
@@ -834,13 +837,13 @@ class Home extends BaseController
         $estadoComprobante = $this->request->getPost('estadoComprobante');
         $montoAbonado = $this->request->getPost('monto_abonado');
         $totalRegisterInput = $this->request->getPost('total_register_input');
-        
+
         if ($estadoComprobante == '1') {
             $montoAbonado = 0;
         } elseif ($estadoComprobante == '4') {
             $montoAbonado = $totalRegisterInput;
         }
-        
+
         $data_comprobantes = [
             'cliente_id' => $this->request->getPost('clienteDropdown'),
             'metodo_pago_id' => $this->request->getPost('metodopagoDropdown'),
@@ -947,34 +950,104 @@ class Home extends BaseController
     public function exportCSV()
     {
         // file name
-        $filename = 'comprobantes_' . date('YmdHis') . '.csv';
+        $filename = 'registro_ingresos_comprobantes_' . date('YmdHis') . '.csv';
         header("Content-Description: File Transfer");
         header("Content-Disposition: attachment; filename=$filename");
         header("Content-Type: application/csv; ");
-    
+
         $start_date = $this->request->getPost('start_date');
         $end_date = $this->request->getPost('end_date');
-    
+
         // get data
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
-        $builder->select('reporte_ingresos.cod_comprobante, reporte_ingresos.fecha, reporte_ingresos.monto_abonado, reporte_ingresos.costo_total, metodo_pago.nom_metodo_pago');
+        $builder->select('reporte_ingresos.cod_comprobante, reporte_ingresos.fecha, metodo_pago.nom_metodo_pago, reporte_ingresos.monto_abonado, reporte_ingresos.costo_total');
         $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
             $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
         }
         $comprobantesData = $builder->get()->getResultArray();
-    
+
         // file creation
         $file = fopen('php://output', 'w');
-    
-        $header = array("cod_comprobante", "fecha", "monto_abonado", "costo_total","nom_metodo_pago");
+
+        $header = array("COMPROBANTE", "FECHA", "METODO DE PAGO", "MONTO ABONADO", "COSTO DEL SERVICIO");
         fputcsv($file, $header);
         foreach ($comprobantesData as $key => $line) {
             fputcsv($file, $line);
         }
         fclose($file);
         exit;
-    }    
+    }
+    public function exportExcel()
+    {
+        // Create a new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+    
+        $start_date = $this->request->getPost('start_date');
+        $end_date = $this->request->getPost('end_date');
+    
+        // Get data
+        $db = \Config\Database::connect();
+        $builder = $db->table('reporte_ingresos');
+        $builder->select('reporte_ingresos.cod_comprobante, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, metodo_pago.nom_metodo_pago, reporte_ingresos.monto_abonado, reporte_ingresos.costo_total');
+        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        if (!empty($start_date) && !empty($end_date)) {
+            $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
+            $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
+        }
+        $comprobantesData = $builder->get()->getResultArray();
+    
+        // Set the headers
+        $headers = array("COMPROBANTE", "FECHA", "METODO DE PAGO", "MONTO ABONADO", "COSTO DEL SERVICIO (REFERENCIAL)");
+        foreach ($headers as $key => $header) {
+            $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
+        }
+    
+        // Add the data
+        $rowNumber = 2;
+        foreach ($comprobantesData as $dataRow) {
+            $column = 1;
+            foreach ($dataRow as $value) {
+                // Remove special characters
+                $value = preg_replace('/[^A-Za-z0-9\-]/', ' ', $value);
+                $sheet->setCellValueByColumnAndRow($column, $rowNumber, $value);
+                $column++;
+            }
+            $rowNumber++;
+        }
+    
+        // Save to a temporary file as XLSX format explicitly
+        $writer = new Xlsx($spreadsheet);
+    
+        $filename = 'registro_ingresos_comprobantes_' . date('YmdHis');
+    
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        
+        $writer->save('php://output'); // download file
+        die;
+    }
+    public function fetch_reporte_ingresos_web()
+    {
+        $start_date = $this->request->getPost('start_date');
+        $end_date = $this->request->getPost('end_date');
+
+        // Get data
+        $db = \Config\Database::connect();
+        $builder = $db->table('reporte_ingresos');
+        $builder->select('reporte_ingresos.cod_comprobante, reporte_ingresos.fecha, metodo_pago.nom_metodo_pago, reporte_ingresos.monto_abonado, reporte_ingresos.costo_total');
+        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        if (!empty($start_date) && !empty($end_date)) {
+            $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
+            $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
+        }
+        $comprobantesData = $builder->get()->getResultArray();
+
+        // Return data as JSON
+        return $this->response->setJSON($comprobantesData);
+    }
 }
