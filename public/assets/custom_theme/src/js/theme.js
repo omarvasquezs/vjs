@@ -442,7 +442,7 @@
                         '<th>FECHA DE ABONO</th>' +
                         '<th>METODO DE PAGO</th>' +
                         '<th>MONTO ABONADO</th>' +
-                        '<th>COSTO DEL SERVICIO (REFERENCIAL)</th>' +
+                        '<th>COSTO COMPROBANTE (REFERENCIAL)</th>' +
                         '</tr></thead><tbody>';
         
                         $.each(response, function(index, item) {
