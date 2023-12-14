@@ -55,6 +55,11 @@ $routes->get('comprobantes_pendiente_pago/(:any)','Home::comprobantes/$1');
 $routes->post('comprobantes_pendiente_pago','Home::comprobantes');
 $routes->post('comprobantes_pendiente_pago/(:any)','Home::comprobantes');
 
+$routes->get('comprobantes_todos','Home::comprobantes');
+$routes->get('comprobantes_todos/(:any)','Home::comprobantes/$1');
+$routes->post('comprobantes_todos','Home::comprobantes');
+$routes->post('comprobantes_todos/(:any)','Home::comprobantes');
+
 $routes->get('registrar_comprobante','Home::registrar_comprobante');
 $routes->get('fetchServicios','Home::fetchServicios');
 $routes->get('fetchServicioDetails','Home::fetchServicioDetails');

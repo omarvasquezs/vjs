@@ -267,19 +267,24 @@ class Home extends BaseController
         $uri = service('uri');
         $segment = $uri->getSegment(1); // get the first segment of the URL
 
-        $crud->where("comprobantes.estado_ropa_id != '4'");
-
         switch ($segment) {
             case 'comprobantes_abonados':
                 // code to execute if the URL contains 'comprobantes_pagados'
+                $crud->where("comprobantes.estado_ropa_id != '4'");
                 $crud->where("comprobantes.estado_comprobante_id = '2'");
                 break;
             case 'comprobantes_pendiente_pago':
                 // code to execute if the URL contains 'comprobantes_pendiente_pago'
+                $crud->where("comprobantes.estado_ropa_id != '4'");
                 $crud->where("comprobantes.estado_comprobante_id = '1'");
+                break;
+            case 'comprobantes_todos':
+                // code to execute if the URL contains 'comprobantes_pendiente_pago'
+                echo '';
                 break;
             default:
                 // code to execute if the URL doesn't contain any of the above
+                $crud->where("comprobantes.estado_ropa_id != '4'");
                 $crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
                 break;
         }      
@@ -316,7 +321,7 @@ class Home extends BaseController
             $montoAbonado = $this->getMontoAbonado(service('uri')->getSegment(service('uri')->getTotalSegments()));
             $remaining = number_format($maxValue - $montoAbonado, 2, '.', '');
             $crud->displayAs('monto_abonado', 'MONTO ABONADO (Máximo a abonar: ' . $remaining . ')');
-            if($maxValue == $montoAbonado) {
+            if(number_format($maxValue, 2, '.', '') == number_format($montoAbonado, 2, '.', '')) {
                 $crud->callbackEditField('monto_abonado', function ($value, $primary_key) {
                     return '<input type="number" step="0.01" name="monto_abonado" value="" style="width: 100%;" disabled>';
                 });

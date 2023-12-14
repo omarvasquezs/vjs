@@ -95,7 +95,7 @@
                     <div class="row">
                         <div class="d-grid gap-2 py-2">
                             <h5 style="font-weight: bold;">MONTO ABONADO:</h5>
-                            <input class="form-control" type="number" step="0.01" id="monto_abonado" name="monto_abonado" disabled>
+                            <input class="form-control" type="number" step="0.01" id="monto_abonado" name="monto_abonado" required disabled>
                         </div>
                     </div>
                     <div class="row total-block">
