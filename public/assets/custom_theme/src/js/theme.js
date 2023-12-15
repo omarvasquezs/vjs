@@ -472,4 +472,85 @@
             }
         });        
     });
+    $(document).ready(function() {
+        $('#reporte_trabajo').submit(function(e) {
+            var start_date = $('#start_date').val();
+            var end_date = $('#end_date').val();
+    
+            if (!start_date || !end_date) {
+                alert('Asegurese que los campos no esten vacios.');
+                e.preventDefault(); // prevent form from submitting
+            } else if (new Date(start_date) > new Date(end_date)) {
+                alert('Fecha Fin no puede ser mas antiguo que Fecha Inicio.');
+                e.preventDefault(); // prevent form from submitting
+            }
+        });
+    
+        $('.export-option').click(function(e) {
+            e.preventDefault();
+            var action = $(this).data('action');
+            var start_date = $('#start_date').val();
+            var end_date = $('#end_date').val();
+        
+            if (!start_date || !end_date) {
+                alert('Asegurese que los campos no esten vacios.');
+                return;
+            }
+        
+            if (action === '/fetch_reporte_trabajo_web') {
+                $.ajax({
+                    type: "POST",
+                    url: "fetch_reporte_trabajo_web",
+                    data: {
+                        start_date: start_date,
+                        end_date: end_date
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        var table = '<table class="table table-striped table-bordered"><thead><tr>' +
+                        '<th>COMPROBANTE</th>' +
+                        '<th>CLIENTE</th>' +
+                        '<th>FECHA</th>' +
+                        '<th>COSTO TOTAL</th>' +
+                        '</tr></thead><tbody>';
+        
+                        $.each(response, function(index, item) {                            
+                            table += '<tr>' +
+                                     '<td>' + item.cod_comprobante + '</td>' +
+                                     '<td>' + item.nombres + '</td>' +
+                                     '<td>' + item.fecha + '</td>' +
+                                     '<td>' + item.costo_total + '</td>' +
+                                     '</tr>';
+                        });
+        
+                        table += '</tbody></table>';
+        
+                        $('#data-table').html(table);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('Error occurred while fetching data.');
+                    }
+                });
+            } else {
+                $('#reporte_trabajo').attr('action', action);
+                $('#reporte_trabajo').submit();
+            }
+        });        
+    });
+    $(document).ready(function() {
+        $('#set_current_date').on('change', function() {
+            const startDateInput = $('#start_date');
+            const endDateInput = $('#end_date');
+    
+            if ($(this).is(':checked')) {
+                const today = new Date().toISOString().split('T')[0];
+                startDateInput.val(today);
+                endDateInput.val(today);
+            } else {
+                startDateInput.val('');
+                endDateInput.val('');
+            }
+        });
+    });    
 })(jQuery);

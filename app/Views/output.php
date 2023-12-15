@@ -74,8 +74,15 @@
                             </ul>
                         </li>
                     <?php } ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?=base_url()?>">REPORTE DE INGRESOS</a>
+                    <li class="nav-item dropdown hover-dropdown">
+                        
+                        <a class="nav-link dropdown-toggle" href="#" id="consultarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            REPORTES
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="consultarDropdown">
+                            <li><a class="dropdown-item" href="<?= base_url() ?>reporte_ingresos">FINANCIEROS</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>reporte_trabajo">CARGA DE TRABAJO</a></li>
+                        </ul>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">

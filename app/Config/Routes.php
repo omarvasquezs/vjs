@@ -88,8 +88,15 @@ $routes->post('exportcsv','Home::exportCSV');
 $routes->post('exportexcel','Home::exportExcel');
 $routes->post('fetch_reporte_ingresos_web','Home::fetch_reporte_ingresos_web');
 
+$routes->post('exportcsvtrabajo','Home::exportCSVtrabajo');
+$routes->post('exportexceltrabajo','Home::exportExceltrabajo');
+$routes->post('fetch_reporte_trabajo_web','Home::fetch_reporte_trabajo_web');
+
 $routes->get('registrar_cliente/(:any)', 'Home::clientes/$1');
 $routes->post('registrar_cliente', 'Home::clientes');
 $routes->post('registrar_cliente/(:any)', 'Home::clientes');
 
 $routes->get('reenviarpdf/(:any)','Home::reenviarPDF/$1');
+
+$routes->get('reporte_trabajo','Home::reporte_trabajo');
+$routes->get('reporte_ingresos','Home::reporte_ingresos');

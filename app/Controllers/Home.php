@@ -582,7 +582,7 @@ class Home extends BaseController
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
         // Instantiate canvas instance 
-        $canvas = $dompdf->getCanvas();
+        /*$canvas = $dompdf->getCanvas();
 
         // Instantiate font metrics class 
         $fontMetrics = new FontMetrics($canvas, $options);
@@ -626,7 +626,7 @@ class Home extends BaseController
         $y = (($h - $txtHeight) / 3);
 
         // Writes text at the specified x and y coordinates 
-        $canvas->text($x, $y, $text, $font, $fontSize, array(255, 0, 0), '', '', 20);
+        $canvas->text($x, $y, $text, $font, $fontSize, array(255, 0, 0), '', '', 20);*/
         $dompdf->stream('comprobante_a4-' . date('YmdHis') . '.pdf', ['Attachment' => false]);
         exit();
     }
@@ -680,7 +680,7 @@ class Home extends BaseController
         $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
         $dompdf->render();
         // Instantiate canvas instance 
-        $canvas = $dompdf->getCanvas();
+        /*$canvas = $dompdf->getCanvas();
 
         // Instantiate font metrics class 
         $fontMetrics = new FontMetrics($canvas, $options);
@@ -707,7 +707,7 @@ class Home extends BaseController
         $y = (($h - $txtHeight) / 2);
 
         // Writes text at the specified x and y coordinates 
-        $canvas->text($x, $y, $text, $font, 75);
+        $canvas->text($x, $y, $text, $font, 75);*/
         $dompdf->stream('comprobante_58mm-' . date('YmdHis') . '.pdf', array("Attachment" => false));
         exit();
     }
@@ -961,7 +961,7 @@ class Home extends BaseController
         // get data
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
-        $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, reporte_ingresos.fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado');
+        $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado');
         //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
         $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id');
         $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
@@ -1046,7 +1046,7 @@ class Home extends BaseController
         // Get data
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
-        $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, reporte_ingresos.fecha, metodo_pago.nom_metodo_pago, reporte_ingresos.monto_abonado');
+        $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, metodo_pago.nom_metodo_pago, reporte_ingresos.monto_abonado');
         //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
         $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id'); // use LEFT JOIN
         $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
@@ -1058,5 +1058,130 @@ class Home extends BaseController
 
         // Return data as JSON
         return $this->response->setJSON($comprobantesData);
+    }
+    public function exportCSVtrabajo()
+    {
+        // file name
+        $filename = 'registro_trabajo_comprobantes_' . date('YmdHis') . '.csv';
+        header("Content-Description: File Transfer");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Content-Type: application/csv; ");
+    
+        $start_date = $this->request->getPost('start_date');
+        $end_date = $this->request->getPost('end_date');
+    
+        // get data
+        $db = \Config\Database::connect();
+        $builder = $db->table('comprobantes');
+        $builder->select('comprobantes.cod_comprobante, clientes.nombres, DATE_FORMAT(comprobantes.fecha, "%Y-%m-%d") as fecha, comprobantes.costo_total');
+        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
+        $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
+        if (!empty($start_date) && !empty($end_date)) {
+            $builder->where('DATE(comprobantes.fecha) >=', $start_date);
+            $builder->where('DATE(comprobantes.fecha) <=', $end_date);
+        }
+        $comprobantesData = $builder->get()->getResultArray();
+    
+        // file creation
+        $file = fopen('php://output', 'w');
+
+        $header = array("COMPROBANTE", "CLIENTE", "FECHA", "COSTO TOTAL");
+        fputcsv($file, $header);
+        foreach ($comprobantesData as $key => $line) {
+            $line = array_map(function($value) {
+                return mb_convert_encoding($value, 'ISO-8859-1', 'UTF-8');
+            }, $line);
+            fputcsv($file, $line);
+        }
+        fclose($file);
+        exit;
+    }
+    public function exportExceltrabajo()
+    {
+        // Create a new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+    
+        $start_date = $this->request->getPost('start_date');
+        $end_date = $this->request->getPost('end_date');
+    
+        // Get data
+        $db = \Config\Database::connect();
+        $builder = $db->table('comprobantes');
+        $builder->select('comprobantes.cod_comprobante, clientes.nombres, DATE_FORMAT(comprobantes.fecha, "%Y-%m-%d") as fecha, comprobantes.costo_total');
+        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
+        if (!empty($start_date) && !empty($end_date)) {
+            $builder->where('DATE(comprobantes.fecha) >=', $start_date);
+            $builder->where('DATE(comprobantes.fecha) <=', $end_date);
+        }
+        $comprobantesData = $builder->get()->getResultArray();
+    
+        // Set the headers
+        $headers = array("COMPROBANTE", "CLIENTE", "FECHA", "COSTO TOTAL");
+        foreach ($headers as $key => $header) {
+            $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
+        }
+    
+        // Add the data
+        $rowNumber = 2;
+        foreach ($comprobantesData as $dataRow) {
+            $column = 1;
+            foreach ($dataRow as $value) {
+                // Encode special characters
+                $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                $sheet->setCellValueByColumnAndRow($column, $rowNumber, $value);
+                $column++;
+            }
+            $rowNumber++;
+        }
+    
+        // Save to a temporary file as XLSX format explicitly
+        $writer = new Xlsx($spreadsheet);
+    
+        $filename = 'registro_trabajo_comprobantes_' . date('YmdHis');
+    
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        
+        $writer->save('php://output'); // download file
+        die;
+    }
+    public function fetch_reporte_trabajo_web()
+    {
+        $start_date = $this->request->getPost('start_date');
+        $end_date = $this->request->getPost('end_date');
+
+        // Get data
+        $db = \Config\Database::connect();
+        $builder = $db->table('comprobantes');
+        $builder->select('comprobantes.cod_comprobante, clientes.nombres, DATE_FORMAT(comprobantes.fecha, "%Y-%m-%d") as fecha, comprobantes.costo_total');
+        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
+        if (!empty($start_date) && !empty($end_date)) {
+            $builder->where('DATE(comprobantes.fecha) >=', $start_date);
+            $builder->where('DATE(comprobantes.fecha) <=', $end_date);
+        }
+        $comprobantesData = $builder->get()->getResultArray();
+
+        // Return data as JSON
+        return $this->response->setJSON($comprobantesData);
+    }
+    public function reporte_ingresos() {
+        $output = (object) [
+            'css_files' => [],
+            'js_files' => [],
+            'output' => view('reporte_ingresos')
+        ];
+        return $this->_mainOutput($output);
+    }
+    public function reporte_trabajo() {
+        $output = (object) [
+            'css_files' => [],
+            'js_files' => [],
+            'output' => view('reporte_trabajo')
+        ];
+        return $this->_mainOutput($output);
     }
 }
