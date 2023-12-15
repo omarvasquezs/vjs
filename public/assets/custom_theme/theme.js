@@ -445,11 +445,18 @@
           dataType: "json",
           success: function success(response) {
             var table = '<table class="table table-striped table-bordered"><thead><tr>' + '<th>COMPROBANTE</th>' + '<th>CLIENTE</th>' + '<th>FECHA DE ABONO</th>' + '<th>METODO DE PAGO</th>' + '<th>MONTO ABONADO</th>' + '</tr></thead><tbody>';
+            var totalSum = 0; // Variable to store the sum of 'monto_abonado'
+
             $.each(response, function (index, item) {
               var metodoPago = item.nom_metodo_pago !== null ? item.nom_metodo_pago : 'NINGUNO';
               table += '<tr>' + '<td>' + item.cod_comprobante + '</td>' + '<td>' + item.nombres + '</td>' + '<td>' + item.fecha + '</td>' + '<td>' + metodoPago + '</td>' + '<td>' + item.monto_abonado + '</td>' + '</tr>';
+
+              // Add 'monto_abonado' value to the totalSum
+              totalSum += parseFloat(item.monto_abonado);
             });
-            table += '</tbody></table>';
+            table += '</tbody><tfoot>' + '<tr>' + '<td colspan="4"><strong>Total:</strong></td>' + '<td><strong>' + totalSum.toFixed(2) + '</strong></td>' +
+            // Display the total sum
+            '</tr>' + '</tfoot></table>';
             $('#data-table').html(table);
           },
           error: function error(xhr, status, _error) {
@@ -496,10 +503,16 @@
           dataType: "json",
           success: function success(response) {
             var table = '<table class="table table-striped table-bordered"><thead><tr>' + '<th>COMPROBANTE</th>' + '<th>CLIENTE</th>' + '<th>FECHA</th>' + '<th>COSTO TOTAL</th>' + '</tr></thead><tbody>';
+            var totalSum = 0; // Variable to store the sum of 'costo_total'
+
             $.each(response, function (index, item) {
               table += '<tr>' + '<td>' + item.cod_comprobante + '</td>' + '<td>' + item.nombres + '</td>' + '<td>' + item.fecha + '</td>' + '<td>' + item.costo_total + '</td>' + '</tr>';
+              // Add 'costo_total' value to the totalSum
+              totalSum += parseFloat(item.costo_total);
             });
-            table += '</tbody></table>';
+            table += '</tbody><tfoot>' + '<tr>' + '<td colspan="3"><strong>Total:</strong></td>' + '<td><strong>' + totalSum.toFixed(2) + '</strong></td>' +
+            // Display the total sum
+            '</tr>' + '</tfoot></table>';
             $('#data-table').html(table);
           },
           error: function error(xhr, status, _error2) {
