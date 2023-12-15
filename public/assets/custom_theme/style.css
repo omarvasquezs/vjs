@@ -111,7 +111,7 @@ body.login-page {
   background-color: #e9ecef !important;
 }
 
-#cod_comprobante_field_box, #costo_total_field_box, #cliente_id_field_box {
+#cod_comprobante_field_box, #costo_total_field_box {
   display: none;
 }
 

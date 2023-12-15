@@ -324,6 +324,7 @@ class Home extends BaseController
             $montoAbonado = $this->getMontoAbonado(service('uri')->getSegment(service('uri')->getTotalSegments()));
             $remaining = number_format($maxValue - $montoAbonado, 2, '.', '');
             $crud->displayAs('monto_abonado', 'MONTO ABONADO (Máximo a abonar: ' . $remaining . ')');
+            echo '<style>#cliente_id_field_box {display: none;}</style>';
             if (number_format($maxValue, 2, '.', '') == number_format($montoAbonado, 2, '.', '')) {
                 $crud->callbackEditField('monto_abonado', function ($value, $primary_key) {
                     return '<input type="number" step="0.01" name="monto_abonado" value="" style="width: 100%;" disabled>';
@@ -335,9 +336,9 @@ class Home extends BaseController
                 });
             }
         } elseif ($crud->getState() == 'read') {
-            $crud->displayAs('monto_abonado', 'MONTO ABONADO HASTA EL MOMENTO (COSTO TOTAL DEL COMPROBANTE: S/. ' . $maxValue . ')');
+            $crud->displayAs('monto_abonado', 'MONTO ABONADO');
         } else {
-            $crud->displayAs('monto_abonado', 'MONTO ABONADO AL REGISTRO');
+            $crud->displayAs('monto_abonado', 'MONTO ABONADO');
         }
 
         $crud->setActionButton('Vista de Impresion', 'print-icon-custom', function ($row) {
@@ -353,6 +354,9 @@ class Home extends BaseController
 
         // Add this callback to modify the tipo_comprobante field in the read view
         $crud->callbackReadField('tipo_comprobante', array($this, 'displayTipoComprobante'));
+
+        // Add this callback to modify the SERVICIOS field in the read view
+        $crud->callbackReadField('SERVICIOS', array($this, 'displaySERVICIOS'));
 
         // Adding custom column
         //$crud->callbackColumn('comprobante', array($this, 'displayComprobante'));
@@ -727,6 +731,67 @@ class Home extends BaseController
 
         return $value;
     }
+    public function displaySERVICIOS($value, $row)
+    {
+        $db = \Config\Database::connect();
+
+        // Fetch comprobantes_detalles data
+        $builder = $db->table('comprobantes_detalles');
+        $builder->select('servicios.nom_servicio, comprobantes_detalles.peso_kg, comprobantes_detalles.costo_kilo');
+        $builder->join('servicios', 'comprobantes_detalles.servicio_id = servicios.id');
+        $builder->where('comprobante_id', service('uri')->getSegment(service('uri')->getTotalSegments()));
+        $details = $builder->get()->getResultArray();
+
+        $table = '<style>
+        .table-style {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .table-style th, .table-style td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        /* Add spacing between columns */
+        .table-style td {
+            padding-right: 15px; /* Adjust as needed */
+        }
+      </style>';
+
+        $table .= '<table class="table-style">
+        <thead>
+            <tr>
+                <th>SERVICIO</th>
+                <th>PESO (KG)</th>
+                <th>COSTO X KILO (S/.)</th>
+                <th>COSTO TOTAL (S/.)</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+        $total_costo_total = 0; // Variable to hold the total costo_total
+
+        foreach ($details as $detail) {
+            $costo_total = $detail['peso_kg'] * $detail['costo_kilo'];
+            $total_costo_total += $costo_total; // Accumulate the total costo_total
+            $table .= '<tr>
+            <td>' . $detail['nom_servicio'] . '</td>
+            <td><center>' . $detail['peso_kg'] . '</center></td>
+            <td><center>' . $detail['costo_kilo'] . '</center></td>
+            <td><center>' . $costo_total . '</center></td>
+        </tr>';
+        }
+
+        // Add the last row with the total
+        $table .= '<tr>
+        <td colspan="3"><strong>TOTAL</strong></td>
+        <td><center>' . $total_costo_total . '</center></td>
+        </tr>';
+
+        $table .= '</tbody></table>';
+
+        return $table;
+    }
     public function registrar_comprobante()
     {
         $output = (object) [
@@ -954,10 +1019,10 @@ class Home extends BaseController
         header("Content-Description: File Transfer");
         header("Content-Disposition: attachment; filename=$filename");
         header("Content-Type: application/csv; ");
-    
+
         $start_date = $this->request->getPost('start_date');
         $end_date = $this->request->getPost('end_date');
-    
+
         // get data
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
@@ -970,14 +1035,14 @@ class Home extends BaseController
             $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
         }
         $comprobantesData = $builder->get()->getResultArray();
-    
+
         // file creation
         $file = fopen('php://output', 'w');
 
         $header = array("COMPROBANTE", "CLIENTE", "FECHA DE ABONO", "METODO DE PAGO", "MONTO ABONADO");
         fputcsv($file, $header);
         foreach ($comprobantesData as $key => $line) {
-            $line = array_map(function($value) {
+            $line = array_map(function ($value) {
                 return mb_convert_encoding($value, 'ISO-8859-1', 'UTF-8');
             }, $line);
             fputcsv($file, $line);
@@ -990,10 +1055,10 @@ class Home extends BaseController
         // Create a new Spreadsheet object
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-    
+
         $start_date = $this->request->getPost('start_date');
         $end_date = $this->request->getPost('end_date');
-    
+
         // Get data
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
@@ -1006,13 +1071,13 @@ class Home extends BaseController
             $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
         }
         $comprobantesData = $builder->get()->getResultArray();
-    
+
         // Set the headers
         $headers = array("COMPROBANTE", "CLIENTE", "FECHA DE ABONO", "METODO DE PAGO", "MONTO ABONADO");
         foreach ($headers as $key => $header) {
             $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
         }
-    
+
         // Add the data
         $rowNumber = 2;
         foreach ($comprobantesData as $dataRow) {
@@ -1025,16 +1090,16 @@ class Home extends BaseController
             }
             $rowNumber++;
         }
-    
+
         // Save to a temporary file as XLSX format explicitly
         $writer = new Xlsx($spreadsheet);
-    
+
         $filename = 'registro_ingresos_comprobantes_' . date('YmdHis');
-    
+
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
         header('Cache-Control: max-age=0');
-        
+
         $writer->save('php://output'); // download file
         die;
     }
@@ -1066,10 +1131,10 @@ class Home extends BaseController
         header("Content-Description: File Transfer");
         header("Content-Disposition: attachment; filename=$filename");
         header("Content-Type: application/csv; ");
-    
+
         $start_date = $this->request->getPost('start_date');
         $end_date = $this->request->getPost('end_date');
-    
+
         // get data
         $db = \Config\Database::connect();
         $builder = $db->table('comprobantes');
@@ -1081,14 +1146,14 @@ class Home extends BaseController
             $builder->where('DATE(comprobantes.fecha) <=', $end_date);
         }
         $comprobantesData = $builder->get()->getResultArray();
-    
+
         // file creation
         $file = fopen('php://output', 'w');
 
         $header = array("COMPROBANTE", "CLIENTE", "FECHA", "COSTO TOTAL");
         fputcsv($file, $header);
         foreach ($comprobantesData as $key => $line) {
-            $line = array_map(function($value) {
+            $line = array_map(function ($value) {
                 return mb_convert_encoding($value, 'ISO-8859-1', 'UTF-8');
             }, $line);
             fputcsv($file, $line);
@@ -1101,10 +1166,10 @@ class Home extends BaseController
         // Create a new Spreadsheet object
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-    
+
         $start_date = $this->request->getPost('start_date');
         $end_date = $this->request->getPost('end_date');
-    
+
         // Get data
         $db = \Config\Database::connect();
         $builder = $db->table('comprobantes');
@@ -1116,13 +1181,13 @@ class Home extends BaseController
             $builder->where('DATE(comprobantes.fecha) <=', $end_date);
         }
         $comprobantesData = $builder->get()->getResultArray();
-    
+
         // Set the headers
         $headers = array("COMPROBANTE", "CLIENTE", "FECHA", "COSTO TOTAL");
         foreach ($headers as $key => $header) {
             $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
         }
-    
+
         // Add the data
         $rowNumber = 2;
         foreach ($comprobantesData as $dataRow) {
@@ -1135,16 +1200,16 @@ class Home extends BaseController
             }
             $rowNumber++;
         }
-    
+
         // Save to a temporary file as XLSX format explicitly
         $writer = new Xlsx($spreadsheet);
-    
+
         $filename = 'registro_trabajo_comprobantes_' . date('YmdHis');
-    
+
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
         header('Cache-Control: max-age=0');
-        
+
         $writer->save('php://output'); // download file
         die;
     }
@@ -1168,7 +1233,8 @@ class Home extends BaseController
         // Return data as JSON
         return $this->response->setJSON($comprobantesData);
     }
-    public function reporte_ingresos() {
+    public function reporte_ingresos()
+    {
         $output = (object) [
             'css_files' => [],
             'js_files' => [],
@@ -1176,7 +1242,8 @@ class Home extends BaseController
         ];
         return $this->_mainOutput($output);
     }
-    public function reporte_trabajo() {
+    public function reporte_trabajo()
+    {
         $output = (object) [
             'css_files' => [],
             'js_files' => [],
