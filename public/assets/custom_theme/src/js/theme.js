@@ -439,10 +439,10 @@
                     success: function(response) {
                         var table = '<table class="table table-striped table-bordered"><thead><tr>' +
                         '<th>COMPROBANTE</th>' +
+                        '<th>CLIENTE</th>' +
                         '<th>FECHA DE ABONO</th>' +
                         '<th>METODO DE PAGO</th>' +
                         '<th>MONTO ABONADO</th>' +
-                        '<th>COSTO COMPROBANTE (REFERENCIAL)</th>' +
                         '</tr></thead><tbody>';
         
                         $.each(response, function(index, item) {
@@ -450,10 +450,10 @@
                             
                             table += '<tr>' +
                                      '<td>' + item.cod_comprobante + '</td>' +
+                                     '<td>' + item.nombres + '</td>' +
                                      '<td>' + item.fecha + '</td>' +
                                      '<td>' + metodoPago + '</td>' +
                                      '<td>' + item.monto_abonado + '</td>' +
-                                     '<td>' + item.costo_total + '</td>' +
                                      '</tr>';
                         });
         

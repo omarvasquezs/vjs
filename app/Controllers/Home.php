@@ -961,8 +961,10 @@ class Home extends BaseController
         // get data
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
-        $builder->select('reporte_ingresos.cod_comprobante, reporte_ingresos.fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado, reporte_ingresos.costo_total');
-        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
+        $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, reporte_ingresos.fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado');
+        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
+        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id');
+        $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
             $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
@@ -971,15 +973,18 @@ class Home extends BaseController
     
         // file creation
         $file = fopen('php://output', 'w');
-    
-        $header = array("COMPROBANTE", "FECHA DE ABONO", "METODO DE PAGO", "MONTO ABONADO", "COSTO COMPROBANTE (REFERENCIAL)");
+
+        $header = array("COMPROBANTE", "CLIENTE", "FECHA DE ABONO", "METODO DE PAGO", "MONTO ABONADO");
         fputcsv($file, $header);
         foreach ($comprobantesData as $key => $line) {
+            $line = array_map(function($value) {
+                return mb_convert_encoding($value, 'ISO-8859-1', 'UTF-8');
+            }, $line);
             fputcsv($file, $line);
         }
         fclose($file);
         exit;
-    }    
+    }
     public function exportExcel()
     {
         // Create a new Spreadsheet object
@@ -992,8 +997,10 @@ class Home extends BaseController
         // Get data
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
-        $builder->select('reporte_ingresos.cod_comprobante, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado, reporte_ingresos.costo_total');
-        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado');
+        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id'); // use LEFT JOIN
+        $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
             $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
@@ -1001,7 +1008,7 @@ class Home extends BaseController
         $comprobantesData = $builder->get()->getResultArray();
     
         // Set the headers
-        $headers = array("COMPROBANTE", "FECHA DE ABONO", "METODO DE PAGO", "MONTO ABONADO", "COSTO COMPROBANTE (REFERENCIAL)");
+        $headers = array("COMPROBANTE", "CLIENTE", "FECHA DE ABONO", "METODO DE PAGO", "MONTO ABONADO");
         foreach ($headers as $key => $header) {
             $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
         }
@@ -1039,8 +1046,10 @@ class Home extends BaseController
         // Get data
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
-        $builder->select('reporte_ingresos.cod_comprobante, reporte_ingresos.fecha, metodo_pago.nom_metodo_pago, reporte_ingresos.monto_abonado, reporte_ingresos.costo_total');
-        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, reporte_ingresos.fecha, metodo_pago.nom_metodo_pago, reporte_ingresos.monto_abonado');
+        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id'); // use LEFT JOIN
+        $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
             $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
