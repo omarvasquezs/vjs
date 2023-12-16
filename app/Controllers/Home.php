@@ -1251,4 +1251,31 @@ class Home extends BaseController
         ];
         return $this->_mainOutput($output);
     }
+    public function change_password()
+    {
+        if(session()->get('user_id') != service('uri')->getSegment(service('uri')->getTotalSegments()))
+        {
+            return redirect()->to('/');
+        } else {
+            $crud = new GroceryCrud();
+    
+            $crud->setTable('users');
+            $crud->setSubject('USUARIO DEL SISTEMA');
+            $crud->displayAs([
+                'password' => 'CONTRASEÑA'
+            ]);
+            $crud->editFields(['password']);
+            $crud->unsetBackToDatagrid();
+            // Modify these callbacks to transform the username to uppercase in the add and edit forms
+            $crud->callbackEditField('password', function ($postArray, $primaryKey) {
+                return $this->editar_campo_password($postArray, $primaryKey);
+            });
+            $crud->callbackBeforeUpdate(function ($stateParameters) {
+                return $this->actualizar_password($stateParameters);
+            });
+            $output = $crud->render();
+    
+            return $this->_mainOutput($output);
+        }
+    }
 }

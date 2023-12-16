@@ -31,10 +31,15 @@ $routes->get('servicios','Home::servicios');
 $routes->get('servicios/(:any)','Home::servicios/$1');
 $routes->post('servicios','Home::servicios');
 $routes->post('servicios/(:any)','Home::servicios');
+
 $routes->get('users','Home::users');
 $routes->get('users/(:any)','Home::users/$1');
 $routes->post('users','Home::users');
 $routes->post('users/(:any)','Home::users');
+
+$routes->get('change_password/(:any)','Home::change_password/$1');
+$routes->post('change_password/(:any)','Home::change_password');
+
 $routes->get('locales','Home::locales');
 $routes->get('locales/(:any)','Home::locales/$1');
 $routes->post('locales','Home::locales');
