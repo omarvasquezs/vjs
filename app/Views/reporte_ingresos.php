@@ -2,12 +2,6 @@
 
 <form method="post" name="reporte_ingresos" id="reporte_ingresos" action="">
     <div class="row mt-5 align-items-end">
-        <div class="col-lg-12 col-md-12 mb-3">           
-            <div class="form-check form-switch">                
-                <input class="form-check-input" type="checkbox" id="set_current_date">
-                <label for="set_current_date" class="form-check-label">FECHA DE HOY DÍA</label>
-            </div>
-        </div>
         <div class="col-lg-3 col-md-12 mb-3">
             <div class="form-group">
                 <label for="start_date" class="form-label">FECHA INICIO:</label>
@@ -18,6 +12,16 @@
             <div class="form-group">
                 <label for="end_date" class="form-label">FECHA FIN:</label>
                 <input type="date" id="end_date" name="end_date" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-12 mb-3">           
+            <div class="form-check form-switch">                
+                <input class="form-check-input" type="checkbox" id="set_current_date">
+                <label for="set_current_date" class="form-check-label">FECHA HOY DÍA</label>
+            </div>
+            <div class="form-check form-switch">                
+                <input class="form-check-input" type="checkbox" id="set_this_month">
+                <label for="set_this_month" class="form-check-label">MES ACTUAL</label>
             </div>
         </div>
         <div class="col-lg-2 col-md-12 mb-3">           

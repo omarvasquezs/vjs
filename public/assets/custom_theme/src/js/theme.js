@@ -559,20 +559,47 @@
         });        
     });
     $(document).ready(function() {
-        $('#set_current_date').on('change', function() {
-            const startDateInput = $('#start_date');
-            const endDateInput = $('#end_date');
+        const startDateInput = $('#start_date');
+        const endDateInput = $('#end_date');
+        const setCurrentDateCheckbox = $('#set_current_date');
+        const setThisMonthCheckbox = $('#set_this_month');
     
+        setCurrentDateCheckbox.on('change', function() {
             if ($(this).is(':checked')) {
                 const today = new Date().toISOString().split('T')[0];
                 startDateInput.val(today);
                 endDateInput.val(today);
+                setThisMonthCheckbox.prop('checked', false);
             } else {
                 startDateInput.val('');
                 endDateInput.val('');
             }
         });
-    });
+    
+        setThisMonthCheckbox.on('change', function() {
+            if ($(this).is(':checked')) {
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+                startDateInput.val(firstDay);
+                endDateInput.val(lastDay);
+                setCurrentDateCheckbox.prop('checked', false);
+            } else {
+                startDateInput.val('');
+                endDateInput.val('');
+            }
+        });
+    
+        startDateInput.on('change', function() {
+            setThisMonthCheckbox.prop('checked', false);
+            setCurrentDateCheckbox.prop('checked', false);
+        });
+    
+        endDateInput.on('change', function() {
+            setThisMonthCheckbox.prop('checked', false);
+            setCurrentDateCheckbox.prop('checked', false);
+        });
+    });    
     $(document).ready(function() {
         // Function to erase cookies with names starting with 'hidden_sorting' or 'hidden_ordering'
         function eraseCookiesStartingWith(prefix) {

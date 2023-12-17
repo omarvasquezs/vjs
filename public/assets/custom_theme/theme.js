@@ -527,17 +527,41 @@
     });
   });
   $(document).ready(function () {
-    $('#set_current_date').on('change', function () {
-      var startDateInput = $('#start_date');
-      var endDateInput = $('#end_date');
+    var startDateInput = $('#start_date');
+    var endDateInput = $('#end_date');
+    var setCurrentDateCheckbox = $('#set_current_date');
+    var setThisMonthCheckbox = $('#set_this_month');
+    setCurrentDateCheckbox.on('change', function () {
       if ($(this).is(':checked')) {
         var today = new Date().toISOString().split('T')[0];
         startDateInput.val(today);
         endDateInput.val(today);
+        setThisMonthCheckbox.prop('checked', false);
       } else {
         startDateInput.val('');
         endDateInput.val('');
       }
+    });
+    setThisMonthCheckbox.on('change', function () {
+      if ($(this).is(':checked')) {
+        var today = new Date();
+        var firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        var lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+        startDateInput.val(firstDay);
+        endDateInput.val(lastDay);
+        setCurrentDateCheckbox.prop('checked', false);
+      } else {
+        startDateInput.val('');
+        endDateInput.val('');
+      }
+    });
+    startDateInput.on('change', function () {
+      setThisMonthCheckbox.prop('checked', false);
+      setCurrentDateCheckbox.prop('checked', false);
+    });
+    endDateInput.on('change', function () {
+      setThisMonthCheckbox.prop('checked', false);
+      setCurrentDateCheckbox.prop('checked', false);
     });
   });
   $(document).ready(function () {
