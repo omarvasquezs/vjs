@@ -339,7 +339,7 @@ class Home extends BaseController
             echo '<style>#cliente_id_field_box {display: none;}</style>';
             if (number_format($maxValue, 2, '.', '') == number_format($montoAbonado, 2, '.', '')) {
                 $crud->callbackEditField('monto_abonado', function ($value, $primary_key) {
-                    return '<input type="number" step="0.01" name="monto_abonado" value="" style="width: 100%;" disabled>';
+                    return '<input type="hidden" step="0.01" name="monto_abonado" value="" style="width: 100%;"><input type="number" step="0.01" value="" style="width: 100%;" disabled>';
                 });
                 echo '<style>#estado_comprobante_id_field_box, #metodo_pago_id_field_box {display: none;}</style>';
             } else {
