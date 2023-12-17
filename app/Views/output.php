@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>.::Sistema de Lavanderia 1.0::.</title>
-    <link href="<?=base_url()?>assets/bootstrap5/bootstrap.min.css" rel="stylesheet">
+    <link href="<?= base_url() ?>assets/bootstrap5/bootstrap.min.css" rel="stylesheet">
     <?php
     foreach ($css_files as $file): ?>
         <link type="text/css" rel="stylesheet" href="<?php echo $file; ?>" />
@@ -14,7 +14,8 @@
     <!-- Select2 styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
     <!-- Select2 bootstrap theme -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -50,10 +51,15 @@
                             CONSULTAR
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="consultarDropdown">
-                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_todos">COMPROBANTES TODOS (HISTORICO)</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes">COMPROBANTES PENDIENTES + ABONADOS + RECOGER</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_abonados">COMPROBANTES ABONADOS</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_pendiente_pago">COMPROBANTES PENDIENTES DE PAGO</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_todos">COMPROBANTES TODOS
+                                    (HISTORICO)</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes">COMPROBANTES PENDIENTES +
+                                    ABONADOS + RECOGER</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_abonados">COMPROBANTES
+                                    ABONADOS</a></li>
+                            <li><a class="dropdown-item"
+                                    href="<?= base_url() ?>comprobantes_pendiente_pago">COMPROBANTES PENDIENTES DE
+                                    PAGO</a></li>
                             <li><a class="dropdown-item" href="<?= base_url() ?>clientes">CLIENTES</a></li>
                         </ul>
                     </li>
@@ -64,7 +70,8 @@
                                 OPCIONES AVANZADAS
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="consultarDropdown">
-                                <li><a class="dropdown-item" href="<?= base_url() ?>estado_comprobantes">ESTADO COMPROBANTES</a></li>
+                                <li><a class="dropdown-item" href="<?= base_url() ?>estado_comprobantes">ESTADO
+                                        COMPROBANTES</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url() ?>estado_ropa">ESTADO ROPA</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url() ?>locales">LOCALES</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url() ?>metodo_pago">MÉTODOS DE PAGO</a></li>
@@ -75,13 +82,15 @@
                         </li>
                     <?php } ?>
                     <li class="nav-item dropdown hover-dropdown">
-                        
-                        <a class="nav-link dropdown-toggle" href="#" id="consultarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <a class="nav-link dropdown-toggle" href="#" id="consultarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             REPORTES
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="consultarDropdown">
                             <li><a class="dropdown-item" href="<?= base_url() ?>reporte_ingresos">FINANCIEROS</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url() ?>reporte_trabajo">CARGA DE TRABAJO</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>reporte_trabajo">CARGA DE TRABAJO</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -89,12 +98,15 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person"></i> <?=session()->get('username')?>
+                            <i class="bi bi-person"></i>
+                            <?= session()->get('username') ?>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <?php if (session()->get('role_id') == 1) { ?>
-                            <li><a class="dropdown-item" href="<?= base_url() ?>change_password/edit/<?=session()->get('user_id')?>">CAMBIAR CONTRASEÑA</a></li>
-                        <?php } ?>
+                            <?php if (session()->get('role_id') == 1) { ?>
+                                <li><a class="dropdown-item"
+                                        href="<?= base_url() ?>change_password/edit/<?= session()->get('user_id') ?>">CAMBIAR
+                                        CONTRASEÑA</a></li>
+                            <?php } ?>
                             <li><a class="dropdown-item" href="<?= base_url() ?>logout">SALIR DEL SISTEMA</a></li>
                         </ul>
                     </li>
@@ -145,7 +157,8 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <iframe src="<?=base_url()?>registrar_cliente/add" width="100%" height="100%" frameborder="0"></iframe>
+                            <iframe src="<?= base_url() ?>registrar_cliente/add" width="100%" height="100%"
+                                frameborder="0"></iframe>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -157,6 +170,14 @@
     </nav>
     <main class="flex-fill">
         <div class="container mt-5 mb-5">
+            <?php if (session()->has('success_message')): ?>
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+                    <button type="button" class="btn-close me-2" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div>
+                        <?= session()->getFlashdata('success_message') ?>
+                    </div>
+                </div>
+            <?php endif; ?>
             <?php echo $output; ?>
         </div>
     </main>

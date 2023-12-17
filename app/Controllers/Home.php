@@ -952,8 +952,10 @@ class Home extends BaseController
 
         $this->whatsapp_pdf($model_comprobantes->getInsertID(), $clientes['telefono']);
 
+        $cod_comprobante = $model_comprobantes->where('id', $model_comprobantes->getInsertID())->first()['cod_comprobante'];
+
         $data_ingresos = [
-            'cod_comprobante' => $model_comprobantes->where('id', $model_comprobantes->getInsertID())->first()['cod_comprobante'],
+            'cod_comprobante' => $cod_comprobante,
             'cliente_id' => $this->request->getPost('clienteDropdown'),
             'metodo_pago_id' => $this->request->getPost('metodopagoDropdown'),
             'fecha' => date('Y-m-d H:i:s'),
@@ -962,8 +964,15 @@ class Home extends BaseController
         ];
 
         $model_reporte_ingresos->insert($data_ingresos);
-
-        return redirect()->to('/comprobantes');
+        
+        session()->setFlashdata('success_message', 'El código de comprobante generado es: ' . $cod_comprobante);
+        
+        // Create a script block that will display the cod_comprobante in a JavaScript alert before redirecting
+        echo "<script>
+            alert('El código de comprobante generado es: " . $model_comprobantes->where('id', $model_comprobantes->getInsertID())->first()['cod_comprobante'] . "');
+            window.location.href = '/comprobantes';
+        </script>";
+        //return redirect()->to('/comprobantes');
     }
     public function reenviarPDF($comprobante_id)
     {
@@ -1253,12 +1262,11 @@ class Home extends BaseController
     }
     public function change_password()
     {
-        if(session()->get('user_id') != service('uri')->getSegment(service('uri')->getTotalSegments()))
-        {
+        if (session()->get('user_id') != service('uri')->getSegment(service('uri')->getTotalSegments())) {
             return redirect()->to('/');
         } else {
             $crud = new GroceryCrud();
-    
+
             $crud->setTable('users');
             $crud->setSubject('USUARIO DEL SISTEMA');
             $crud->displayAs([
@@ -1274,7 +1282,7 @@ class Home extends BaseController
                 return $this->actualizar_password($stateParameters);
             });
             $output = $crud->render();
-    
+
             return $this->_mainOutput($output);
         }
     }
