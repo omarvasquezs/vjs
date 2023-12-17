@@ -26,7 +26,7 @@
         </div>
         <div class="col-lg-2 col-md-12 mb-3">           
             <div class="btn-group w-100" role="group">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                <button type="button" id="reporte_opciones" class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     OPCIONES
                 </button>
