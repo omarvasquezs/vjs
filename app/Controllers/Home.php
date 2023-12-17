@@ -269,27 +269,37 @@ class Home extends BaseController
 
         $crud->defaultOrdering('comprobantes.fecha', 'desc');
 
+        // Where close based on menu items
         $uri = service('uri');
         $segment = $uri->getSegment(1); // get the first segment of the URL
 
         switch ($segment) {
-            case 'comprobantes_abonados':
+            case 'comprobantes_recibidos':
                 // code to execute if the URL contains 'comprobantes_pagados'
-                $crud->where("comprobantes.estado_ropa_id != '4'");
-                $crud->where("comprobantes.estado_comprobante_id = '2'");
+                //$crud->where("comprobantes.estado_ropa_id != '4'");
+                //$crud->where("comprobantes.estado_comprobante_id = '2'");
+
+                $crud->where("comprobantes.estado_ropa_id IN (1, 3)");
+                $crud->where("comprobantes.estado_comprobante_id IN (1, 2)");
                 break;
-            case 'comprobantes_pendiente_pago':
+            case 'comprobantes_cancelados':
                 // code to execute if the URL contains 'comprobantes_pendiente_pago'
-                $crud->where("comprobantes.estado_ropa_id != '4'");
-                $crud->where("comprobantes.estado_comprobante_id = '1'");
+                //$crud->where("comprobantes.estado_ropa_id != '4'");
+                //$crud->where("comprobantes.estado_comprobante_id = '1'");
+
+                $crud->where("comprobantes.estado_ropa_id IN (1, 3)");
+                $crud->where("comprobantes.estado_comprobante_id", 4);
                 break;
-            case 'comprobantes_todos':
+            /*case 'comprobantes_todos':
                 // code to execute if the URL contains 'comprobantes_pendiente_pago'
                 echo '';
-                break;
+                break;*/
             default:
                 // code to execute if the URL doesn't contain any of the above
-                $crud->where("comprobantes.estado_ropa_id != '4'");
+                //$crud->where("comprobantes.estado_ropa_id != '4'");
+                //$crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
+
+                $crud->where("comprobantes.estado_ropa_id", 1);
                 $crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
                 break;
         }

@@ -50,6 +50,16 @@ $routes->get('comprobantes/(:any)','Home::comprobantes/$1');
 $routes->post('comprobantes','Home::comprobantes');
 $routes->post('comprobantes/(:any)','Home::comprobantes');
 
+$routes->get('comprobantes_recibidos','Home::comprobantes');
+$routes->get('comprobantes_recibidos/(:any)','Home::comprobantes/$1');
+$routes->post('comprobantes_recibidos','Home::comprobantes');
+$routes->post('comprobantes_recibidos/(:any)','Home::comprobantes');
+
+$routes->get('comprobantes_cancelados','Home::comprobantes');
+$routes->get('comprobantes_cancelados/(:any)','Home::comprobantes/$1');
+$routes->post('comprobantes_cancelados','Home::comprobantes');
+$routes->post('comprobantes_cancelados/(:any)','Home::comprobantes');
+
 $routes->get('comprobantes_abonados','Home::comprobantes');
 $routes->get('comprobantes_abonados/(:any)','Home::comprobantes/$1');
 $routes->post('comprobantes_abonados','Home::comprobantes');
