@@ -267,6 +267,8 @@ class Home extends BaseController
         $crud->columns(['cod_comprobante', 'cliente_id', 'estado_ropa_id', 'costo_total', 'deuda', 'fecha']);
         $crud->editFields(['cliente_id', 'cod_comprobante', 'estado_comprobante_id', 'estado_ropa_id', 'metodo_pago_id', 'monto_abonado', 'costo_total', 'observaciones']);
 
+        $crud->defaultOrdering('comprobantes.fecha', 'desc');
+
         $uri = service('uri');
         $segment = $uri->getSegment(1); // get the first segment of the URL
 

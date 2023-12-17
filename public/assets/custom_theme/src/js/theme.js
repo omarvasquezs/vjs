@@ -572,5 +572,28 @@
                 endDateInput.val('');
             }
         });
-    });    
+    });
+    $(document).ready(function() {
+        // Function to erase cookies with names starting with 'hidden_sorting' or 'hidden_ordering'
+        function eraseCookiesStartingWith(prefix) {
+            var cookies = document.cookie.split(';');
+    
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+    
+                // Check if the cookie name starts with the specified prefix
+                if (cookie.indexOf(prefix) === 0) {
+                    // Get the cookie name
+                    var cookieName = cookie.split('=')[0];
+                    
+                    // Set the cookie value to an empty string
+                    document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                }
+            }
+        }
+    
+        // Call the function to erase cookies starting with 'hidden_sorting' or 'hidden_ordering'
+        eraseCookiesStartingWith('hidden_sorting');
+        eraseCookiesStartingWith('hidden_ordering');
+    });
 })(jQuery);

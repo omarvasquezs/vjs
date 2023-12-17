@@ -115,6 +115,10 @@ body.login-page {
   display: none;
 }
 
+.field-sorting {
+  pointer-events: none;
+}
+
 .footer {
   margin-top: auto;
 }

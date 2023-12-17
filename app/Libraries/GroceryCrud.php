@@ -4338,7 +4338,7 @@ class GroceryCrud extends grocery_CRUD_States
      * @param string $direction
      * @return $this
      */
-    public function defaultOrdering($orderBy, $direction = 'asc')
+    public function defaultOrdering($orderBy, $direction = 'desc')
     {
         $this->order_by = [$orderBy, $direction];
 
