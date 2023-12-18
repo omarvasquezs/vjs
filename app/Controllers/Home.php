@@ -299,7 +299,7 @@ class Home extends BaseController
                 //$crud->where("comprobantes.estado_ropa_id != '4'");
                 //$crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
 
-                $crud->where("comprobantes.estado_ropa_id", 1);
+                $crud->where("comprobantes.estado_ropa_id IN (1, 3)");
                 $crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
                 break;
         }
