@@ -634,9 +634,11 @@
                 $('#monto_abonado').addClass('input-disabled').on('keydown paste', function(e) {
                     e.preventDefault();
                 }); // Add the 'input-disabled' class to #monto_abonado
+                $('#metodo_pago_id_field_box').hide();
                 $('#monto_abonado2').prop('type', 'hidden').prop('disabled', true); // Hide the input field
                 $('#monto_abonado').val('').show(); // Reset and show the #monto_abonado element
             } else {
+                $('#metodo_pago_id_field_box').show();
                 $('#monto_abonado').removeClass('input-disabled').off('keydown paste'); // Remove the 'input-disabled' class from #monto_abonado and remove the event handler
                 $('#monto_abonado2').prop('type', 'hidden').prop('disabled', true); // Hide the input field
                 $('#monto_abonado').val('').show(); // Reset and show the #monto_abonado element
