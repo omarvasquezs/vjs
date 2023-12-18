@@ -265,7 +265,7 @@ class Home extends BaseController
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
         $crud->readFields(['cod_comprobante', 'tipo_comprobante', 'cliente_id', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'SERVICIOS', 'monto_abonado', 'observaciones', 'last_updated_by']);
         $crud->columns(['cod_comprobante', 'cliente_id', 'estado_ropa_id', 'costo_total', 'deuda', 'fecha']);
-        $crud->editFields(['cliente_id', 'cod_comprobante', 'estado_comprobante_id', 'estado_ropa_id', 'metodo_pago_id', 'monto_abonado', 'costo_total', 'observaciones']);
+        $crud->editFields(['cliente_id', 'cod_comprobante', 'estado_ropa_id', 'estado_comprobante_id', 'metodo_pago_id', 'monto_abonado', 'costo_total', 'observaciones']);
 
         $crud->defaultOrdering('comprobantes.fecha', 'desc');
 
@@ -338,13 +338,16 @@ class Home extends BaseController
             $crud->displayAs('monto_abonado', 'MONTO ABONADO (Máximo a abonar: ' . $remaining . ')');
             echo '<style>#cliente_id_field_box {display: none;}</style>';
             if (number_format($maxValue, 2, '.', '') == number_format($montoAbonado, 2, '.', '')) {
-                $crud->callbackEditField('monto_abonado', function ($value, $primary_key) {
-                    return '<input type="hidden" step="0.01" name="monto_abonado" value="" style="width: 100%;"><input type="number" step="0.01" value="" style="width: 100%;" disabled>';
+                
+                $crud->callbackEditField('monto_abonado', function ($value, $primary_key) use ($remaining) {
+                    return '<input type="hidden" step="0.01" id="monto_abonado" name="monto_abonado" value="" style="width: 100%;">
+                            <input type="number" step="0.01" id="monto_abonado2" name="monto_abonado2" value="'. $remaining .'" style="width: 100%;" disabled>';
                 });
                 echo '<style>#estado_comprobante_id_field_box, #metodo_pago_id_field_box {display: none;}</style>';
             } else {
-                $crud->callbackEditField('monto_abonado', function ($value, $primary_key) {
-                    return '<input type="number" step="0.01" name="monto_abonado" value="" style="width: 100%;">';
+                $crud->callbackEditField('monto_abonado', function ($value, $primary_key) use ($remaining) {
+                    return '<input type="number" step="0.01" id="monto_abonado" name="monto_abonado" value="" style="width: 100%;">
+                            <input type="hidden" class="input-disabled" step="0.01" id="monto_abonado2" name="monto_abonado2" value="'. $remaining .'" style="width: 100%;" disabled>';
                 });
             }
         } elseif ($crud->getState() == 'read') {
@@ -382,7 +385,7 @@ class Home extends BaseController
         $crud->callbackBeforeUpdate(function ($stateParameters) use ($db) {
 
             //$this->updateEstadoComprobantesId($stateParameters->primaryKeyValue, $stateParameters->data['monto_abonado']);
-            if ($stateParameters->data['monto_abonado'] === '') {
+            if ($stateParameters->data['monto_abonado'] === "0" || $stateParameters->data['monto_abonado'] === "0.00" || $stateParameters->data['monto_abonado'] === '') {
                 unset($stateParameters->data['monto_abonado']);
             } else {
                 $model_comprobantes = new \App\Models\Comprobantes();

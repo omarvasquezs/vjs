@@ -119,6 +119,15 @@ body.login-page {
   pointer-events: none;
 }
 
+.chosen-container-single .chosen-single abbr {
+  display: none;
+}
+
+.input-disabled {
+  background-color: #eee;
+  color: #666;
+}
+
 .footer {
   margin-top: auto;
 }

@@ -586,6 +586,40 @@
     eraseCookiesStartingWith('hidden_sorting');
     eraseCookiesStartingWith('hidden_ordering');
   });
+  $(document).ready(function () {
+    // Function to toggle input field visibility based on the selected option
+    function toggleInputVisibility() {
+      var selectedOption = $('#field_estado_comprobante_id_chosen .chosen-single span').text().trim();
+      if (selectedOption === 'CANCELADO') {
+        $('#monto_abonado2').prop('type', 'number').prop('disabled', false); // Show the input field
+        $('#monto_abonado').val($('#monto_abonado2').val()).hide(); // Replace the value and hide the #monto_abonado element
+      } else if (selectedOption === 'DEBE') {
+        $('#monto_abonado').addClass('input-disabled').on('keydown paste', function (e) {
+          e.preventDefault();
+        }); // Add the 'input-disabled' class to #monto_abonado
+        $('#monto_abonado2').prop('type', 'hidden').prop('disabled', true); // Hide the input field
+        $('#monto_abonado').val('').show(); // Reset and show the #monto_abonado element
+      } else {
+        $('#monto_abonado').removeClass('input-disabled').off('keydown paste'); // Remove the 'input-disabled' class from #monto_abonado and remove the event handler
+        $('#monto_abonado2').prop('type', 'hidden').prop('disabled', true); // Hide the input field
+        $('#monto_abonado').val('').show(); // Reset and show the #monto_abonado element
+      }
+    }
+
+    // Check on initial load if 'CANCELADO' is selected
+    toggleInputVisibility();
+
+    // Listen for changes in the dropdown selection
+    $('#field_estado_comprobante_id_chosen').on('mouseup', 'li', function () {
+      setTimeout(toggleInputVisibility, 0); // Toggle input field visibility on dropdown selection
+    });
+  });
+
+  $(document).ready(function () {
+    $('#monto_abonado2').addClass('input-disabled').on('keydown paste', function (e) {
+      e.preventDefault();
+    });
+  });
 })(jQuery);
 
 /***/ }),
