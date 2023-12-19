@@ -263,7 +263,7 @@ class Home extends BaseController
         $crud->setRelation('last_updated_by', 'users', 'username');
         $crud->setRelation('estado_ropa_id', 'estado_ropa', 'nom_estado_ropa');
         $crud->setRelationNtoN('SERVICIOS', 'comprobantes_detalles', 'servicios', 'comprobante_id', 'servicio_id', 'nom_servicio');
-        $crud->readFields(['cod_comprobante', 'tipo_comprobante', 'cliente_id', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'SERVICIOS', 'monto_abonado', 'observaciones', 'last_updated_by']);
+        $crud->readFields(['cod_comprobante', 'cliente_id', 'SERVICIOS', 'user_id', 'fecha', 'metodo_pago_id', 'num_ruc', 'razon_social', 'estado_comprobante_id', 'estado_ropa_id', 'local_id', 'monto_abonado', 'observaciones', 'last_updated_by']);
         $crud->columns(['cod_comprobante', 'cliente_id', 'estado_ropa_id', 'costo_total', 'deuda', 'fecha']);
         $crud->editFields(['cliente_id', 'cod_comprobante', 'estado_ropa_id', 'estado_comprobante_id', 'metodo_pago_id', 'monto_abonado', 'costo_total', 'observaciones']);
 
@@ -343,7 +343,7 @@ class Home extends BaseController
                     return '<input type="hidden" step="0.01" id="monto_abonado" name="monto_abonado" value="" style="width: 100%;">
                             <input type="number" step="0.01" id="monto_abonado2" name="monto_abonado2" value="'. $remaining .'" style="width: 100%;" disabled>';
                 });
-                echo '<style>#estado_comprobante_id_field_box, #metodo_pago_id_field_box {display: none;}</style>';
+                echo '<style>#cod_comprobante_field_box, #estado_comprobante_id_field_box, #metodo_pago_id_field_box {display: none;}</style>';
             } else {
                 $crud->callbackEditField('monto_abonado', function ($value, $primary_key) use ($remaining) {
                     return '<input type="number" step="0.01" id="monto_abonado" name="monto_abonado" value="" style="width: 100%;">
