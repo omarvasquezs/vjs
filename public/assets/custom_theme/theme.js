@@ -533,9 +533,17 @@
     var setThisMonthCheckbox = $('#set_this_month');
     setCurrentDateCheckbox.on('change', function () {
       if ($(this).is(':checked')) {
-        var today = new Date().toISOString().split('T')[0];
-        startDateInput.val(today);
-        endDateInput.val(today);
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = today.getMonth() + 1; // getMonth() is zero-based
+        var day = today.getDate();
+
+        // Pad the month and day with leading zeros, if necessary
+        month = month < 10 ? '0' + month : month;
+        day = day < 10 ? '0' + day : day;
+        var localDate = "".concat(year, "-").concat(month, "-").concat(day);
+        startDateInput.val(localDate);
+        endDateInput.val(localDate);
         setThisMonthCheckbox.prop('checked', false);
       } else {
         startDateInput.val('');
@@ -545,10 +553,22 @@
     setThisMonthCheckbox.on('change', function () {
       if ($(this).is(':checked')) {
         var today = new Date();
-        var firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-        var lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-        startDateInput.val(firstDay);
-        endDateInput.val(lastDay);
+        var firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        var lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        var year = firstDay.getFullYear();
+        var month = firstDay.getMonth() + 1;
+        var day = firstDay.getDate();
+        month = month < 10 ? '0' + month : month;
+        day = day < 10 ? '0' + day : day;
+        var firstDayLocal = "".concat(year, "-").concat(month, "-").concat(day);
+        year = lastDay.getFullYear();
+        month = lastDay.getMonth() + 1;
+        day = lastDay.getDate();
+        month = month < 10 ? '0' + month : month;
+        day = day < 10 ? '0' + day : day;
+        var lastDayLocal = "".concat(year, "-").concat(month, "-").concat(day);
+        startDateInput.val(firstDayLocal);
+        endDateInput.val(lastDayLocal);
         setCurrentDateCheckbox.prop('checked', false);
       } else {
         startDateInput.val('');

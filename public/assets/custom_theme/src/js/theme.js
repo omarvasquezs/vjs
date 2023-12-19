@@ -566,9 +566,19 @@
     
         setCurrentDateCheckbox.on('change', function() {
             if ($(this).is(':checked')) {
-                const today = new Date().toISOString().split('T')[0];
-                startDateInput.val(today);
-                endDateInput.val(today);
+                let today = new Date();
+                let year = today.getFullYear();
+                let month = today.getMonth() + 1; // getMonth() is zero-based
+                let day = today.getDate();
+    
+                // Pad the month and day with leading zeros, if necessary
+                month = month < 10 ? '0' + month : month;
+                day = day < 10 ? '0' + day : day;
+    
+                let localDate = `${year}-${month}-${day}`;
+    
+                startDateInput.val(localDate);
+                endDateInput.val(localDate);
                 setThisMonthCheckbox.prop('checked', false);
             } else {
                 startDateInput.val('');
@@ -579,10 +589,29 @@
         setThisMonthCheckbox.on('change', function() {
             if ($(this).is(':checked')) {
                 const today = new Date();
-                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-                startDateInput.val(firstDay);
-                endDateInput.val(lastDay);
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    
+                let year = firstDay.getFullYear();
+                let month = firstDay.getMonth() + 1;
+                let day = firstDay.getDate();
+    
+                month = month < 10 ? '0' + month : month;
+                day = day < 10 ? '0' + day : day;
+    
+                let firstDayLocal = `${year}-${month}-${day}`;
+    
+                year = lastDay.getFullYear();
+                month = lastDay.getMonth() + 1;
+                day = lastDay.getDate();
+    
+                month = month < 10 ? '0' + month : month;
+                day = day < 10 ? '0' + day : day;
+    
+                let lastDayLocal = `${year}-${month}-${day}`;
+    
+                startDateInput.val(firstDayLocal);
+                endDateInput.val(lastDayLocal);
                 setCurrentDateCheckbox.prop('checked', false);
             } else {
                 startDateInput.val('');
@@ -599,7 +628,7 @@
             setThisMonthCheckbox.prop('checked', false);
             setCurrentDateCheckbox.prop('checked', false);
         });
-    });    
+    });
     $(document).ready(function() {
         // Function to erase cookies with names starting with 'hidden_sorting' or 'hidden_ordering'
         function eraseCookiesStartingWith(prefix) {
