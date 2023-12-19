@@ -1051,13 +1051,14 @@ class Home extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
         $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado');
-        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
-        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id');
+        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
+        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id');
         $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
             $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
         }
+        $builder->where('reporte_ingresos.monto_abonado >', 0);
         $comprobantesData = $builder->get()->getResultArray();
 
         // file creation
@@ -1087,13 +1088,14 @@ class Home extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
         $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado');
-        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
-        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id'); // use LEFT JOIN
+        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id'); // use LEFT JOIN
         $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
             $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
         }
+        $builder->where('reporte_ingresos.monto_abonado >', 0);
         $comprobantesData = $builder->get()->getResultArray();
 
         // Set the headers
@@ -1136,13 +1138,14 @@ class Home extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('reporte_ingresos');
         $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, metodo_pago.nom_metodo_pago, reporte_ingresos.monto_abonado');
-        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
-        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id'); // use LEFT JOIN
+        $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id'); // use LEFT JOIN
         $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
             $builder->where('DATE(reporte_ingresos.fecha) <=', $end_date);
         }
+        $builder->where('reporte_ingresos.monto_abonado >', 0);
         $comprobantesData = $builder->get()->getResultArray();
 
         // Return data as JSON
