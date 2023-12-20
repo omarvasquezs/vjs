@@ -32,6 +32,15 @@ class Home extends BaseController
         ];
         return $this->_mainOutput($output);
     }
+    public function adicionales()
+    {
+        $output = (object) [
+            'css_files' => [],
+            'js_files' => [],
+            'output' => view('adicionales')
+        ];
+        return $this->_crudOutput($output);
+    }
     public function clientes()
     {
         $crud = new GroceryCrud();
@@ -336,7 +345,7 @@ class Home extends BaseController
             $montoAbonado = $this->getMontoAbonado(service('uri')->getSegment(service('uri')->getTotalSegments()));
             $remaining = number_format($maxValue - $montoAbonado, 2, '.', '');
             $crud->displayAs('monto_abonado', 'MONTO ABONADO (Máximo a abonar: ' . $remaining . ')');
-            echo '<style>#cliente_id_field_box {display: none;}</style>';
+            echo '<style>#cod_comprobante_field_box,#cliente_id_field_box {display: none;}</style>';
             if (number_format($maxValue, 2, '.', '') == number_format($montoAbonado, 2, '.', '')) {
                 
                 $crud->callbackEditField('monto_abonado', function ($value, $primary_key) use ($remaining) {
@@ -362,6 +371,10 @@ class Home extends BaseController
 
         $crud->setActionButton('Reenviar Comprobante', 'whatsapp-icon-custom', function ($row) {
             return site_url('reenviarpdf/' . $row);
+        }, false);
+
+        $crud->setActionButton('Añadir adicional', 'adicionales-icon-custom', function ($row) {
+            return site_url('adicionales/' . $row);
         }, false);
 
         // Add this callback to modify the tipo_comprobante column in the list view
@@ -988,6 +1001,51 @@ class Home extends BaseController
             window.location.href = '/comprobantes';
         </script>";
         //return redirect()->to('/comprobantes');
+    }
+    public function submit_adicionales_form()
+    {
+        helper(['form', 'url']);
+    
+        $model_comprobantes_detalles = new \App\Models\ComprobantesDetalles();
+        $model_comprobantes = new \App\Models\Comprobantes();
+        $db = \Config\Database::connect(); // Get a reference to the database
+    
+        $inserted_id = $this->request->getPost('comprobante_id');
+    
+        $val_id_servicio = $this->request->getPost('val_id_servicio');
+        $val_kg_ropa_register = $this->request->getPost('val_kg_ropa_register');
+        $val_precio_kilo = $this->request->getPost('val_precio_kilo');
+    
+        $data_comprobantes_detalles = [];
+        $total_cost = 0; // This will hold the sum of peso_kg * costo_kilo
+    
+        foreach ($val_id_servicio as $key => $value) {
+            $peso_kg = $val_kg_ropa_register[$key];
+            $costo_kilo = $val_precio_kilo[$key];
+            $total_cost += $peso_kg * $costo_kilo; // Calculate the sum for each item
+    
+            $data_comprobantes_detalles[] = [
+                'servicio_id' => $val_id_servicio[$key],
+                'peso_kg' => $peso_kg,
+                'costo_kilo' => $costo_kilo,
+                'comprobante_id' => $inserted_id
+            ];
+        }
+    
+        $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
+
+        $estado_comprobante_id = $model_comprobantes->where('id', $inserted_id)->first()['estado_comprobante_id'];
+
+        if($estado_comprobante_id == 4)
+        {
+            $db->table('comprobantes')->where('id', $inserted_id)->update(['estado_comprobante_id' => 2]);
+        }
+    
+        // Fetch the current costo_total from the comprobantes table
+        $current_costo_total = $db->table('comprobantes')->where('id', $inserted_id)->get()->getRow()->costo_total;
+    
+        // Update the costo_total in the comprobantes table
+        $db->table('comprobantes')->where('id', $inserted_id)->update(['costo_total' => $current_costo_total + $total_cost]);
     }
     public function reenviarPDF($comprobante_id)
     {

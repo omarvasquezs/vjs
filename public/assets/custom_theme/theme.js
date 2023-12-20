@@ -73,7 +73,7 @@
         }
       },
       ajax: {
-        url: 'fetchMetodoPago',
+        url: '/fetchMetodoPago',
         // Update with your actual URL for fetching servicio data
         dataType: 'json',
         type: "GET",
@@ -119,7 +119,7 @@
         }
       },
       ajax: {
-        url: 'fetchClientes',
+        url: '/fetchClientes',
         // Update with your actual URL for fetching servicio data
         dataType: 'json',
         type: "GET",
@@ -165,7 +165,7 @@
         }
       },
       ajax: {
-        url: 'fetchServicios',
+        url: '/fetchServicios',
         // Update with your actual URL for fetching servicio data
         dataType: 'json',
         type: "GET",
@@ -212,7 +212,7 @@
         }
       },
       ajax: {
-        url: 'fetchEstadocomprobantes',
+        url: '/fetchEstadocomprobantes',
         // Update with your actual URL for fetching estado comprobante data
         dataType: 'json',
         type: "GET",
@@ -256,7 +256,7 @@
       var servicioId = $('#servicioDropdown').val();
       if (servicioId) {
         // Fetch servicio details based on the selected servicio ID
-        $.post('fetchServicioDetails', {
+        $.post('/fetchServicioDetails', {
           servicio_id: servicioId
         }, function (data) {
           var servicio = data;
@@ -337,6 +337,15 @@
       $(this).html(printIconSpan);
     });
 
+    // Find all elements with class 'fa-solid fa-shirt'
+    $('.adicionales-icon-custom').each(function () {
+      // Create a new <span> element with class 'fa-solid fa-shirt'
+      var adicionalesIconSpan = $('<span class="fa-solid fa-shirt"></span>');
+
+      // Replace the text inside the <a> tag with the created <span> element
+      $(this).html(adicionalesIconSpan);
+    });
+
     // Find all elements with class 'whatsapp-icon-custom'
     $('.whatsapp-icon-custom').each(function () {
       // Create a new <span> element with class 'whatsapp-icon'
@@ -363,6 +372,21 @@
       $('#printModal').modal('show');
       return false;
     });
+
+    // jQuery code to handle the action button click
+    $('.adicionales-icon-custom').on('click', function (e) {
+      e.preventDefault();
+
+      // Get the URL from the action button's data-url attribute
+      var url = $(this).attr('href');
+
+      // Set the iframe src attribute to the URL with "/58mm" appended
+      $('#adicionalesIframe').attr('src', url);
+
+      // Open the Bootstrap modal
+      $('#adicionalesModal').modal('show');
+      return false;
+    });
   });
   $(document).ajaxComplete(function () {
     // Adding print icon on grocery crud flexigrid
@@ -373,6 +397,15 @@
 
       // Replace the text inside the <a> tag with the created <span> element
       $(this).html(printIconSpan);
+    });
+
+    // Find all elements with class 'fa-solid fa-shirt'
+    $('.adicionales-icon-custom').each(function () {
+      // Create a new <span> element with class 'fa-solid fa-shirt'
+      var adicionalesIconSpan = $('<span class="fa-solid fa-shirt"></span>');
+
+      // Replace the text inside the <a> tag with the created <span> element
+      $(this).html(adicionalesIconSpan);
     });
 
     // Find all elements with class 'whatsapp-icon-custom'
@@ -399,6 +432,21 @@
 
       // Open the Bootstrap modal
       $('#printModal').modal('show');
+      return false;
+    });
+
+    // jQuery code to handle the action button click
+    $('.adicionales-icon-custom').on('click', function (e) {
+      e.preventDefault();
+
+      // Get the URL from the action button's data-url attribute
+      var url = $(this).attr('href');
+
+      // Set the iframe src attribute to the URL with "/58mm" appended
+      $('#adicionalesIframe').attr('src', url);
+
+      // Open the Bootstrap modal
+      $('#adicionalesModal').modal('show');
       return false;
     });
   });

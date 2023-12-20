@@ -17,8 +17,9 @@
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body class="d-flex flex-column min-vh-100 <?php echo isset($css_class) ? $css_class : ''; ?>">
@@ -51,9 +52,12 @@
                             CONSULTAR
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="consultarDropdown">
-                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes">COMPROBANTES TODOS</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_recibidos">COMPROBANTES NO CANCELADOS</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_cancelados">COMPROBANTES CANCELADOS</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes">COMPROBANTES TODOS</a>
+                            </li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_recibidos">COMPROBANTES NO
+                                    CANCELADOS</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_cancelados">COMPROBANTES
+                                    CANCELADOS</a></li>
                             <!--<li><a class="dropdown-item"
                                     href="<?= base_url() ?>comprobantes_pendiente_pago">COMPROBANTES PENDIENTES DE
                                     PAGO</a></li>-->
@@ -156,6 +160,23 @@
                         <div class="modal-body">
                             <iframe src="<?= base_url() ?>registrar_cliente/add" width="100%" height="100%"
                                 frameborder="0"></iframe>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bootstrap modal for adicionales -->
+            <div class="modal" id="adicionalesModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-fullscreen" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">ADICIONALES</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <iframe id="adicionalesIframe" width="100%" height="100%" frameborder="0"></iframe>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

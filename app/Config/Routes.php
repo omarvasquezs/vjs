@@ -84,7 +84,9 @@ $routes->post('fetchServicioDetails/(:any)','Home::fetchServicioDetails');
 $routes->get('fetchMetodoPago','Home::fetchMetodoPago');
 $routes->get('fetchClientes','Home::fetchClientes');
 $routes->get('fetchEstadocomprobantes','Home::fetchEstadocomprobantes');
+
 $routes->post('submit_comprobante','Home::submit_comprobantes_form');
+$routes->post('submit_adicionales','Home::submit_adicionales_form');
 
 $routes->get('ver_detalles/(:any)','Home::view_details/$1');
 
@@ -115,3 +117,8 @@ $routes->get('reenviarpdf/(:any)','Home::reenviarPDF/$1');
 
 $routes->get('reporte_trabajo','Home::reporte_trabajo');
 $routes->get('reporte_ingresos','Home::reporte_ingresos');
+
+$routes->get('adicionales','Home::adicionales');
+$routes->get('adicionales/(:any)','Home::adicionales/$1');
+$routes->post('adicionales','Home::adicionales');
+$routes->post('adicionales/(:any)','Home::adicionales');
