@@ -1008,6 +1008,7 @@ class Home extends BaseController
     
         $model_comprobantes_detalles = new \App\Models\ComprobantesDetalles();
         $model_comprobantes = new \App\Models\Comprobantes();
+        $model_clientes = new \App\Models\Clientes();
         $db = \Config\Database::connect(); // Get a reference to the database
     
         $inserted_id = $this->request->getPost('comprobante_id');
@@ -1035,7 +1036,11 @@ class Home extends BaseController
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
 
         $estado_comprobante_id = $model_comprobantes->where('id', $inserted_id)->first()['estado_comprobante_id'];
+        $cliente_id = $model_comprobantes->where('id', $inserted_id)->first()['cliente_id'];
+        $cod_comprobante = $model_comprobantes->where('id', $inserted_id)->first()['cod_comprobante'];
+        $telefono = $model_clientes->where('id', $cliente_id)->first()['telefono'];
 
+        // Check if comprobante is already CANCELADO
         if($estado_comprobante_id == 4)
         {
             $db->table('comprobantes')->where('id', $inserted_id)->update(['estado_comprobante_id' => 2]);
@@ -1046,6 +1051,14 @@ class Home extends BaseController
     
         // Update the costo_total in the comprobantes table
         $db->table('comprobantes')->where('id', $inserted_id)->update(['costo_total' => $current_costo_total + $total_cost]);
+
+        // Send new comprobante through whatsapp
+        $this->whatsapp_pdf($inserted_id, $telefono);
+
+        session()->setFlashdata('success_message', 'Se actualizo con éxito el siguiente comprobante: ' . $cod_comprobante);
+
+        // After all your PHP code, output the JavaScript code to reload the parent page
+        echo "<script>window.parent.location.reload();</script>";
     }
     public function reenviarPDF($comprobante_id)
     {
