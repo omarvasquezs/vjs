@@ -13,7 +13,7 @@
 <body class="login-page">
     <div class="container">
         <div class="login-container">
-            <img class="img-fluid" src="<?= base_url() ?>assets/img/main_logo.jpeg">
+            <img class="img-fluid" src="<?=base_url()?>assets/img/main_logo.jpg">
             <form class="login-form" action="/authenticate" method="post">
                 <div class="mb-3">
                     <input type="text" class="form-control" id="username" name="username" placeholder="USUARIO"
