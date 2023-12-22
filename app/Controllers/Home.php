@@ -507,7 +507,7 @@ class Home extends BaseController
             session()->setFlashdata('wsp_msg_danger', '<p>El teléfono <b>' . $phone_number . '</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir las notificaciones.</p>');
         } else {
             // Store the message in flash data
-            session()->setFlashdata('wsp_msg_success', 'Se notifico al teléfono <b>'. $phone_number .'</b> con éxito.');
+            session()->setFlashdata('wsp_msg_success', 'Se notifico con éxito al teléfono: <b>'. $phone_number .'</b>.');
         }
     }
     private function whatsapp_pdf($comprobante_id, $phone_number)
@@ -519,7 +519,7 @@ class Home extends BaseController
             session()->setFlashdata('wsp_msg_danger', '<p>El teléfono <b>' . $phone_number . '</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir el comprobante en PDF, provisionalmente puede enviar el comprobante por correo como tambien imprimirlo.</p>');
         } else {
             // Store the message in flash data
-            session()->setFlashdata('wsp_msg_success', 'Se envio comprobante con éxito al teléfono <b>'. $phone_number .'</b>');
+            session()->setFlashdata('wsp_msg_success', 'Se envio comprobante con éxito al teléfono: <b>'. $phone_number .'</b>.');
         }
     }    
     private function send_request($url)
@@ -1006,14 +1006,14 @@ class Home extends BaseController
 
         $model_reporte_ingresos->insert($data_ingresos);
         
-        session()->setFlashdata('success_message', 'El código de comprobante generado es: ' . $cod_comprobante);
+        session()->setFlashdata('success_message', 'El código de comprobante generado es: <b>' . $cod_comprobante.'</b>');
         
         // Create a script block that will display the cod_comprobante in a JavaScript alert before redirecting
-        echo "<script>
+        /*echo "<script>
             alert('El código de comprobante generado es: " . $model_comprobantes->where('id', $model_comprobantes->getInsertID())->first()['cod_comprobante'] . "');
             window.location.href = '/comprobantes';
-        </script>";
-        //return redirect()->to('/comprobantes');
+        </script>";*/
+        return redirect()->to('/comprobantes');
     }
     public function submit_adicionales_form()
     {
@@ -1068,7 +1068,7 @@ class Home extends BaseController
         // Send new comprobante through whatsapp
         $this->whatsapp_pdf($inserted_id, $telefono);
 
-        session()->setFlashdata('success_message', 'Se actualizo con éxito el siguiente comprobante: ' . $cod_comprobante);
+        session()->setFlashdata('success_message', 'Se actualizo con éxito el siguiente comprobante: <b>' . $cod_comprobante .'</b>');
 
         // After all your PHP code, output the JavaScript code to reload the parent page
         echo "<script>window.parent.location.reload();</script>";
