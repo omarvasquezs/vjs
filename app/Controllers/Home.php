@@ -589,9 +589,10 @@ class Home extends BaseController
 
         // Fetch comprobantes data
         $builder = $db->table('comprobantes');
-        $builder->select('comprobantes.cod_comprobante as cod_comprobante, comprobantes.estado_comprobante_id as estado_comprobante_id, comprobantes.id as comprobantes_id, clientes.dni as dni, clientes.direccion as direccion, comprobantes.*, clientes.nombres, users.username');
+        $builder->select('comprobantes.cod_comprobante as cod_comprobante, comprobantes.estado_comprobante_id as estado_comprobante_id, comprobantes.id as comprobantes_id, clientes.dni as dni, clientes.direccion as direccion, comprobantes.*, clientes.nombres, users.username, estado_comprobantes.nom_estado as estado_comprobante');
         $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
         $builder->join('users', 'comprobantes.user_id = users.id');
+        $builder->join('estado_comprobantes', 'comprobantes.estado_comprobante_id = estado_comprobantes.id', 'left');
         $builder->where('comprobantes.id', $id);
         $comprobante = $builder->get()->getRowArray();
 
@@ -668,9 +669,10 @@ class Home extends BaseController
 
         // Fetch comprobantes data
         $builder = $db->table('comprobantes');
-        $builder->select('comprobantes.cod_comprobante as cod_comprobante, comprobantes.id as comprobantes_id, comprobantes.*, clientes.*, users.*');
+        $builder->select('comprobantes.cod_comprobante as cod_comprobante, comprobantes.id as comprobantes_id, comprobantes.*, clientes.*, users.*, estado_comprobantes.nom_estado as estado_comprobante');
         $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
         $builder->join('users', 'comprobantes.user_id = users.id');
+        $builder->join('estado_comprobantes', 'comprobantes.estado_comprobante_id = estado_comprobantes.id', 'left');
         $builder->where('comprobantes.id', $id);
         $comprobante = $builder->get()->getRowArray();
 

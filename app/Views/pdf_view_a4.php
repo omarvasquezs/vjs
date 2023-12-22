@@ -112,6 +112,9 @@
                 <p><b>Dirección: </b>
                     <?= $comprobante['direccion'] ?>
                 </p>
+                <p><b>Estado: </b>
+                    <?= $comprobante['estado_comprobante'] ?>
+                </p>
             </div>
         </div>
         <div class="row">

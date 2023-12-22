@@ -97,8 +97,11 @@
         <p class="mt-0 pt-0 mb-2 pb-0"><span class="fw-bold">DNI:</span>
             <?= $comprobante['dni'] ?>
         </p>
-        <p class="mt-0 pt-0 mb-3 pb-0"><span class="fw-bold">DIRECCIÓN:</span>
+        <p class="mt-0 pt-0 mb-2 pb-0"><span class="fw-bold">DIRECCIÓN:</span>
             <?= $comprobante['direccion'] ?>
+        </p>
+        <p class="mt-0 pt-0 mb-3 pb-0"><span class="fw-bold">ESTADO:</span>
+            <?= $comprobante['estado_comprobante'] ?>
         </p>
         <h2 class="text-center fw-bolder">DETALLES</h2>
         <!-- Add other comprobante fields as needed... -->
