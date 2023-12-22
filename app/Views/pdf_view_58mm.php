@@ -51,7 +51,7 @@
 
 <body>
     <div class="container">
-        <img class="img-fluid mb-2" src="<?= base_url() ?>assets/img/main_logo.jpeg">
+        <img class="img-fluid mb-2" src="<?= base_url() ?>assets/img/main_logo.jpg">
         <h1 class="text-center">VJS LAUNDRY S.A.C.</h1>
         <div class="text-center">
             <p class="mt-0 mb-0 pb-0 pt-0">Av. Agustín de la Rosa Toro 318, San Luis 15021</p>

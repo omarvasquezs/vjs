@@ -56,7 +56,7 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-5">
-                <img class="img-responsive" src="<?= base_url() ?>assets/img/main_logo.jpeg">
+                <img class="img-responsive" src="<?= base_url() ?>assets/img/main_logo.jpg">
             </div>
             <div class="col-xs-5 col-xs-offset-1 invoice-header">
                 <h2 class="invoice-title">R.U.C. N° 20602340466</h2>
