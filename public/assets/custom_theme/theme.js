@@ -460,6 +460,7 @@
       return false;
     });
   });
+  // REPORTE INGRESOS VIA WEB
   $(document).ready(function () {
     $('#reporte_ingresos').submit(function (e) {
       var start_date = $('#start_date').val();
@@ -492,19 +493,45 @@
           },
           dataType: "json",
           success: function success(response) {
-            var table = '<table class="table table-striped table-bordered"><thead><tr>' + '<th>COMPROBANTE</th>' + '<th>CLIENTE</th>' + '<th>FECHA DE ABONO</th>' + '<th>METODO DE PAGO</th>' + '<th>MONTO ABONADO</th>' + '</tr></thead><tbody>';
-            var totalSum = 0; // Variable to store the sum of 'monto_abonado'
+            var totalSum = 0; // Variable to store the total sum of 'monto_abonado'
+            var metodoPagoSum = {}; // Object to store sum for each 'METODO DE PAGO'
+            var totalMetodoPagoSum = 0; // Variable to store total sum of 'METODO DE PAGO'
 
             $.each(response, function (index, item) {
               var metodoPago = item.nom_metodo_pago !== null ? item.nom_metodo_pago : 'NINGUNO';
-              table += '<tr>' + '<td>' + item.cod_comprobante + '</td>' + '<td>' + item.nombres + '</td>' + '<td>' + item.fecha + '</td>' + '<td>' + metodoPago + '</td>' + '<td>' + item.monto_abonado + '</td>' + '</tr>';
 
               // Add 'monto_abonado' value to the totalSum
               totalSum += parseFloat(item.monto_abonado);
+
+              // Sum 'monto_abonado' for each 'METODO DE PAGO'
+              if (!metodoPagoSum[metodoPago]) {
+                metodoPagoSum[metodoPago] = parseFloat(item.monto_abonado);
+              } else {
+                metodoPagoSum[metodoPago] += parseFloat(item.monto_abonado);
+              }
             });
-            table += '</tbody><tfoot>' + '<tr>' + '<td colspan="4"><strong>Total:</strong></td>' + '<td><strong>' + totalSum.toFixed(2) + '</strong></td>' +
-            // Display the total sum
-            '</tr>' + '</tfoot></table>';
+            var table = '<table class="table table-striped table-bordered"><thead><tr>' + '<td><strong>FILAS ENCONTRADAS:</strong></td>' + '<td colspan="4">' + response.length + '</td>' + '</tr>';
+
+            // Display sum for each 'METODO DE PAGO' above the headers
+            for (var method in metodoPagoSum) {
+              if (metodoPagoSum.hasOwnProperty(method)) {
+                table += '<tr>' + '<td><strong>' + method + ' TOTAL:</strong></td>' + '<td colspan="4">' + metodoPagoSum[method].toFixed(2) + '</td>' + '</tr>';
+
+                // Add sum of 'METODO DE PAGO' to the totalMetodoPagoSum
+                totalMetodoPagoSum += metodoPagoSum[method];
+              }
+            }
+            table += '<tr>' + '<td><strong>INGRESOS TOTALES EN SOLES:</strong></td>' + '<td colspan="4">' + totalMetodoPagoSum.toFixed(2) + '</td>' + '</tr>' + '<tr>' + '<th>COMPROBANTE</th>' + '<th>CLIENTE</th>' + '<th>FECHA DE ABONO</th>' + '<th>METODO DE PAGO</th>' + '<th>MONTO ABONADO</th>' + '</tr>';
+            table += '</thead><tbody>';
+
+            // Generate table body
+            $.each(response, function (index, item) {
+              var metodoPago = item.nom_metodo_pago !== null ? item.nom_metodo_pago : 'NINGUNO';
+              table += '<tr>' + '<td>' + item.cod_comprobante + '</td>' + '<td>' + item.nombres + '</td>' + '<td>' + item.fecha + '</td>' + '<td>' + metodoPago + '</td>' + '<td>' + item.monto_abonado + '</td>' + '</tr>';
+            });
+
+            // Display the total sum at the top of the table
+            table += '</tbody></table>';
             $('#data-table').html(table);
           },
           error: function error(xhr, status, _error) {
@@ -518,6 +545,8 @@
       }
     });
   });
+
+  // REPORTE DE TRABAJO VIA WEB
   $(document).ready(function () {
     $('#reporte_trabajo').submit(function (e) {
       var start_date = $('#start_date').val();

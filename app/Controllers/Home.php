@@ -347,16 +347,16 @@ class Home extends BaseController
             $crud->displayAs('monto_abonado', 'MONTO ABONADO (Máximo a abonar: ' . $remaining . ')');
             echo '<style>#cod_comprobante_field_box,#cliente_id_field_box {display: none;}</style>';
             if (number_format($maxValue, 2, '.', '') == number_format($montoAbonado, 2, '.', '')) {
-                
+
                 $crud->callbackEditField('monto_abonado', function ($value, $primary_key) use ($remaining) {
                     return '<input type="hidden" step="0.01" id="monto_abonado" name="monto_abonado" value="" style="width: 100%;">
-                            <input type="number" step="0.01" id="monto_abonado2" name="monto_abonado2" value="'. $remaining .'" style="width: 100%;" disabled>';
+                            <input type="number" step="0.01" id="monto_abonado2" name="monto_abonado2" value="' . $remaining . '" style="width: 100%;" disabled>';
                 });
                 echo '<style>#cod_comprobante_field_box, #estado_comprobante_id_field_box, #metodo_pago_id_field_box {display: none;}</style>';
             } else {
                 $crud->callbackEditField('monto_abonado', function ($value, $primary_key) use ($remaining) {
                     return '<input type="number" step="0.01" id="monto_abonado" name="monto_abonado" value="" style="width: 100%;">
-                            <input type="hidden" class="input-disabled" step="0.01" id="monto_abonado2" name="monto_abonado2" value="'. $remaining .'" style="width: 100%;" disabled>';
+                            <input type="hidden" class="input-disabled" step="0.01" id="monto_abonado2" name="monto_abonado2" value="' . $remaining . '" style="width: 100%;" disabled>';
                 });
             }
         } elseif ($crud->getState() == 'read') {
@@ -507,21 +507,21 @@ class Home extends BaseController
             session()->setFlashdata('wsp_msg_danger', '<p>El teléfono <b>' . $phone_number . '</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir las notificaciones.</p>');
         } else {
             // Store the message in flash data
-            session()->setFlashdata('wsp_msg_success', 'Se notifico con éxito al teléfono: <b>'. $phone_number .'</b>.');
+            session()->setFlashdata('wsp_msg_success', 'Se notifico con éxito al teléfono: <b>' . $phone_number . '</b>.');
         }
     }
     private function whatsapp_pdf($comprobante_id, $phone_number)
     {
         $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=hCS2aZ9aHwhF&document=' . base_url() . 'comprobante/' . $comprobante_id . '/a4/comprobante_A4_' . date('YmdHis') . '.pdf';
-        
+
         if (strpos($this->send_request($url), 'Invalid Destination WhatsApp number') !== false) {
             // Store the message in flash data
             session()->setFlashdata('wsp_msg_danger', '<p>El teléfono <b>' . $phone_number . '</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir el comprobante en PDF, provisionalmente puede enviar el comprobante por correo como tambien imprimirlo.</p>');
         } else {
             // Store the message in flash data
-            session()->setFlashdata('wsp_msg_success', 'Se envio comprobante con éxito al teléfono: <b>'. $phone_number .'</b>.');
+            session()->setFlashdata('wsp_msg_success', 'Se envio comprobante con éxito al teléfono: <b>' . $phone_number . '</b>.');
         }
-    }    
+    }
     private function send_request($url)
     {
         if ($ch = curl_init($url)) {
@@ -1005,9 +1005,9 @@ class Home extends BaseController
         ];
 
         $model_reporte_ingresos->insert($data_ingresos);
-        
-        session()->setFlashdata('success_message', 'El código de comprobante generado es: <b>' . $cod_comprobante.'</b>');
-        
+
+        session()->setFlashdata('success_message', 'El código de comprobante generado es: <b>' . $cod_comprobante . '</b>');
+
         // Create a script block that will display the cod_comprobante in a JavaScript alert before redirecting
         /*echo "<script>
             alert('El código de comprobante generado es: " . $model_comprobantes->where('id', $model_comprobantes->getInsertID())->first()['cod_comprobante'] . "');
@@ -1018,26 +1018,26 @@ class Home extends BaseController
     public function submit_adicionales_form()
     {
         helper(['form', 'url']);
-    
+
         $model_comprobantes_detalles = new \App\Models\ComprobantesDetalles();
         $model_comprobantes = new \App\Models\Comprobantes();
         $model_clientes = new \App\Models\Clientes();
         $db = \Config\Database::connect(); // Get a reference to the database
-    
+
         $inserted_id = $this->request->getPost('comprobante_id');
-    
+
         $val_id_servicio = $this->request->getPost('val_id_servicio');
         $val_kg_ropa_register = $this->request->getPost('val_kg_ropa_register');
         $val_precio_kilo = $this->request->getPost('val_precio_kilo');
-    
+
         $data_comprobantes_detalles = [];
         $total_cost = 0; // This will hold the sum of peso_kg * costo_kilo
-    
+
         foreach ($val_id_servicio as $key => $value) {
             $peso_kg = $val_kg_ropa_register[$key];
             $costo_kilo = $val_precio_kilo[$key];
             $total_cost += $peso_kg * $costo_kilo; // Calculate the sum for each item
-    
+
             $data_comprobantes_detalles[] = [
                 'servicio_id' => $val_id_servicio[$key],
                 'peso_kg' => $peso_kg,
@@ -1045,7 +1045,7 @@ class Home extends BaseController
                 'comprobante_id' => $inserted_id
             ];
         }
-    
+
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
 
         $estado_comprobante_id = $model_comprobantes->where('id', $inserted_id)->first()['estado_comprobante_id'];
@@ -1054,21 +1054,20 @@ class Home extends BaseController
         $telefono = $model_clientes->where('id', $cliente_id)->first()['telefono'];
 
         // Check if comprobante is already CANCELADO
-        if($estado_comprobante_id == 4)
-        {
+        if ($estado_comprobante_id == 4) {
             $db->table('comprobantes')->where('id', $inserted_id)->update(['estado_comprobante_id' => 2]);
         }
-    
+
         // Fetch the current costo_total from the comprobantes table
         $current_costo_total = $db->table('comprobantes')->where('id', $inserted_id)->get()->getRow()->costo_total;
-    
+
         // Update the costo_total in the comprobantes table
         $db->table('comprobantes')->where('id', $inserted_id)->update(['costo_total' => $current_costo_total + $total_cost]);
 
         // Send new comprobante through whatsapp
         $this->whatsapp_pdf($inserted_id, $telefono);
 
-        session()->setFlashdata('success_message', 'Se actualizo con éxito el siguiente comprobante: <b>' . $cod_comprobante .'</b>');
+        session()->setFlashdata('success_message', 'Se actualizo con éxito el siguiente comprobante: <b>' . $cod_comprobante . '</b>');
 
         // After all your PHP code, output the JavaScript code to reload the parent page
         echo "<script>window.parent.location.reload();</script>";

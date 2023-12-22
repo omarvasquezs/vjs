@@ -424,7 +424,7 @@
             $('#printModal').modal('show');
             return false;
         });
-        
+
         // jQuery code to handle the action button click
         $('.adicionales-icon-custom').on('click', function (e) {
             e.preventDefault();
@@ -450,11 +450,12 @@
             return false;
         });
     });
-    $(document).ready(function() {
-        $('#reporte_ingresos').submit(function(e) {
+    // REPORTE INGRESOS VIA WEB
+    $(document).ready(function () {
+        $('#reporte_ingresos').submit(function (e) {
             var start_date = $('#start_date').val();
             var end_date = $('#end_date').val();
-    
+
             if (!start_date || !end_date) {
                 alert('Asegurese que los campos no esten vacios.');
                 e.preventDefault(); // prevent form from submitting
@@ -463,18 +464,18 @@
                 e.preventDefault(); // prevent form from submitting
             }
         });
-    
-        $('.export-option').click(function(e) {
+
+        $('.export-option').click(function (e) {
             e.preventDefault();
             var action = $(this).data('action');
             var start_date = $('#start_date').val();
             var end_date = $('#end_date').val();
-        
+
             if (!start_date || !end_date) {
                 alert('Asegurese que los campos no esten vacios.');
                 return;
             }
-        
+
             if (action === '/fetch_reporte_ingresos_web') {
                 $.ajax({
                     type: "POST",
@@ -484,20 +485,60 @@
                         end_date: end_date
                     },
                     dataType: "json",
-                    success: function(response) {
+                    success: function (response) {
+                        var totalSum = 0; // Variable to store the total sum of 'monto_abonado'
+                        var metodoPagoSum = {}; // Object to store sum for each 'METODO DE PAGO'
+                        var totalMetodoPagoSum = 0; // Variable to store total sum of 'METODO DE PAGO'
+
+                        $.each(response, function (index, item) {
+                            var metodoPago = item.nom_metodo_pago !== null ? item.nom_metodo_pago : 'NINGUNO';
+
+                            // Add 'monto_abonado' value to the totalSum
+                            totalSum += parseFloat(item.monto_abonado);
+
+                            // Sum 'monto_abonado' for each 'METODO DE PAGO'
+                            if (!metodoPagoSum[metodoPago]) {
+                                metodoPagoSum[metodoPago] = parseFloat(item.monto_abonado);
+                            } else {
+                                metodoPagoSum[metodoPago] += parseFloat(item.monto_abonado);
+                            }
+                        });
+
                         var table = '<table class="table table-striped table-bordered"><thead><tr>' +
+                            '<td><strong>FILAS ENCONTRADAS:</strong></td>' +
+                            '<td colspan="4">' + response.length + '</td>' +
+                            '</tr>';
+
+                        // Display sum for each 'METODO DE PAGO' above the headers
+                        for (var method in metodoPagoSum) {
+                            if (metodoPagoSum.hasOwnProperty(method)) {
+                                table += '<tr>' +
+                                    '<td><strong>' + method + ' TOTAL:</strong></td>' +
+                                    '<td colspan="4">' + metodoPagoSum[method].toFixed(2) + '</td>' +
+                                    '</tr>';
+
+                                // Add sum of 'METODO DE PAGO' to the totalMetodoPagoSum
+                                totalMetodoPagoSum += metodoPagoSum[method];
+                            }
+                        }
+
+                        table += '<tr>' +
+                            '<td><strong>INGRESOS TOTALES EN SOLES:</strong></td>' +
+                            '<td colspan="4">' + totalMetodoPagoSum.toFixed(2) + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
                             '<th>COMPROBANTE</th>' +
                             '<th>CLIENTE</th>' +
                             '<th>FECHA DE ABONO</th>' +
                             '<th>METODO DE PAGO</th>' +
                             '<th>MONTO ABONADO</th>' +
-                            '</tr></thead><tbody>';
-                    
-                        var totalSum = 0; // Variable to store the sum of 'monto_abonado'
-                    
-                        $.each(response, function(index, item) {
+                            '</tr>';
+                        table += '</thead><tbody>';
+
+                        // Generate table body
+                        $.each(response, function (index, item) {
                             var metodoPago = item.nom_metodo_pago !== null ? item.nom_metodo_pago : 'NINGUNO';
-                    
+
                             table += '<tr>' +
                                 '<td>' + item.cod_comprobante + '</td>' +
                                 '<td>' + item.nombres + '</td>' +
@@ -505,22 +546,15 @@
                                 '<td>' + metodoPago + '</td>' +
                                 '<td>' + item.monto_abonado + '</td>' +
                                 '</tr>';
-                    
-                            // Add 'monto_abonado' value to the totalSum
-                            totalSum += parseFloat(item.monto_abonado);
                         });
-                    
-                        table += '</tbody><tfoot>' +
-                            '<tr>' +
-                            '<td colspan="4"><strong>Total:</strong></td>' +
-                            '<td><strong>' + totalSum.toFixed(2) + '</strong></td>' + // Display the total sum
-                            '</tr>' +
-                            '</tfoot></table>';
-                    
+
+                        // Display the total sum at the top of the table
+                        table += '</tbody></table>';
+
                         $('#data-table').html(table);
                     },
-                    
-                    error: function(xhr, status, error) {
+
+                    error: function (xhr, status, error) {
                         console.error(xhr.responseText);
                         alert('Error occurred while fetching data.');
                     }
@@ -529,13 +563,15 @@
                 $('#reporte_ingresos').attr('action', action);
                 $('#reporte_ingresos').submit();
             }
-        });        
+        });
     });
-    $(document).ready(function() {
-        $('#reporte_trabajo').submit(function(e) {
+
+    // REPORTE DE TRABAJO VIA WEB
+    $(document).ready(function () {
+        $('#reporte_trabajo').submit(function (e) {
             var start_date = $('#start_date').val();
             var end_date = $('#end_date').val();
-    
+
             if (!start_date || !end_date) {
                 alert('Asegurese que los campos no esten vacios.');
                 e.preventDefault(); // prevent form from submitting
@@ -544,18 +580,18 @@
                 e.preventDefault(); // prevent form from submitting
             }
         });
-    
-        $('.export-option').click(function(e) {
+
+        $('.export-option').click(function (e) {
             e.preventDefault();
             var action = $(this).data('action');
             var start_date = $('#start_date').val();
             var end_date = $('#end_date').val();
-        
+
             if (!start_date || !end_date) {
                 alert('Asegurese que los campos no esten vacios.');
                 return;
             }
-        
+
             if (action === '/fetch_reporte_trabajo_web') {
                 $.ajax({
                     type: "POST",
@@ -565,37 +601,37 @@
                         end_date: end_date
                     },
                     dataType: "json",
-                    success: function(response) {
+                    success: function (response) {
                         var table = '<table class="table table-striped table-bordered"><thead><tr>' +
-                        '<th>COMPROBANTE</th>' +
-                        '<th>CLIENTE</th>' +
-                        '<th>FECHA</th>' +
-                        '<th>COSTO TOTAL</th>' +
-                        '</tr></thead><tbody>';
-                        
+                            '<th>COMPROBANTE</th>' +
+                            '<th>CLIENTE</th>' +
+                            '<th>FECHA</th>' +
+                            '<th>COSTO TOTAL</th>' +
+                            '</tr></thead><tbody>';
+
                         var totalSum = 0; // Variable to store the sum of 'costo_total'
 
-                        $.each(response, function(index, item) {                            
+                        $.each(response, function (index, item) {
                             table += '<tr>' +
-                                     '<td>' + item.cod_comprobante + '</td>' +
-                                     '<td>' + item.nombres + '</td>' +
-                                     '<td>' + item.fecha + '</td>' +
-                                     '<td>' + item.costo_total + '</td>' +
-                                     '</tr>';
+                                '<td>' + item.cod_comprobante + '</td>' +
+                                '<td>' + item.nombres + '</td>' +
+                                '<td>' + item.fecha + '</td>' +
+                                '<td>' + item.costo_total + '</td>' +
+                                '</tr>';
                             // Add 'costo_total' value to the totalSum
                             totalSum += parseFloat(item.costo_total);
                         });
-        
+
                         table += '</tbody><tfoot>' +
-                        '<tr>' +
-                        '<td colspan="3"><strong>Total:</strong></td>' +
-                        '<td><strong>' + totalSum.toFixed(2) + '</strong></td>' + // Display the total sum
-                        '</tr>' +
-                        '</tfoot></table>';
-        
+                            '<tr>' +
+                            '<td colspan="3"><strong>Total:</strong></td>' +
+                            '<td><strong>' + totalSum.toFixed(2) + '</strong></td>' + // Display the total sum
+                            '</tr>' +
+                            '</tfoot></table>';
+
                         $('#data-table').html(table);
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error(xhr.responseText);
                         alert('Error occurred while fetching data.');
                     }
@@ -604,27 +640,27 @@
                 $('#reporte_trabajo').attr('action', action);
                 $('#reporte_trabajo').submit();
             }
-        });        
+        });
     });
-    $(document).ready(function() {
+    $(document).ready(function () {
         const startDateInput = $('#start_date');
         const endDateInput = $('#end_date');
         const setCurrentDateCheckbox = $('#set_current_date');
         const setThisMonthCheckbox = $('#set_this_month');
-    
-        setCurrentDateCheckbox.on('change', function() {
+
+        setCurrentDateCheckbox.on('change', function () {
             if ($(this).is(':checked')) {
                 let today = new Date();
                 let year = today.getFullYear();
                 let month = today.getMonth() + 1; // getMonth() is zero-based
                 let day = today.getDate();
-    
+
                 // Pad the month and day with leading zeros, if necessary
                 month = month < 10 ? '0' + month : month;
                 day = day < 10 ? '0' + day : day;
-    
+
                 let localDate = `${year}-${month}-${day}`;
-    
+
                 startDateInput.val(localDate);
                 endDateInput.val(localDate);
                 setThisMonthCheckbox.prop('checked', false);
@@ -633,31 +669,31 @@
                 endDateInput.val('');
             }
         });
-    
-        setThisMonthCheckbox.on('change', function() {
+
+        setThisMonthCheckbox.on('change', function () {
             if ($(this).is(':checked')) {
                 const today = new Date();
                 const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
                 const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    
+
                 let year = firstDay.getFullYear();
                 let month = firstDay.getMonth() + 1;
                 let day = firstDay.getDate();
-    
+
                 month = month < 10 ? '0' + month : month;
                 day = day < 10 ? '0' + day : day;
-    
+
                 let firstDayLocal = `${year}-${month}-${day}`;
-    
+
                 year = lastDay.getFullYear();
                 month = lastDay.getMonth() + 1;
                 day = lastDay.getDate();
-    
+
                 month = month < 10 ? '0' + month : month;
                 day = day < 10 ? '0' + day : day;
-    
+
                 let lastDayLocal = `${year}-${month}-${day}`;
-    
+
                 startDateInput.val(firstDayLocal);
                 endDateInput.val(lastDayLocal);
                 setCurrentDateCheckbox.prop('checked', false);
@@ -666,41 +702,41 @@
                 endDateInput.val('');
             }
         });
-    
-        startDateInput.on('change', function() {
+
+        startDateInput.on('change', function () {
             setThisMonthCheckbox.prop('checked', false);
             setCurrentDateCheckbox.prop('checked', false);
         });
-    
-        endDateInput.on('change', function() {
+
+        endDateInput.on('change', function () {
             setThisMonthCheckbox.prop('checked', false);
             setCurrentDateCheckbox.prop('checked', false);
         });
     });
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Function to erase cookies with names starting with 'hidden_sorting' or 'hidden_ordering'
         function eraseCookiesStartingWith(prefix) {
             var cookies = document.cookie.split(';');
-    
+
             for (var i = 0; i < cookies.length; i++) {
                 var cookie = cookies[i].trim();
-    
+
                 // Check if the cookie name starts with the specified prefix
                 if (cookie.indexOf(prefix) === 0) {
                     // Get the cookie name
                     var cookieName = cookie.split('=')[0];
-                    
+
                     // Set the cookie value to an empty string
                     document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 }
             }
         }
-    
+
         // Call the function to erase cookies starting with 'hidden_sorting' or 'hidden_ordering'
         eraseCookiesStartingWith('hidden_sorting');
         eraseCookiesStartingWith('hidden_ordering');
     });
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Function to toggle input field visibility based on the selected option
         function toggleInputVisibility() {
             var selectedOption = $('#field_estado_comprobante_id_chosen .chosen-single span').text().trim();
@@ -708,7 +744,7 @@
                 $('#monto_abonado2').prop('type', 'number').prop('disabled', false); // Show the input field
                 $('#monto_abonado').val($('#monto_abonado2').val()).hide(); // Replace the value and hide the #monto_abonado element
             } else if (selectedOption === 'DEBE') {
-                $('#monto_abonado').addClass('input-disabled').on('keydown paste', function(e) {
+                $('#monto_abonado').addClass('input-disabled').on('keydown paste', function (e) {
                     e.preventDefault();
                 }); // Add the 'input-disabled' class to #monto_abonado
                 $('#metodo_pago_id_field_box').hide();
@@ -721,17 +757,17 @@
                 $('#monto_abonado').val('').show(); // Reset and show the #monto_abonado element
             }
         }
-    
+
         // Check on initial load if 'CANCELADO' is selected
         toggleInputVisibility();
-    
+
         // Listen for changes in the dropdown selection
-        $('#field_estado_comprobante_id_chosen').on('mouseup', 'li', function() {
+        $('#field_estado_comprobante_id_chosen').on('mouseup', 'li', function () {
             setTimeout(toggleInputVisibility, 0); // Toggle input field visibility on dropdown selection
         });
     });
-    $(document).ready(function() {
-        $('#monto_abonado2').addClass('input-disabled').on('keydown paste', function(e) {
+    $(document).ready(function () {
+        $('#monto_abonado2').addClass('input-disabled').on('keydown paste', function (e) {
             e.preventDefault();
         });
     });
