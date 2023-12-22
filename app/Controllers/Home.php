@@ -502,23 +502,34 @@ class Home extends BaseController
     {
         $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=hCS2aZ9aHwhF&text=' . urlencode($message);
 
-        return $this->send_request($url);
+        if (strpos($this->send_request($url), 'Invalid Destination WhatsApp number') !== false) {
+            // Store the message in flash data
+            session()->setFlashdata('wsp_msg_danger', '<p>El teléfono <b>' . $phone_number . '</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir las notificaciones.</p>');
+        } else {
+            // Store the message in flash data
+            session()->setFlashdata('wsp_msg_success', 'Se notifico al teléfono <b>'. $phone_number .'</b> con éxito.');
+        }
     }
     private function whatsapp_pdf($comprobante_id, $phone_number)
     {
         $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=hCS2aZ9aHwhF&document=' . base_url() . 'comprobante/' . $comprobante_id . '/a4/comprobante_A4_' . date('YmdHis') . '.pdf';
-
-        return $this->send_request($url);
-    }
+        
+        if (strpos($this->send_request($url), 'Invalid Destination WhatsApp number') !== false) {
+            // Store the message in flash data
+            session()->setFlashdata('wsp_msg_danger', '<p>El teléfono <b>' . $phone_number . '</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir el comprobante en PDF, provisionalmente puede enviar el comprobante por correo como tambien imprimirlo.</p>');
+        } else {
+            // Store the message in flash data
+            session()->setFlashdata('wsp_msg_success', 'Se envio comprobante con éxito al teléfono <b>'. $phone_number .'</b>');
+        }
+    }    
     private function send_request($url)
     {
         if ($ch = curl_init($url)) {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
             $html = curl_exec($ch);
-            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
-            return (int) $status;
+            return $html;
         } else {
             return false;
         }
@@ -1073,7 +1084,7 @@ class Home extends BaseController
 
         $this->whatsapp_pdf($comprobante_id, $telefono);
 
-        return redirect()->to(previous_url());
+        return redirect()->to('/comprobantes');
     }
     public function incrementComprobanteCounter($id, $tipo_comprobante)
     {
