@@ -690,6 +690,10 @@
       if (selectedOption === 'CANCELADO') {
         $('#monto_abonado2').prop('type', 'number').prop('disabled', false); // Show the input field
         $('#monto_abonado').val($('#monto_abonado2').val()).hide(); // Replace the value and hide the #monto_abonado element
+        // Check if #estado_comprobante_id_field_box is visible before showing #metodo_pago_id_field_box
+        if ($('#estado_comprobante_id_field_box').is(':visible')) {
+          $('#metodo_pago_id_field_box').show();
+        }
       } else if (selectedOption === 'DEBE') {
         $('#monto_abonado').addClass('input-disabled').on('keydown paste', function (e) {
           e.preventDefault();

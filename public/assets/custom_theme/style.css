@@ -128,6 +128,10 @@ body.login-page {
   color: #666;
 }
 
+.comprobantes #form-button-save {
+  display: none;
+}
+
 .footer {
   margin-top: auto;
 }

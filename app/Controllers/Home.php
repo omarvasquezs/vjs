@@ -394,10 +394,33 @@ class Home extends BaseController
 
         $db = \Config\Database::connect();
 
-        // Add beforeUpdate event
-        $crud->callbackBeforeUpdate(function ($stateParameters) use ($db) {
+        $validation = \Config\Services::validation();
 
-            //$this->updateEstadoComprobantesId($stateParameters->primaryKeyValue, $stateParameters->data['monto_abonado']);
+        // Add beforeUpdate event
+        $crud->callbackBeforeUpdate(function ($stateParameters) use ($db, $validation) {
+            if (
+                ($stateParameters->data['estado_comprobante_id'] == 2 && empty($stateParameters->data['metodo_pago_id'])) ||
+                ($stateParameters->data['estado_comprobante_id'] == 2 && empty($stateParameters->data['metodo_pago_id']) && empty($stateParameters->data['monto_abonado'])) ||
+                ($stateParameters->data['estado_comprobante_id'] == 4 && empty($stateParameters->data['metodo_pago_id'])) ||
+                ($stateParameters->data['estado_comprobante_id'] == 4 && empty($stateParameters->data['metodo_pago_id']) && empty($stateParameters->data['monto_abonado']))
+            ) {
+                // Set the rules
+                $validation->setRule('metodo_pago_id', 'METODO DE PAGO', 'required', [
+                    'required' => 'El campo {field} es obligatorio.'
+                ]);
+
+                // Run the validation check
+                if (!$validation->run($stateParameters->data)) {
+                    // If validation fails, get the error message
+                    //$errors = $validation->getErrors();
+                    //$errorMessage = reset($errors);
+
+                    // Prevent updating the data by throwing an exception
+                    //throw new \Exception($errorMessage);
+                    return false;
+                }
+            }
+
             if ($stateParameters->data['monto_abonado'] === "0" || $stateParameters->data['monto_abonado'] === "0.00" || $stateParameters->data['monto_abonado'] === '') {
                 unset($stateParameters->data['monto_abonado']);
             } else {
