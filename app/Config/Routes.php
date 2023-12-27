@@ -107,6 +107,8 @@ $routes->post('fetch_reporte_ingresos_web','Home::fetch_reporte_ingresos_web');
 
 $routes->post('exportcsvtrabajo','Home::exportCSVtrabajo');
 $routes->post('exportexceltrabajo','Home::exportExceltrabajo');
+$routes->get('exportexceltrabajoall','Home::exportExceltrabajoAll');
+$routes->post('exportexceltrabajoall','Home::exportExceltrabajoAll');
 $routes->post('fetch_reporte_trabajo_web','Home::fetch_reporte_trabajo_web');
 
 $routes->get('registrar_cliente/(:any)', 'Home::clientes/$1');

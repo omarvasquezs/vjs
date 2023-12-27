@@ -1346,6 +1346,69 @@ class Home extends BaseController
         $writer->save('php://output'); // download file
         die;
     }
+    public function exportExceltrabajoAll()
+    {        
+        // Create a new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Get data
+        $db = \Config\Database::connect();
+        $builder = $db->table('comprobantes');
+        $builder->select('comprobantes.cod_comprobante,
+        clientes.nombres,
+        comprobantes.num_ruc,
+        comprobantes.razon_social,
+        DATE_FORMAT(comprobantes.fecha, "%Y-%m-%d") as fecha,
+        DATE_FORMAT(comprobantes.fecha_actualizacion, "%Y-%m-%d") as fecha_actualizacion,
+        metodo_pago.nom_metodo_pago,
+        estado_ropa.nom_estado_ropa,
+        estado_comprobantes.nom_estado,
+        u1.username as registrado_por,
+        u2.username as actualizado_por,
+        comprobantes.observaciones,
+        comprobantes.monto_abonado,
+        comprobantes.costo_total');
+        $builder->join('metodo_pago', 'comprobantes.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
+        $builder->join('estado_ropa', 'comprobantes.estado_ropa_id = estado_ropa.id', 'left'); // use LEFT JOIN
+        $builder->join('estado_comprobantes', 'comprobantes.estado_comprobante_id = estado_comprobantes.id', 'left'); // use LEFT JOIN
+        $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
+        $builder->join('users as u1', 'comprobantes.user_id = u1.id', 'left');
+        $builder->join('users as u2', 'comprobantes.last_updated_by = u2.id', 'left');
+
+        $comprobantesData = $builder->get()->getResultArray();
+
+        // Set the headers
+        $headers = array("COMPROBANTE", "CLIENTE", "N RUC", "RAZON SOCIAL","FECHA", "FECHA ACTUALIZACION", "METODO DE PAGO", "ESTADO ROPA", "ESTADO COMPROBANTE", "REGISTRADO POR", "ACTUALIZADO POR", "OBSERVACIONES", "ABONADO", "COSTO TOTAL");
+        foreach ($headers as $key => $header) {
+            $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
+        }
+
+        // Add the data
+        $rowNumber = 2;
+        foreach ($comprobantesData as $dataRow) {
+            $column = 1;
+            foreach ($dataRow as $value) {
+                // Encode special characters
+                $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                $sheet->setCellValueByColumnAndRow($column, $rowNumber, $value);
+                $column++;
+            }
+            $rowNumber++;
+        }
+
+        // Save to a temporary file as XLSX format explicitly
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = 'registro_trabajo_comprobantes_todos_' . date('YmdHis');
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output'); // download file
+        die;
+    }
     public function fetch_reporte_trabajo_web()
     {
         $start_date = $this->request->getPost('start_date');
