@@ -1366,6 +1366,7 @@ class Home extends BaseController
         estado_comprobantes.nom_estado,
         u1.username as registrado_por,
         u2.username as actualizado_por,
+        locales.nombre,
         comprobantes.observaciones,
         comprobantes.monto_abonado,
         comprobantes.costo_total');
@@ -1375,11 +1376,12 @@ class Home extends BaseController
         $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
         $builder->join('users as u1', 'comprobantes.user_id = u1.id', 'left');
         $builder->join('users as u2', 'comprobantes.last_updated_by = u2.id', 'left');
+        $builder->join('locales', 'comprobantes.local_id = locales.id', 'left');
 
         $comprobantesData = $builder->get()->getResultArray();
 
         // Set the headers
-        $headers = array("COMPROBANTE", "CLIENTE", "N RUC", "RAZON SOCIAL","FECHA", "FECHA ACTUALIZACION", "METODO DE PAGO", "ESTADO ROPA", "ESTADO COMPROBANTE", "REGISTRADO POR", "ACTUALIZADO POR", "OBSERVACIONES", "ABONADO", "COSTO TOTAL");
+        $headers = array("COMPROBANTE", "CLIENTE", "N RUC", "RAZON SOCIAL","FECHA", "FECHA ACTUALIZACION", "METODO DE PAGO", "ESTADO ROPA", "ESTADO COMPROBANTE", "REGISTRADO POR", "ACTUALIZADO POR", "LOCAL", "OBSERVACIONES", "ABONADO", "COSTO TOTAL");
         foreach ($headers as $key => $header) {
             $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
         }
