@@ -1359,8 +1359,8 @@ class Home extends BaseController
         clientes.nombres,
         comprobantes.num_ruc,
         comprobantes.razon_social,
-        DATE_FORMAT(comprobantes.fecha, "%Y-%m-%d") as fecha,
-        DATE_FORMAT(comprobantes.fecha_actualizacion, "%Y-%m-%d") as fecha_actualizacion,
+        comprobantes.fecha,
+        comprobantes.fecha_actualizacion,
         metodo_pago.nom_metodo_pago,
         estado_ropa.nom_estado_ropa,
         estado_comprobantes.nom_estado,
@@ -1402,7 +1402,7 @@ class Home extends BaseController
         // Save to a temporary file as XLSX format explicitly
         $writer = new Xlsx($spreadsheet);
 
-        $filename = 'registro_trabajo_comprobantes_todos_' . date('YmdHis');
+        $filename = 'comprobantes_todos_' . date('YmdHis');
 
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
