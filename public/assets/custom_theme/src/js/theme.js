@@ -282,8 +282,14 @@
     $(document).ready(function () {
         $('#btn_registrar_comprobante').click(function (event) {
             var tableContent = $('table tbody').html().trim();
+            var estadoComprobante = $('#estadoComprobante').val(); // assuming the id of your estadoComprobante field
+            var metodopagoDropdown = $('#metodopagoDropdown').val(); // assuming the id of your metodopagoDropdown field
+    
             if (tableContent === '') {
                 alert('Favor ingrese servicios en el comprobante!');
+                event.preventDefault();
+            } else if ((estadoComprobante == 2 || estadoComprobante == 4) && (metodopagoDropdown == null || metodopagoDropdown.trim() == '')) {
+                alert('DEBE SELECCIONAR METODO DE PAGO.');
                 event.preventDefault();
             } else {
                 var emptyRequiredInputs = $('input:enabled[required], select:enabled[required]').filter(function () {
@@ -301,7 +307,7 @@
                 }
             }
         });
-    });
+    });    
     // radio options for RUC fields behavior
     $(document).ready(function () {
         $('#btnradio3').change(function () {
