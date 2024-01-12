@@ -299,10 +299,10 @@ class Home extends BaseController
                 $crud->where("comprobantes.estado_ropa_id IN (1, 3)");
                 $crud->where("comprobantes.estado_comprobante_id", 4);
                 break;
-            /*case 'comprobantes_todos':
+            case 'comprobantes_todos':
                 // code to execute if the URL contains 'comprobantes_pendiente_pago'
                 echo '';
-                break;*/
+                break;
             default:
                 // code to execute if the URL doesn't contain any of the above
                 //$crud->where("comprobantes.estado_ropa_id != '4'");

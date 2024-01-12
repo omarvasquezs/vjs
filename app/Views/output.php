@@ -92,6 +92,7 @@
                             <li><a class="dropdown-item" href="<?= base_url() ?>reporte_ingresos">FINANCIEROS</a></li>
                             <li><a class="dropdown-item" href="<?= base_url() ?>reporte_trabajo">CARGA DE TRABAJO</a>
                             <li><a class="dropdown-item" href="<?= base_url() ?>exportexceltrabajoall">EXPORTAR TODOS LOS COMPROBANTES</a>
+                            <li><a class="dropdown-item" href="<?= base_url() ?>comprobantes_todos">HISTORICO COMPROBANTES</a>
                             </li>
                         </ul>
                     </li>
