@@ -317,7 +317,9 @@ class Home extends BaseController
         $crud->unsetExport();
         $crud->unsetPrint();
         $crud->unsetAdd();
-        $crud->unsetDelete();
+        if (session()->get('role_id') != 1) {
+            $crud->unsetDelete();
+        }
         $crud->setRead();
         //$crud->requiredFields(['monto_abonado']);
         $crud->displayAs([
