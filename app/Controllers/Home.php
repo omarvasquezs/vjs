@@ -643,24 +643,24 @@ class Home extends BaseController
             'details' => $details,
             // Add other data you want to pass to the view...
         ];
-        // Set options to enable embedded PHP 
+        // Set options to enable embedded PHP
         $options = new Options();
         $options->set('isPhpEnabled', 'true');
         $dompdf = new Dompdf(['isRemoteEnabled' => true]);
         $dompdf->loadHtml(view('pdf_view_a4', $data), 'UTF-8');
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
-        // Instantiate canvas instance 
+        // Instantiate canvas instance
         /*$canvas = $dompdf->getCanvas();
 
-        // Instantiate font metrics class 
+        // Instantiate font metrics class
         $fontMetrics = new FontMetrics($canvas, $options);
 
-        // Get height and width of page 
+        // Get height and width of page
         $w = $canvas->get_width();
         $h = $canvas->get_height();
 
-        // Get font family file 
+        // Get font family file
         $font = $fontMetrics->getFont('times');
 
         // Specify watermark text
@@ -683,18 +683,18 @@ class Home extends BaseController
                 break;
         }
 
-        // Get height and width of text 
+        // Get height and width of text
         $txtHeight = $fontMetrics->getFontHeight($font, $fontSize);
         $textWidth = $fontMetrics->getTextWidth($text, $font, $fontSize);
 
-        // Set text opacity 
+        // Set text opacity
         $canvas->set_opacity(.2);
 
-        // Specify horizontal and vertical position 
+        // Specify horizontal and vertical position
         $x = (($w - $textWidth) / 2);
         $y = (($h - $txtHeight) / 3);
 
-        // Writes text at the specified x and y coordinates 
+        // Writes text at the specified x and y coordinates
         $canvas->text($x, $y, $text, $font, $fontSize, array(255, 0, 0), '', '', 20);*/
         $dompdf->stream('comprobante_a4-' . date('YmdHis') . '.pdf', ['Attachment' => false]);
         exit();
@@ -723,7 +723,7 @@ class Home extends BaseController
             'details' => $details,
             // Add other data you want to pass to the view...
         ];
-        // Set options to enable embedded PHP 
+        // Set options to enable embedded PHP
         $options = new Options();
         $options->set('isPhpEnabled', 'true');
         $dompdf = new Dompdf();
@@ -749,34 +749,34 @@ class Home extends BaseController
         $dompdf->setPaper(array(0, 0, 164, $docHeight));
         $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
         $dompdf->render();
-        // Instantiate canvas instance 
+        // Instantiate canvas instance
         /*$canvas = $dompdf->getCanvas();
 
-        // Instantiate font metrics class 
+        // Instantiate font metrics class
         $fontMetrics = new FontMetrics($canvas, $options);
 
-        // Get height and width of page 
+        // Get height and width of page
         $w = $canvas->get_width();
         $h = $canvas->get_height();
 
-        // Get font family file 
+        // Get font family file
         $font = $fontMetrics->getFont('times');
 
-        // Specify watermark text 
+        // Specify watermark text
         $text = "";
 
-        // Get height and width of text 
+        // Get height and width of text
         $txtHeight = $fontMetrics->getFontHeight($font, 75);
         $textWidth = $fontMetrics->getTextWidth($text, $font, 75);
 
-        // Set text opacity 
+        // Set text opacity
         $canvas->set_opacity(.2);
 
-        // Specify horizontal and vertical position 
+        // Specify horizontal and vertical position
         $x = (($w - $textWidth) / 2);
         $y = (($h - $txtHeight) / 2);
 
-        // Writes text at the specified x and y coordinates 
+        // Writes text at the specified x and y coordinates
         $canvas->text($x, $y, $text, $font, 75);*/
         $dompdf->stream('comprobante_58mm-' . date('YmdHis') . '.pdf', array("Attachment" => false));
         exit();
@@ -1349,7 +1349,7 @@ class Home extends BaseController
         die;
     }
     public function exportExceltrabajoAll()
-    {        
+    {
         // Create a new Spreadsheet object
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -1410,8 +1410,9 @@ class Home extends BaseController
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
         header('Cache-Control: max-age=0');
 
-        $writer->save('php://output'); // download file
-        die;
+        //$writer->save('php://output'); // download file
+        //die;
+        return redirect()->to('/');
     }
     public function fetch_reporte_trabajo_web()
     {
@@ -1440,7 +1441,8 @@ class Home extends BaseController
             'js_files' => [],
             'output' => view('reporte_ingresos')
         ];
-        return $this->_mainOutput($output);
+        //return $this->_mainOutput($output);
+        return redirect()->to('/');
     }
     public function reporte_trabajo()
     {
@@ -1449,7 +1451,8 @@ class Home extends BaseController
             'js_files' => [],
             'output' => view('reporte_trabajo')
         ];
-        return $this->_mainOutput($output);
+        //return $this->_mainOutput($output);
+        return redirect()->to('/');
     }
     public function change_password()
     {
