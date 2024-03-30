@@ -1410,9 +1410,8 @@ class Home extends BaseController
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
         header('Cache-Control: max-age=0');
 
-        //$writer->save('php://output'); // download file
-        //die;
-        return redirect()->to('/');
+        $writer->save('php://output'); // download file
+        die;
     }
     public function fetch_reporte_trabajo_web()
     {
@@ -1441,8 +1440,7 @@ class Home extends BaseController
             'js_files' => [],
             'output' => view('reporte_ingresos')
         ];
-        //return $this->_mainOutput($output);
-        return redirect()->to('/');
+        return $this->_mainOutput($output);
     }
     public function reporte_trabajo()
     {
@@ -1451,8 +1449,7 @@ class Home extends BaseController
             'js_files' => [],
             'output' => view('reporte_trabajo')
         ];
-        //return $this->_mainOutput($output);
-        return redirect()->to('/');
+        return $this->_mainOutput($output);
     }
     public function change_password()
     {
