@@ -526,25 +526,35 @@ class Home extends BaseController
     private function whatsapp_message($phone_number, $message)
     {
         $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=2GKoeUfNo5dp&text=' . urlencode($message);
+        $response = $this->send_request($url);
+        $invalidNumberMessage = 'Invalid Destination WhatsApp number';
 
-        if (strpos($this->send_request($url), 'Invalid Destination WhatsApp number') !== false) {
-            // Store the message in flash data
-            session()->setFlashdata('wsp_msg_danger', '<p>El teléfono <b>' . $phone_number . '</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir las notificaciones.</p>');
+        if (strpos($response, 'Error') !== false) {
+            $message = "Error al enviar mensaje. El servicio de tercero no esta respondiendo.";
+            session()->setFlashdata('wsp_msg_danger', $message);
+        } else if (strpos($response, $invalidNumberMessage) !== false) {
+            $message = "<p>El teléfono <b>{$phone_number}</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir las notificaciones.</p>";
+            session()->setFlashdata('wsp_msg_danger', $message);
         } else {
-            // Store the message in flash data
-            session()->setFlashdata('wsp_msg_success', 'Se notifico con éxito al teléfono: <b>' . $phone_number . '</b>.');
+            $message = "Se notifico con éxito al teléfono: <b>{$phone_number}</b>.";
+            session()->setFlashdata('wsp_msg_success', $message);
         }
     }
     private function whatsapp_pdf($comprobante_id, $phone_number)
     {
         $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=2GKoeUfNo5dp&document=' . base_url() . 'comprobante/' . $comprobante_id . '/a4/comprobante_A4_' . date('YmdHis') . '.pdf';
-
-        if (strpos($this->send_request($url), 'Invalid Destination WhatsApp number') !== false) {
-            // Store the message in flash data
-            session()->setFlashdata('wsp_msg_danger', '<p>El teléfono <b>' . $phone_number . '</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir el comprobante en PDF, provisionalmente puede enviar el comprobante por correo como tambien imprimirlo.</p>');
+        $response = $this->send_request($url);
+        $invalidNumberMessage = 'Invalid Destination WhatsApp number';
+    
+        if (strpos($response, 'Error') !== false) {
+            $message = "Error al enviar mensaje. El servicio de tercero no esta respondiendo.";
+            session()->setFlashdata('wsp_msg_danger', $message);
+        } else if (strpos($response, $invalidNumberMessage) !== false) {
+            $message = "<p>El teléfono <b>{$phone_number}</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir el comprobante en PDF, provisionalmente puede enviar el comprobante por correo como tambien imprimirlo.</p>";
+            session()->setFlashdata('wsp_msg_danger', $message);
         } else {
-            // Store the message in flash data
-            session()->setFlashdata('wsp_msg_success', 'Se envio comprobante con éxito al teléfono: <b>' . $phone_number . '</b>.');
+            $message = "Se envio comprobante con éxito al teléfono: <b>{$phone_number}</b>.";
+            session()->setFlashdata('wsp_msg_success', $message);
         }
     }
     private function send_request($url)
