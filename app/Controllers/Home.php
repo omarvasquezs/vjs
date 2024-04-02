@@ -995,7 +995,7 @@ class Home extends BaseController
             'user_id' => session()->get('user_id'),
             'local_id' => 5,
             'estado_ropa_id' => 1,
-            'fecha' => date('Y-m-d H:i:s'),
+            'fecha' => $this->request->getPost('creado'),
             'estado_comprobante_id' => $estadoComprobante,
             'monto_abonado' => $montoAbonado,
             'last_updated_by' => session()->get('user_id'),
