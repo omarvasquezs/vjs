@@ -525,7 +525,7 @@ class Home extends BaseController
     }
     private function whatsapp_message($phone_number, $message)
     {
-        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=hCS2aZ9aHwhF&text=' . urlencode($message);
+        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=2GKoeUfNo5dp&text=' . urlencode($message);
 
         if (strpos($this->send_request($url), 'Invalid Destination WhatsApp number') !== false) {
             // Store the message in flash data
@@ -537,7 +537,7 @@ class Home extends BaseController
     }
     private function whatsapp_pdf($comprobante_id, $phone_number)
     {
-        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=hCS2aZ9aHwhF&document=' . base_url() . 'comprobante/' . $comprobante_id . '/a4/comprobante_A4_' . date('YmdHis') . '.pdf';
+        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=2GKoeUfNo5dp&document=' . base_url() . 'comprobante/' . $comprobante_id . '/a4/comprobante_A4_' . date('YmdHis') . '.pdf';
 
         if (strpos($this->send_request($url), 'Invalid Destination WhatsApp number') !== false) {
             // Store the message in flash data
