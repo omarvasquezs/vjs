@@ -89,7 +89,7 @@
                     <div class="row total-block">
                         <div class="d-grid gap-2 mb-4">
                             <h5>CREACION:</h5>
-                            <input type="date" class="form-control" id="creado" name="creado" required>
+                            <input type="datetime-local" class="form-control" id="creado" name="creado" required>
                         </div>
                         <h5>OP. GRAVADAS: <span id="sub_total_register"></span></h5>
                         <h5 class="mb-4">IGV 18%: <span id="igv_register"></span></h5>
