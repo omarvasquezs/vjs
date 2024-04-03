@@ -12,30 +12,14 @@
 
   // Dynamic content on registering a comprobante
   $(document).ready(function () {
-    // Calculate the total of the fourth column values
-    function calculateTotal() {
-      var total = 0;
-      $(".table tbody").find('tr input[type="number"]').each(function () {
-        var row = $(this).closest('tr');
-        var input = $(this).val();
-        var thirdColumn = parseFloat(row.find('td:eq(2) input').val());
-
-        // Check if input is empty or not
-        var inputValue = input.trim() === '' ? 0 : parseFloat(input);
-
-        // Calculate the sum
-        var sum = inputValue * thirdColumn || 0; // If either input or thirdColumn is NaN, set sum as 0
-
-        // Display the sum in the fourth column
-        row.find('td:eq(3)').text(sum.toFixed(2));
-        total += sum;
-      });
-      return total;
-    }
-
     // Update the total register span element with the calculated total
     function updateTotalRegister() {
-      var total = calculateTotal();
+      var total = 0;
+      $(".table tbody tr").each(function () {
+        var row = $(this);
+        var sum = parseFloat(row.find('td:eq(3)').text()) || 0;
+        total += sum;
+      });
       var igv = total * 0.18;
       var subtotal = total - igv;
       $("#total_register").text('S/. ' + total.toFixed(2));
@@ -44,7 +28,7 @@
       $("#sub_total_register").text('S/. ' + subtotal.toFixed(2));
     }
 
-    // Bind the calculateTotal() function to the keyup and blur events of all number input elements
+    // Bind the updateTotalRegister() function to the keyup and blur events of all number input elements
     $(".table tbody").on('keyup blur', 'tr input[type="number"]', function () {
       updateTotalRegister();
     });
@@ -263,9 +247,20 @@
           if (servicio) {
             var newRow = $('<tr style="vertical-align: middle;">');
             newRow.append('<td>' + servicio.nom_servicio + '<input name="val_id_servicio[]" type="hidden" value="' + servicio.id + '"></td>');
-            newRow.append('<td><input type="number" step="0.01" class="form-control" name="val_kg_ropa_register[]" id="kg_ropa_register" style="width: 5rem;" required></td>'); // Empty cell, no quantity needed
-            newRow.append('<td><center><input type="number" step="0.01" class="form-control" name="val_precio_kilo[]" id="kg_ropa_register" style="width: 5rem;" value="' + servicio.precio_kilo + '" required></center></td>');
-            newRow.append('<td class="text-center"></td>'); // Empty cell, no total cost needed
+            var kgRopaCell = $('<td><input type="number" step="0.01" class="form-control" name="val_kg_ropa_register[]" id="kg_ropa_register" style="width: 5rem;" required></td>');
+            newRow.append(kgRopaCell);
+            var precioKiloCell = $('<td><center><input type="number" step="0.01" class="form-control" name="val_precio_kilo[]" id="kg_ropa_register" style="width: 5rem;" value="' + servicio.precio_kilo + '" required></center></td>');
+            newRow.append(precioKiloCell);
+            var totalCell = $('<td class="text-center"></td>');
+            newRow.append(totalCell);
+            var calculateTotal = function calculateTotal() {
+              var kgRopa = parseFloat(kgRopaCell.find('input').val()) || 0;
+              var precioKilo = parseFloat(precioKiloCell.find('input').val()) || 0;
+              var sum = kgRopa * precioKilo;
+              totalCell.text(sum.toFixed(2));
+            };
+            kgRopaCell.find('input').on('input', calculateTotal);
+            precioKiloCell.find('input').on('input', calculateTotal);
             newRow.append('<td><button class="btn btn-danger btn-sm delete-row"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/></svg></button></td>');
             newRow.append('</tr>');
             $('#productTableBody tbody').append(newRow);
@@ -279,11 +274,14 @@
               updateTotalRegister();
             });
 
-            // Disable selected option                        
+            // Disable selected option
             $('#servicioDropdown option:selected').select2().prop("disabled", true);
 
             // Clear the selected value in the dropdown
             servicioDropdown.val(null).trigger('change'); // Clear the selected value in the Select2 dropdown
+
+            // Calculate the initial total for the new row
+            calculateTotal();
           }
         });
       }
