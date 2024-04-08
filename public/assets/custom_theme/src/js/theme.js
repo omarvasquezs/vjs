@@ -236,7 +236,7 @@
 
                         newRow.append('<td>' + servicio.nom_servicio + '<input name="val_id_servicio[]" type="hidden" value="' + servicio.id + '"></td>');
 
-                        var kgRopaCell = $('<td><input type="number" step="0.01" class="form-control" name="val_kg_ropa_register[]" id="kg_ropa_register" style="width: 5rem;" required></td>');
+                        var kgRopaCell = $('<td><center><input type="number" step="0.01" class="form-control" name="val_kg_ropa_register[]" id="kg_ropa_register" style="width: 5rem;" required></center></td>');
                         newRow.append(kgRopaCell);
 
                         var precioKiloCell = $('<td><center><input type="number" step="0.01" class="form-control" name="val_precio_kilo[]" id="kg_ropa_register" style="width: 5rem;" value="' + servicio.precio_kilo + '" required></center></td>');

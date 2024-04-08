@@ -70,7 +70,7 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">SERVICIO</th>
-                                        <th scope="col">PESO EN KG</th>
+                                        <th scope="col" style="text-align: center;">PESO EN KG</th>
                                         <th scope="col" style="text-align: center;">PRECIO POR KG (S/.)</th>
                                         <th scope="col" style="text-align: center;">TOTAL (S/.)</th>
                                         <th scope="col"></th>
