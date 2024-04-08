@@ -15,6 +15,18 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Home extends BaseController
 {
+    private $textmebot_model;  //This can be accessed by all class methods
+    public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+    {
+        // Do Not Edit This Line
+        parent::initController($request, $response, $logger);
+
+        // Preload any models, libraries, etc, here.
+        $this->textmebot_model = new \App\Models\ConfigTextmebotModel();
+        
+        // Load the form helper
+        helper('form');
+    }
     private function _mainOutput($output = null)
     {
         return view('output', (array) $output);
@@ -525,7 +537,7 @@ class Home extends BaseController
     }
     private function whatsapp_message($phone_number, $message)
     {
-        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=2GKoeUfNo5dp&text=' . urlencode($message);
+        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey='.$this->textmebot_model->getApiKey().'&text=' . urlencode($message);
         $response = $this->send_request($url);
         $invalidNumberMessage = 'Invalid Destination WhatsApp number';
 
@@ -542,7 +554,7 @@ class Home extends BaseController
     }
     private function whatsapp_pdf($comprobante_id, $phone_number)
     {
-        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey=2GKoeUfNo5dp&document=' . base_url() . 'comprobante/' . $comprobante_id . '/a4/comprobante_A4_' . date('YmdHis') . '.pdf';
+        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey='.$this->textmebot_model->getApiKey().'&document=' . base_url() . 'comprobante/' . $comprobante_id . '/a4/comprobante_A4_' . date('YmdHis') . '.pdf';
         $response = $this->send_request($url);
         $invalidNumberMessage = 'Invalid Destination WhatsApp number';
     
@@ -1486,5 +1498,42 @@ class Home extends BaseController
 
             return $this->_mainOutput($output);
         }
+    }
+    public function textmebot_form()
+    {
+        // Get the current API key from the database
+        $form = form_open('save_textmebot_api_key', ['method' => 'post', 'class' => 'form']);
+        $form .= '<h1 class="display-6 mb-5">CONFIGURACIÓN WHATSAPP</h1>';
+        $form .= '<div class="form-group col-md-6 col-sm-12">';
+        $form .= form_label('TEXTMEBOT API KEY', 'api_key', ['class' => 'form-label fw-bolder']);
+        $form .= form_input(['name' => 'api_key', 'id' => 'api_key', 'value' => $this->textmebot_model->getApiKey(), 'class' => 'form-control mb-4']);        
+        $form .= form_submit('submit', 'GUARDAR', ['class' => 'btn btn-primary']);
+        $form .= '</div>';
+        $form .= form_close();
+    
+        $output = (object) [
+            'css_files' => [],
+            'js_files' => [],
+            'output' => $form
+        ];
+
+        return $this->_mainOutput($output);
+    }
+    public function save_textmebot_api_key()
+    {
+        $api_key = $this->request->getPost('api_key');
+
+        // Check if the table is empty
+        $count = $this->textmebot_model->countAll();
+        if ($count == 0) {
+            // Insert the API key
+            $this->textmebot_model->insert(['api_key' => $api_key]);
+        } else {
+            // Update the existing row
+            $this->textmebot_model->update(1, ['api_key' => $api_key]);
+        }
+
+        // Redirect back to the form
+        return redirect()->to('/textmebot_form');
     }
 }

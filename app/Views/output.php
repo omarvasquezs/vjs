@@ -109,6 +109,7 @@
                                 <li><a class="dropdown-item"
                                         href="<?= base_url() ?>change_password/edit/<?= session()->get('user_id') ?>">CAMBIAR
                                         CONTRASEÑA</a></li>
+                                <li><a class="dropdown-item" href="/textmebot_form">CONF. WHATSAPP</a></li>
                             <?php } ?>
                             <li><a class="dropdown-item" href="<?= base_url() ?>logout">SALIR DEL SISTEMA</a></li>
                         </ul>

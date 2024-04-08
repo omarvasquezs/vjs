@@ -124,3 +124,7 @@ $routes->get('adicionales','Home::adicionales');
 $routes->get('adicionales/(:any)','Home::adicionales/$1');
 $routes->post('adicionales','Home::adicionales');
 $routes->post('adicionales/(:any)','Home::adicionales');
+
+$routes->get('textmebot_form','Home::textmebot_form');
+$routes->post('save_textmebot_api_key','Home::save_textmebot_api_key');
+$routes->post('save_textmebot_api_key/(:any)','Home::save_textmebot_api_key');
