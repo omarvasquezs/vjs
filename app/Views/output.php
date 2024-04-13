@@ -126,22 +126,22 @@
                         <div class="modal-body">
                             <nav>
                                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                    <button class="nav-link active" id="nav-58mm-tab" data-bs-toggle="tab"
-                                        data-bs-target="#nav-58mm" type="button" role="tab" aria-controls="nav-58mm"
-                                        aria-selected="true">58MM</button>
-                                    <button class="nav-link" id="nav-a4-tab" data-bs-toggle="tab"
+                                    <button class="nav-link active" id="nav-a4-tab" data-bs-toggle="tab"
                                         data-bs-target="#nav-a4" type="button" role="tab" aria-controls="nav-a4"
                                         aria-selected="false">A4</button>
+                                    <button class="nav-link" id="nav-58mm-tab" data-bs-toggle="tab"
+                                        data-bs-target="#nav-58mm" type="button" role="tab" aria-controls="nav-58mm"
+                                        aria-selected="true">58MM</button>
                                 </div>
                             </nav>
                             <div class="tab-content" id="nav-tabContent">
-                                <div class="tab-pane fade show active" id="nav-58mm" role="tabpanel"
-                                    aria-labelledby="nav-58mm-tab" tabindex="0">
-                                    <iframe id="printIframe" width="100%" height="100%" frameborder="0"></iframe>
-                                </div>
-                                <div class="tab-pane fade" id="nav-a4" role="tabpanel" aria-labelledby="nav-a4-tab"
+                                <div class="tab-pane fade show active" id="nav-a4" role="tabpanel" aria-labelledby="nav-a4-tab"
                                     tabindex="0">
                                     <iframe id="printIframe2" width="100%" height="100%" frameborder="0"></iframe>
+                                </div>
+                                <div class="tab-pane fade" id="nav-58mm" role="tabpanel"
+                                    aria-labelledby="nav-58mm-tab" tabindex="0">
+                                    <iframe id="printIframe" width="100%" height="100%" frameborder="0"></iframe>
                                 </div>
                             </div>
                         </div>

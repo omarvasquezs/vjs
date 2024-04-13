@@ -28,7 +28,7 @@ class Home extends BaseController
 
         // Preload any models, libraries, etc, here.
         $this->textmebot_model = new \App\Models\ConfigTextmebotModel();
-        
+
         // Load the form helper
         helper('form');
     }
@@ -302,17 +302,11 @@ class Home extends BaseController
         switch ($segment) {
             case 'comprobantes_recibidos':
                 // code to execute if the URL contains 'comprobantes_pagados'
-                //$crud->where("comprobantes.estado_ropa_id != '4'");
-                //$crud->where("comprobantes.estado_comprobante_id = '2'");
-
                 $crud->where("comprobantes.estado_ropa_id IN (1, 3)");
                 $crud->where("comprobantes.estado_comprobante_id IN (1, 2)");
                 break;
             case 'comprobantes_cancelados':
                 // code to execute if the URL contains 'comprobantes_pendiente_pago'
-                //$crud->where("comprobantes.estado_ropa_id != '4'");
-                //$crud->where("comprobantes.estado_comprobante_id = '1'");
-
                 $crud->where("comprobantes.estado_ropa_id IN (1, 3)");
                 $crud->where("comprobantes.estado_comprobante_id", 4);
                 break;
@@ -322,9 +316,6 @@ class Home extends BaseController
                 break;
             default:
                 // code to execute if the URL doesn't contain any of the above
-                //$crud->where("comprobantes.estado_ropa_id != '4'");
-                //$crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
-
                 $crud->where("comprobantes.estado_ropa_id IN (1, 3)");
                 $crud->where("comprobantes.estado_comprobante_id IN (1, 2, 4)");
                 break;
@@ -426,12 +417,6 @@ class Home extends BaseController
 
                 // Run the validation check
                 if (!$validation->run($stateParameters->data)) {
-                    // If validation fails, get the error message
-                    //$errors = $validation->getErrors();
-                    //$errorMessage = reset($errors);
-
-                    // Prevent updating the data by throwing an exception
-                    //throw new \Exception($errorMessage);
                     return false;
                 }
             }
@@ -608,52 +593,6 @@ class Home extends BaseController
         $dompdf->loadHtml(view('pdf_view_a4', $data), 'UTF-8');
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
-        // Instantiate canvas instance
-        /*$canvas = $dompdf->getCanvas();
-
-        // Instantiate font metrics class
-        $fontMetrics = new FontMetrics($canvas, $options);
-
-        // Get height and width of page
-        $w = $canvas->get_width();
-        $h = $canvas->get_height();
-
-        // Get font family file
-        $font = $fontMetrics->getFont('times');
-
-        // Specify watermark text
-        switch ($comprobante['estado_comprobante_id']) {
-            case 1:
-                $text = "PENDIENTE DE PAGO";
-                $fontSize = 55;
-                break;
-            case 2:
-                $text = "PARCIALMENTE PAGADO";
-                $fontSize = 45;
-                break;
-            case 3:
-                $text = "ANULADO";
-                $fontSize = 85;
-                break;
-            default:
-                $text = "";
-                $fontSize = 0;
-                break;
-        }
-
-        // Get height and width of text
-        $txtHeight = $fontMetrics->getFontHeight($font, $fontSize);
-        $textWidth = $fontMetrics->getTextWidth($text, $font, $fontSize);
-
-        // Set text opacity
-        $canvas->set_opacity(.2);
-
-        // Specify horizontal and vertical position
-        $x = (($w - $textWidth) / 2);
-        $y = (($h - $txtHeight) / 3);
-
-        // Writes text at the specified x and y coordinates
-        $canvas->text($x, $y, $text, $font, $fontSize, array(255, 0, 0), '', '', 20);*/
         $dompdf->stream('comprobante_a4-' . date('YmdHis') . '.pdf', ['Attachment' => false]);
         exit();
     }
@@ -707,35 +646,6 @@ class Home extends BaseController
         $dompdf->setPaper(array(0, 0, 164, $docHeight));
         $dompdf->loadHtml(view('pdf_view_58mm', $data), 'UTF-8');
         $dompdf->render();
-        // Instantiate canvas instance
-        /*$canvas = $dompdf->getCanvas();
-
-        // Instantiate font metrics class
-        $fontMetrics = new FontMetrics($canvas, $options);
-
-        // Get height and width of page
-        $w = $canvas->get_width();
-        $h = $canvas->get_height();
-
-        // Get font family file
-        $font = $fontMetrics->getFont('times');
-
-        // Specify watermark text
-        $text = "";
-
-        // Get height and width of text
-        $txtHeight = $fontMetrics->getFontHeight($font, 75);
-        $textWidth = $fontMetrics->getTextWidth($text, $font, 75);
-
-        // Set text opacity
-        $canvas->set_opacity(.2);
-
-        // Specify horizontal and vertical position
-        $x = (($w - $textWidth) / 2);
-        $y = (($h - $txtHeight) / 2);
-
-        // Writes text at the specified x and y coordinates
-        $canvas->text($x, $y, $text, $font, 75);*/
         $dompdf->stream('comprobante_58mm-' . date('YmdHis') . '.pdf', array("Attachment" => false));
         exit();
     }
@@ -969,7 +879,6 @@ class Home extends BaseController
 
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
 
-        //$this->updateEstadoComprobantesId($model_comprobantes->getInsertID(), $this->request->getPost('monto_abonado'));
         $this->incrementComprobanteCounter($model_comprobantes->getInsertID(), $this->request->getPost('btnradio'));
 
         $cod_comprobante = $model_comprobantes->where('id', $model_comprobantes->getInsertID())->first()['cod_comprobante'];
@@ -987,11 +896,6 @@ class Home extends BaseController
 
         session()->setFlashdata('success_message', 'El código de comprobante generado es: <b>' . $cod_comprobante . '</b>');
 
-        // Create a script block that will display the cod_comprobante in a JavaScript alert before redirecting
-        /*echo "<script>
-            alert('El código de comprobante generado es: " . $model_comprobantes->where('id', $model_comprobantes->getInsertID())->first()['cod_comprobante'] . "');
-            window.location.href = '/comprobantes';
-        </script>";*/
         return redirect()->to('/comprobantes');
     }
     public function submit_adicionales_form()
@@ -1027,7 +931,7 @@ class Home extends BaseController
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
 
         $estado_comprobante_id = $model_comprobantes->where('id', $inserted_id)->first()['estado_comprobante_id'];
-        
+
         $cod_comprobante = $model_comprobantes->where('id', $inserted_id)->first()['cod_comprobante'];
 
         // Check if comprobante is already CANCELADO
@@ -1096,7 +1000,6 @@ class Home extends BaseController
         $builder = $db->table('reporte_ingresos');
         $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado');
         $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
-        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id');
         $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
@@ -1133,7 +1036,6 @@ class Home extends BaseController
         $builder = $db->table('reporte_ingresos');
         $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, COALESCE(NULLIF(metodo_pago.nom_metodo_pago, ""), "NINGUNO") as nom_metodo_pago, reporte_ingresos.monto_abonado');
         $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
-        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id'); // use LEFT JOIN
         $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
@@ -1183,7 +1085,6 @@ class Home extends BaseController
         $builder = $db->table('reporte_ingresos');
         $builder->select('reporte_ingresos.cod_comprobante, clientes.nombres, DATE_FORMAT(reporte_ingresos.fecha, "%Y-%m-%d") as fecha, metodo_pago.nom_metodo_pago, reporte_ingresos.monto_abonado');
         $builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
-        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id'); // use LEFT JOIN
         $builder->join('clientes', 'reporte_ingresos.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(reporte_ingresos.fecha) >=', $start_date);
@@ -1210,7 +1111,6 @@ class Home extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('comprobantes');
         $builder->select('comprobantes.cod_comprobante, clientes.nombres, DATE_FORMAT(comprobantes.fecha, "%Y-%m-%d") as fecha, comprobantes.costo_total');
-        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left');  // use LEFT JOIN
         $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(comprobantes.fecha) >=', $start_date);
@@ -1245,7 +1145,6 @@ class Home extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('comprobantes');
         $builder->select('comprobantes.cod_comprobante, clientes.nombres, DATE_FORMAT(comprobantes.fecha, "%Y-%m-%d") as fecha, comprobantes.costo_total');
-        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
         $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(comprobantes.fecha) >=', $start_date);
@@ -1358,7 +1257,6 @@ class Home extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('comprobantes');
         $builder->select('comprobantes.cod_comprobante, clientes.nombres, DATE_FORMAT(comprobantes.fecha, "%Y-%m-%d") as fecha, comprobantes.costo_total');
-        //$builder->join('metodo_pago', 'reporte_ingresos.metodo_pago_id = metodo_pago.id', 'left'); // use LEFT JOIN
         $builder->join('clientes', 'comprobantes.cliente_id = clientes.id');
         if (!empty($start_date) && !empty($end_date)) {
             $builder->where('DATE(comprobantes.fecha) >=', $start_date);
