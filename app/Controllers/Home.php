@@ -13,10 +13,15 @@ use Dompdf\FontMetrics;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+// initController objects
+use \CodeIgniter\HTTP\RequestInterface;
+use \CodeIgniter\HTTP\ResponseInterface;
+use \Psr\Log\LoggerInterface;
+
 class Home extends BaseController
 {
     private $textmebot_model;  //This can be accessed by all class methods
-    public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
@@ -383,10 +388,6 @@ class Home extends BaseController
             return site_url('comprobante/' . $row);
         }, true);
 
-        $crud->setActionButton('Reenviar Comprobante', 'whatsapp-icon-custom', function ($row) {
-            return site_url('reenviarpdf/' . $row);
-        }, false);
-
         $crud->setActionButton('Añadir adicional', 'adicionales-icon-custom', function ($row) {
             return site_url('adicionales/' . $row);
         }, false);
@@ -458,28 +459,6 @@ class Home extends BaseController
 
             $this->updateLastUpdatedBy($stateParameters->primaryKeyValue);
 
-            $newEstadoRopaId = $stateParameters->data['estado_ropa_id'] ?? null;
-
-            if ($newEstadoRopaId === '3') {
-
-                // Get the cliente_id
-                $cliente_id = $stateParameters->data['cliente_id'];
-
-                // Query the clientes table to get the telefono
-                $query = $db->table('clientes')->getWhere(['id' => $cliente_id]);
-                $row_cliente = $query->getRow();
-
-                // Check if telefono is not NULL, has 9 digits, and starts with 9
-                if (!empty($row_cliente) && !is_null($row_cliente->telefono) && strlen($row_cliente->telefono) == 9 && $row_cliente->telefono[0] == '9') {
-
-                    // The message to send
-                    $message = "VJ's Laundry le informa que su ropa ya está lista para recoger, favor de apersonarse a nuestro local. Si no ha pagado aún o tiene un deuda pendiente con nosotros, favor de pagarlo lo antes posible, ya que sino se le retendrá la ropa. Su código de comprobante es " . $this->displayComprobanteWSP($stateParameters->primaryKeyValue);
-
-
-                    $this->whatsapp_message($row_cliente->telefono, $message);
-                }
-            }
-
             return $stateParameters;
         });
 
@@ -535,40 +514,6 @@ class Home extends BaseController
         // Update the last_updated_by field in the comprobantes table
         $db->query("UPDATE comprobantes SET last_updated_by = ? WHERE id = ?", [$user_id, $comprobante_id]);
     }
-    private function whatsapp_message($phone_number, $message)
-    {
-        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey='.$this->textmebot_model->getApiKey().'&text=' . urlencode($message);
-        $response = $this->send_request($url);
-        $invalidNumberMessage = 'Invalid Destination WhatsApp number';
-
-        if (strpos($response, 'Error') !== false) {
-            $message = "Error al enviar mensaje. El servicio de tercero no esta respondiendo.";
-            session()->setFlashdata('wsp_msg_danger', $message);
-        } else if (strpos($response, $invalidNumberMessage) !== false) {
-            $message = "<p>El teléfono <b>{$phone_number}</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir las notificaciones.</p>";
-            session()->setFlashdata('wsp_msg_danger', $message);
-        } else {
-            $message = "Se notifico con éxito al teléfono: <b>{$phone_number}</b>.";
-            session()->setFlashdata('wsp_msg_success', $message);
-        }
-    }
-    private function whatsapp_pdf($comprobante_id, $phone_number)
-    {
-        $url = 'https://api.textmebot.com/send.php?recipient=+51' . $phone_number . '&apikey='.$this->textmebot_model->getApiKey().'&document=' . base_url() . 'comprobante/' . $comprobante_id . '/a4/comprobante_A4_' . date('YmdHis') . '.pdf';
-        $response = $this->send_request($url);
-        $invalidNumberMessage = 'Invalid Destination WhatsApp number';
-    
-        if (strpos($response, 'Error') !== false) {
-            $message = "Error al enviar mensaje. El servicio de tercero no esta respondiendo.";
-            session()->setFlashdata('wsp_msg_danger', $message);
-        } else if (strpos($response, $invalidNumberMessage) !== false) {
-            $message = "<p>El teléfono <b>{$phone_number}</b> no esta activo en WhatsApp.</p><p>Debe rectificar el teléfono sino no va recibir el comprobante en PDF, provisionalmente puede enviar el comprobante por correo como tambien imprimirlo.</p>";
-            session()->setFlashdata('wsp_msg_danger', $message);
-        } else {
-            $message = "Se envio comprobante con éxito al teléfono: <b>{$phone_number}</b>.";
-            session()->setFlashdata('wsp_msg_success', $message);
-        }
-    }
     private function send_request($url)
     {
         if ($ch = curl_init($url)) {
@@ -601,15 +546,6 @@ class Home extends BaseController
             default:
                 return $row->id;
         }
-    }
-    private function displayComprobanteWSP($comprobante_id)
-    {
-        // Get the database connection
-        $db = \Config\Database::connect();
-        // Query the database to get the cod_comprobante value for the current id
-        $query = $db->query('SELECT cod_comprobante FROM comprobantes WHERE id = ?', [$comprobante_id]);
-        $result = $query->getRow();
-        return $result->cod_comprobante;
     }
     public function displayIdWithTipoComprobante($value, $row)
     {
@@ -1036,10 +972,6 @@ class Home extends BaseController
         //$this->updateEstadoComprobantesId($model_comprobantes->getInsertID(), $this->request->getPost('monto_abonado'));
         $this->incrementComprobanteCounter($model_comprobantes->getInsertID(), $this->request->getPost('btnradio'));
 
-        $clientes = $model_clientes->where('id', $this->request->getPost('clienteDropdown'))->first();
-
-        $this->whatsapp_pdf($model_comprobantes->getInsertID(), $clientes['telefono']);
-
         $cod_comprobante = $model_comprobantes->where('id', $model_comprobantes->getInsertID())->first()['cod_comprobante'];
 
         $data_ingresos = [
@@ -1068,7 +1000,6 @@ class Home extends BaseController
 
         $model_comprobantes_detalles = new \App\Models\ComprobantesDetalles();
         $model_comprobantes = new \App\Models\Comprobantes();
-        $model_clientes = new \App\Models\Clientes();
         $db = \Config\Database::connect(); // Get a reference to the database
 
         $inserted_id = $this->request->getPost('comprobante_id');
@@ -1096,9 +1027,8 @@ class Home extends BaseController
         $model_comprobantes_detalles->insertBatch($data_comprobantes_detalles);
 
         $estado_comprobante_id = $model_comprobantes->where('id', $inserted_id)->first()['estado_comprobante_id'];
-        $cliente_id = $model_comprobantes->where('id', $inserted_id)->first()['cliente_id'];
+        
         $cod_comprobante = $model_comprobantes->where('id', $inserted_id)->first()['cod_comprobante'];
-        $telefono = $model_clientes->where('id', $cliente_id)->first()['telefono'];
 
         // Check if comprobante is already CANCELADO
         if ($estado_comprobante_id == 4) {
@@ -1111,26 +1041,10 @@ class Home extends BaseController
         // Update the costo_total in the comprobantes table
         $db->table('comprobantes')->where('id', $inserted_id)->update(['costo_total' => $current_costo_total + $total_cost]);
 
-        // Send new comprobante through whatsapp
-        $this->whatsapp_pdf($inserted_id, $telefono);
-
         session()->setFlashdata('success_message', 'Se actualizo con éxito el siguiente comprobante: <b>' . $cod_comprobante . '</b>');
 
         // After all your PHP code, output the JavaScript code to reload the parent page
         echo "<script>window.parent.location.reload();</script>";
-    }
-    public function reenviarPDF($comprobante_id)
-    {
-        $model_comprobantes = new \App\Models\Comprobantes();
-        $model_clientes = new \App\Models\Clientes();
-
-        $cliente_id = $model_comprobantes->where('id', $comprobante_id)->first()['cliente_id'];
-
-        $telefono = $model_clientes->where('id', $cliente_id)->first()['telefono'];
-
-        $this->whatsapp_pdf($comprobante_id, $telefono);
-
-        return redirect()->to('/comprobantes');
     }
     public function incrementComprobanteCounter($id, $tipo_comprobante)
     {
@@ -1498,42 +1412,5 @@ class Home extends BaseController
 
             return $this->_mainOutput($output);
         }
-    }
-    public function textmebot_form()
-    {
-        // Get the current API key from the database
-        $form = form_open('save_textmebot_api_key', ['method' => 'post', 'class' => 'form']);
-        $form .= '<h1 class="display-6 mb-5">CONFIGURACIÓN WHATSAPP</h1>';
-        $form .= '<div class="form-group col-md-6 col-sm-12">';
-        $form .= form_label('TEXTMEBOT API KEY', 'api_key', ['class' => 'form-label fw-bolder']);
-        $form .= form_input(['name' => 'api_key', 'id' => 'api_key', 'value' => $this->textmebot_model->getApiKey(), 'class' => 'form-control mb-4']);        
-        $form .= form_submit('submit', 'GUARDAR', ['class' => 'btn btn-primary']);
-        $form .= '</div>';
-        $form .= form_close();
-    
-        $output = (object) [
-            'css_files' => [],
-            'js_files' => [],
-            'output' => $form
-        ];
-
-        return $this->_mainOutput($output);
-    }
-    public function save_textmebot_api_key()
-    {
-        $api_key = $this->request->getPost('api_key');
-
-        // Check if the table is empty
-        $count = $this->textmebot_model->countAll();
-        if ($count == 0) {
-            // Insert the API key
-            $this->textmebot_model->insert(['api_key' => $api_key]);
-        } else {
-            // Update the existing row
-            $this->textmebot_model->update(1, ['api_key' => $api_key]);
-        }
-
-        // Redirect back to the form
-        return redirect()->to('/textmebot_form');
     }
 }
