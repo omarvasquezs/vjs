@@ -3,33 +3,52 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\User;
 
 class Auth extends BaseController
 {
+    protected $userModel;
+    protected $session;
+    
+    public function __construct()
+    {
+        $this->userModel = new User();
+        $this->session = \Config\Services::session();
+    }
+    
     public function login() {
         return view('login');
     }
-    public function authenticate() {
-        if ($this->request->getMethod() === 'post') {
-            // Handle user login here
-            $data = $this->request->getPost();
-            $userModel = new \App\Models\User();
-            $user = $userModel->where('username', $data['username'])->first();
+    public function authenticate()
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $username = $this->request->getPost('username');
+            $password = $this->request->getPost('password');
             
-            if ($user && $user['habilitado'] == 1 && 
-                $user['password'] === md5(sha1($data['password']))) {
-                // Successful login
-                // Set user session or token
-                // Example for session:
-                session()->set('user_id', $user['id']);
-                session()->set('username', $user['username']);
-                session()->set('role_id', $user['role_id']);
-                return redirect()->to('/');
-            } else {
-                // Login failed, show errors or set an error message
-                return redirect()->to('/login');
+            if ($username && $password) {
+                $user = $this->userModel->where('username', $username)->first();
+                
+                if ($user) {
+                    // Usar md5(sha1()) como en el código original
+                    if ($user['password'] === md5(sha1($password))) {
+                        // Configurar la sesión
+                        $sessionData = [
+                            'user_id' => $user['id'],
+                            'username' => $user['username'],
+                            'isLoggedIn' => true
+                        ];
+                        $this->session->set($sessionData);
+                        return redirect()->to('/');
+                    }
+                }
             }
+            
+            // Si llegamos aquí, la autenticación falló
+            return redirect()->to('/login')->with('error', 'Credenciales inválidas');
         }
+        
+        // Si no es POST, redirigir al login
+        return redirect()->to('/login');
     }
     public function logout() {
         // Destroy the session
