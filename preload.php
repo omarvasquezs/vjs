@@ -79,7 +79,9 @@ class preload
     private function loadAutoloader()
     {
         $paths = new Config\Paths();
-        require rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'bootstrap.php';
+        // Use modern Boot class instead of deprecated bootstrap.php
+        require $paths->systemDirectory . '/Boot.php';
+        \CodeIgniter\Boot::preload($paths);
     }
 
     /**
