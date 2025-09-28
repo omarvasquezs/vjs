@@ -23,12 +23,22 @@ class App extends BaseConfig
         // Auto-detect base URL to support any hostname (ngrok, local dev, production)
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        
+        // Also check X-Forwarded-Proto for proxies like ngrok
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            $protocol = 'https://';
+        }
 
         // Ensure we have a valid host
         if (empty($host) || $host === '/') {
             $this->baseURL = 'http://localhost/';
         } else {
             $this->baseURL = $protocol . $host . '/';
+        }
+
+        // Auto-enable forceGlobalSecureRequests if we detect HTTPS
+        if ($protocol === 'https://') {
+            $this->forceGlobalSecureRequests = true;
         }
 
         // Allow environment override if needed
@@ -175,7 +185,14 @@ class App extends BaseConfig
      *
      * @var array<string, string>
      */
-    public array $proxyIPs = [];
+    public array $proxyIPs = [
+        // Trust ngrok and other common proxy services
+        '127.0.0.1'    => 'X-Forwarded-For',
+        '::1'          => 'X-Forwarded-For',
+        '10.0.0.0/8'   => 'X-Forwarded-For',
+        '172.16.0.0/12' => 'X-Forwarded-For',
+        '192.168.0.0/16' => 'X-Forwarded-For',
+    ];
 
     /**
      * --------------------------------------------------------------------------
