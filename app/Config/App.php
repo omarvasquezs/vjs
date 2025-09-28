@@ -11,21 +11,30 @@ class App extends BaseConfig
      * Base Site URL
      * --------------------------------------------------------------------------
      *
-     * URL to your CodeIgniter root. Typically, this will be your base URL,
-     * WITH a trailing slash:
-     *
-     *    http://example.com/
+     * URL to your CodeIgniter root. Auto-detects from HTTP_HOST to support
+     * dynamic URLs like ngrok tunnels, local development, and production.
      */
-    // Read the base URL from the environment so we can adapt to dynamic
-    // URLs such as ngrok tunnels. If APP_BASE_URL is not provided, leave
-    // it empty to allow CodeIgniter to attempt automatic detection.
-    // Example in `.env`:
-    //   APP_BASE_URL="https://abcd-1234.ngrok.io/"
     public string $baseURL = '';
 
     public function __construct()
     {
-        $this->baseURL = env('APP_BASE_URL') ?: $this->baseURL;
+        parent::__construct();
+
+        // Auto-detect base URL to support any hostname (ngrok, local dev, production)
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+
+        // Ensure we have a valid host
+        if (empty($host) || $host === '/') {
+            $this->baseURL = 'http://localhost/';
+        } else {
+            $this->baseURL = $protocol . $host . '/';
+        }
+
+        // Allow environment override if needed
+        if ($envBaseURL = env('APP_BASE_URL')) {
+            $this->baseURL = $envBaseURL;
+        }
     }
 
     /**
