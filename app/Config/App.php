@@ -16,7 +16,17 @@ class App extends BaseConfig
      *
      *    http://example.com/
      */
-    public string $baseURL = 'https://vjslaundry.com/';
+    // Read the base URL from the environment so we can adapt to dynamic
+    // URLs such as ngrok tunnels. If APP_BASE_URL is not provided, leave
+    // it empty to allow CodeIgniter to attempt automatic detection.
+    // Example in `.env`:
+    //   APP_BASE_URL="https://abcd-1234.ngrok.io/"
+    public string $baseURL = '';
+
+    public function __construct()
+    {
+        $this->baseURL = env('APP_BASE_URL') ?: $this->baseURL;
+    }
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
