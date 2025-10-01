@@ -3,15 +3,17 @@
 namespace App\Controllers;
 
 use App\Libraries\GroceryCrud;
+
 // Reference the Dompdf namespace
 use Dompdf\Dompdf;
+
 // Reference the Options namespace
 use Dompdf\Options;
-// Reference the Font Metrics namespace
-use Dompdf\FontMetrics;
+
 // phpoffice for reports
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 // initController objects
 use \CodeIgniter\HTTP\RequestInterface;
@@ -20,7 +22,8 @@ use \Psr\Log\LoggerInterface;
 
 class Home extends BaseController
 {
-    private $textmebot_model;  //This can be accessed by all class methods
+    protected $textmebot_model;
+
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         // Do Not Edit This Line
@@ -1047,7 +1050,8 @@ class Home extends BaseController
         // Set the headers
         $headers = array("COMPROBANTE", "CLIENTE", "FECHA DE ABONO", "METODO DE PAGO", "MONTO ABONADO");
         foreach ($headers as $key => $header) {
-            $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
+            $columnLetter = Coordinate::stringFromColumnIndex($key + 1);
+            $sheet->setCellValue($columnLetter . '1', $header);
         }
 
         // Add the data
@@ -1057,7 +1061,8 @@ class Home extends BaseController
             foreach ($dataRow as $value) {
                 // Encode special characters
                 $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-                $sheet->setCellValueByColumnAndRow($column, $rowNumber, $value);
+                $columnLetter = Coordinate::stringFromColumnIndex($column);
+                $sheet->setCellValue($columnLetter . $rowNumber, $value);
                 $column++;
             }
             $rowNumber++;
@@ -1155,7 +1160,8 @@ class Home extends BaseController
         // Set the headers
         $headers = array("COMPROBANTE", "CLIENTE", "FECHA", "COSTO TOTAL");
         foreach ($headers as $key => $header) {
-            $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
+            $columnLetter = Coordinate::stringFromColumnIndex($key + 1);
+            $sheet->setCellValue($columnLetter . '1', $header);
         }
 
         // Add the data
@@ -1165,7 +1171,8 @@ class Home extends BaseController
             foreach ($dataRow as $value) {
                 // Encode special characters
                 $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-                $sheet->setCellValueByColumnAndRow($column, $rowNumber, $value);
+                $columnLetter = Coordinate::stringFromColumnIndex($column);
+                $sheet->setCellValue($columnLetter . $rowNumber, $value);
                 $column++;
             }
             $rowNumber++;
@@ -1218,9 +1225,10 @@ class Home extends BaseController
         $comprobantesData = $builder->get()->getResultArray();
 
         // Set the headers
-        $headers = array("COMPROBANTE", "CLIENTE", "N RUC", "RAZON SOCIAL","FECHA", "FECHA ACTUALIZACION", "METODO DE PAGO", "ESTADO ROPA", "ESTADO COMPROBANTE", "REGISTRADO POR", "ACTUALIZADO POR", "LOCAL", "OBSERVACIONES", "ABONADO", "COSTO TOTAL");
+        $headers = array("COMPROBANTE", "CLIENTE", "N RUC", "RAZON SOCIAL", "FECHA", "FECHA ACTUALIZACION", "METODO DE PAGO", "ESTADO ROPA", "ESTADO COMPROBANTE", "REGISTRADO POR", "ACTUALIZADO POR", "LOCAL", "OBSERVACIONES", "ABONADO", "COSTO TOTAL");
         foreach ($headers as $key => $header) {
-            $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
+            $columnLetter = Coordinate::stringFromColumnIndex($key + 1);
+            $sheet->setCellValue($columnLetter . '1', $header);
         }
 
         // Add the data
@@ -1230,7 +1238,8 @@ class Home extends BaseController
             foreach ($dataRow as $value) {
                 // Encode special characters
                 $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-                $sheet->setCellValueByColumnAndRow($column, $rowNumber, $value);
+                $columnLetter = Coordinate::stringFromColumnIndex($column);
+                $sheet->setCellValue($columnLetter . $rowNumber, $value);
                 $column++;
             }
             $rowNumber++;
